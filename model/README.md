@@ -2,6 +2,8 @@
 
 [Canopy](../README.md) / Model
 
+Before adding a feature, read the [Model contribution standard](CONTRIBUTING.md). [All component standards](../model/docs/framework/contributing.md) provide the shared entrypoint.
+
 Models provide reusable geometry tools and physics simulators. Every Scenario uses the same trusted registry; inputs and outputs belong to the selected Scenario. A Model groups related Methods, each with a versioned contract, parameter schema, example request and run guide.
 
 ## Internal structure
@@ -57,14 +59,16 @@ python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install -e '.[physics,geometry]'
 canopy --root . models
-canopy --root . demo --physics solar flood wind temperature pollution
-canopy --root . validate demo
+python model/tools/run_example.py --physics solar flood wind temperature pollution
+# The tool prints a separate workspace. The main checkout keeps only London.
+# Validation below requires the local London payloads.
+canopy --root . validate imperial_corridor_8km
 canopy --root . serve --port 8769
 ```
 
-Open <http://127.0.0.1:8769/>. The example generates synthetic geometry and results, then selects them in the standard viewer. Use `canopy demo --physics` for geometry only. CPU execution is the default; device requirements and physical assumptions are specified in each Method guide.
+Open <http://127.0.0.1:8769/>. The example generates synthetic geometry and results inside a disposable workspace. To view it, use the printed `canopy --root /path/to/workspace serve` command. The main checkout serves London. Use `python model/tools/run_example.py --physics` for geometry only. CPU execution is the default; device requirements and physical assumptions are specified in each Method guide.
 
-For a single Method, copy a request from [scenario/examples/canopy](../scenario/examples/canopy/), set the Scenario and exact input Asset references, then run `canopy run REQUEST.json --dry-run` followed by `canopy run REQUEST.json`. A saved recipe can also run through `canopy run-task SCENARIO TASK`.
+For a single Method, copy a request from [model/tests/fixtures/canopy](tests/fixtures/canopy/), set the Scenario and exact input Asset references, then run `canopy --root /path/to/example-workspace run REQUEST.json --dry-run` followed by the same command without `--dry-run`. A saved recipe can also run through `canopy run-task SCENARIO TASK`.
 
 ## Add or change a Method
 
@@ -78,7 +82,7 @@ From the repository root, after installation:
 
 ```sh
 python -m unittest discover -s model/tests -v
-python model/tools/check_contract.py scenario/examples/contract-v1/manifest.json
+python model/tools/check_contract.py model/tests/fixtures/contract-v1/manifest.json
 node --test visualizer/tests/test_viewer.mjs
 python -m pip wheel --no-deps . -w dist
 ```

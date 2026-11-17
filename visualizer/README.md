@@ -2,6 +2,8 @@
 
 [Canopy](../README.md) / Visualizer
 
+Before adding a feature, read the [Visualizer contribution standard](CONTRIBUTING.md). [All component standards](../model/docs/framework/contributing.md) provide the shared entrypoint.
+
 The Visualizer reads Geometry and Physics Assets through a single presentation framework. Scenarios choose a preset and default view; they share loaders, coordinate transforms, widgets and interaction controls. Opening a view performs no simulation.
 
 ## Internal structure
@@ -42,10 +44,11 @@ After [installation](../model/README.md#run-the-small-example), run from the rep
 canopy --root . serve --port 8769
 node --test visualizer/tests/test_viewer.mjs
 # In a second terminal; requires puppeteer-core and a local Chrome executable:
-node visualizer/tests/browser_canopy.cjs http://127.0.0.1:8769
 node visualizer/tests/browser_canopy_scenarios.cjs http://127.0.0.1:8769
 ```
 
-Set `PUPPETEER_MODULE` and `CHROME_PATH` when those tools are outside the test defaults. Browser scenario checks require the retained local datasets; the synthetic test requires a generated `demo`.
+Set `PUPPETEER_MODULE` and `CHROME_PATH` when those tools are outside the test defaults. The browser scenario check requires the retained London payloads and checks that London is the sole catalog entry. Synthetic browser checks can use the separate workspace printed by `model/tools/run_example.py`.
 
 The local server explicitly maps existing `/src/visualization/`, `/project/`, `/examples/` and `/schemas/` URL prefixes to their current repository or data locations. The detailed website's `/viewer/`, `/scenes/`, `/assets/` and related paths map to `visualizer/site/`. These are public resource routes, independent of the source directory names. Source code, private configuration and arbitrary filesystem paths are not served.
+
+The [interactive architecture guide](guide/README.md) lists the current Model, Asset and Visualizer contents and links to their extension standards. Open `/guide/` on the local server.

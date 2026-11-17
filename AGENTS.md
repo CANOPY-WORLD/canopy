@@ -4,6 +4,10 @@ Write all documentation in English, including README text, diagram labels, inter
 
 The four top-level domains are `model/`, `scenario/`, `asset/` and `visualizer/`. The root README explains their relationships; internal diagrams, setup and interface details belong in the relevant directory README. View configuration belongs to Scenario.
 
+The only curated Scenario is `imperial_corridor_8km`, the London 8 km case. Other scene datasets stay outside this checkout; test requests and tiny payloads live under `model/tests/fixtures/`. Use `model/tools/run_example.py` for disposable synthetic runs.
+
+Start at `model/docs/framework/contributing.md` and read the affected component's `CONTRIBUTING.md`. Scoped `AGENTS.md` files reinforce the same standards.
+
 Read `model/docs/framework/protocol-v2.md` and `model/docs/framework/method-guide.md` before adding a Method, Asset or Scenario.
 
 - Shared Python implementations and the SDK: `model/src/`; keep package import names stable.
@@ -19,4 +23,6 @@ Use `common.layout` and `Storage` to resolve paths. Original Physics4D checkouts
 
 Do not upload private datasets or remove original histories. Preserve source notices and the original hashes in `model/docs/framework/physics4d-import.json`; record relocations and adaptations separately in `import-adaptations.json`. Publication requires task-specific authorization.
 
-Run `python -m unittest discover -s model/tests -v`, `node --test visualizer/tests/test_viewer.mjs`, and `python model/tools/check_contract.py scenario/examples/contract-v1/manifest.json` after installation. Check viewer behavior when changing routes, loading or widgets.
+Run `python -m unittest discover -s model/tests -v`, `node --test visualizer/tests/test_viewer.mjs`, and `python model/tools/check_contract.py model/tests/fixtures/contract-v1/manifest.json` after installation. Check viewer behavior when changing routes, loading or widgets.
+
+Run `python model/tools/check_repository.py` to check the one-case catalog, Method references, documentation links and generated inventory. Keep the private explanation Site source under `visualizer/guide/`; never include raw payloads in that site.

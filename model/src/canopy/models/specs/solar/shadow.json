@@ -106,5 +106,5 @@
     "progress": "steps"
   },
   "guide": "model/solar/shadow/README.md",
-  "example": "scenario/examples/canopy/solar.json"
+  "example": "model/tests/fixtures/canopy/solar.json"
 }

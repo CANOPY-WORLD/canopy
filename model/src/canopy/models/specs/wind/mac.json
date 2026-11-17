@@ -116,5 +116,5 @@
     "progress": "steps"
   },
   "guide": "model/wind/mac/README.md",
-  "example": "scenario/examples/canopy/wind.json"
+  "example": "model/tests/fixtures/canopy/wind.json"
 }

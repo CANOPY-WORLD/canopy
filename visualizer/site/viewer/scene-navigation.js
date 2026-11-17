@@ -7,11 +7,7 @@ const select = document.getElementById('scene-select');
 const home = document.getElementById('scene-home');
 home.href = root.href;
 const query = new URLSearchParams(location.search);
-const current = location.pathname.includes('/windfarm-movie/')
-  ? 'windfarm'
-  : { south_kensington: 'south_ken', region: 'windfarm' }[query.get('scene')] ||
-    query.get('scene') ||
-    'south_ken';
+const current = query.get('scene') || 'imperial_corridor_8km';
 try {
   const response = await fetch(catalogue, { cache: 'no-cache' });
   if (!response.ok) throw new Error(`Scene catalogue: HTTP ${response.status}`);
@@ -28,7 +24,7 @@ try {
       option.value = scene.scene_id;
       option.textContent = scene.title;
       const target = new URL(scene.viewer_url, root);
-      // Carry rendering preferences through the windfarm round trip as well.
+      // Keep rendering preferences when reopening the London case.
       for (const key of ['lite', 'tile', 'expansion']) {
         if (query.has(key)) target.searchParams.set(key, query.get(key));
       }

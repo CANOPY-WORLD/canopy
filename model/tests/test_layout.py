@@ -68,7 +68,7 @@ class DomainLayoutTests(unittest.TestCase):
                 self.assertEqual(schema.read_bytes(), (ROOT / 'model/src/canopy/schemas' / schema.name).read_bytes())
 
     def test_public_routes_read_new_layout_without_exposing_source(self):
-        fixture = ROOT / 'scenario/examples/contract-v1'
+        fixture = ROOT / 'model/tests/fixtures/contract-v1'
         manifest = json.loads((fixture / 'manifest.json').read_text())
         scenario = manifest['scene_id']
         create(self.storage, scenario, 'Recorded fixture', manifest['spatial'])
@@ -76,11 +76,14 @@ class DomainLayoutTests(unittest.TestCase):
         select(self.storage, scenario, refs, 'engineering')
         self.write('visualizer/src/visualization/catalog/index.html', 'catalog page')
         self.write('visualizer/site/index.html', 'detailed website')
+        self.write('visualizer/guide/index.html', 'architecture guide')
+        self.write('visualizer/guide/inventory.json', '{"review": true}')
         self.write('visualizer/site/vendor/data.bin', '0123456789')
-        self.write('scenario/examples/example.json', '{"example": true}')
+        self.write('model/tests/fixtures/example.json', '{"example": true}')
         self.write('model/src/private.py', 'private source')
         private = self.write('storage.local.json', '{"private": true}')
         (self.root / 'visualizer/site/vendor/escape').symlink_to(private)
+        (self.root / 'visualizer/guide/escape').symlink_to(private)
 
         class QuietHandler(Handler):
             def log_message(self, *args):
@@ -99,6 +102,10 @@ class DomainLayoutTests(unittest.TestCase):
                 self.assertEqual(response.read(), b'catalog page')
             with get('/index.html') as response:
                 self.assertEqual(response.read(), b'detailed website')
+            with get('/guide/') as response:
+                self.assertEqual(response.read(), b'architecture guide')
+            with get('/guide/inventory.json') as response:
+                self.assertTrue(json.load(response)['review'])
             with get('/api/canopy/scenarios') as response:
                 catalog = json.load(response)
                 self.assertEqual([entry['scenario_id'] for entry in catalog], [scenario])
@@ -117,7 +124,7 @@ class DomainLayoutTests(unittest.TestCase):
             asset = json.loads((self.storage.metadata(scenario) / 'scenario.json').read_text())['assets'][refs[0]]
             with get(f'/project/{scenario}/{asset}') as response:
                 self.assertEqual(json.load(response)['scenario_id'], scenario)
-            for path in ('/model/src/private.py', '/storage.local.json', '/asset/data/', '/vendor/escape'):
+            for path in ('/model/src/private.py', '/storage.local.json', '/asset/data/', '/vendor/escape', '/guide/escape'):
                 with self.subTest(path=path), self.assertRaises(HTTPError) as error:
                     get(path)
                 self.assertIn(error.exception.code, (400, 404))

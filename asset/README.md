@@ -2,6 +2,8 @@
 
 [Canopy](../README.md) / Asset
 
+Before adding a feature, read the [Asset contribution standard](CONTRIBUTING.md). [All component standards](../model/docs/framework/contributing.md) provide the shared entrypoint.
+
 An Asset is a versioned, Scenario-owned Geometry or Physics result. Its small JSON descriptor identifies the payload, exact input versions, coordinates, provenance and file checksums. Bulk arrays and meshes remain separate binary files.
 
 ## Internal structure
@@ -59,10 +61,12 @@ Asset references resolve only inside the owning Scenario. Files cannot escape th
 ## Package a Scenario
 
 ```sh
-canopy --root . validate demo
-canopy --root . pack demo /absolute/output/demo.tar.gz
+canopy --root . validate imperial_corridor_8km
+canopy --root . pack imperial_corridor_8km /absolute/output/london.tar.gz
 ```
 
 The archive contains the complete Scenario index, registered Assets and provenance, excluding cache. It does not publish data. The destination must be outside the Asset directory and must not already exist.
 
 Archives keep the portable `project/<scenario>/...` member layout. On restoration, place `scenario.json` under the checkout's `scenario/<scenario>/` directory and the retained data under `<data_root>/project/<scenario>/`. Exact references and payload paths remain unchanged.
+
+For local retention, remote distribution and future large-array formats, see the [storage strategy](docs/storage.md). The [London Asset catalog](../scenario/imperial_corridor_8km/asset-catalog.json) lists the current retained bundle metadata.

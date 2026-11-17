@@ -88,6 +88,8 @@ class ViewerHandler(BaseHTTPRequestHandler):
                 path=within(site_root(self.storage.root),*parts)
             elif parts==('index.html',):
                 path=site_root(self.storage.root)/'index.html'
+            elif parts[0]=='guide':
+                path=within(self.storage.root/'visualizer/guide',*parts[1:])
             elif parts[:2]==('src','visualization'):
                 path=within(visualization_root(self.storage.root),*parts[2:])
             elif parts[0]=='examples':

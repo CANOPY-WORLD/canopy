@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An interactive guide to Canopy: shared models, scenario-owned data, and one consistent visualizer. Explore the London 8 km case and the standards for extending it.">
+  <meta name="theme-color" content="#254e3d">
+  <title>Canopy — Architecture & Contributor Guide</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23254e3d'/%3E%3Cpath d='M10 24Q10 10 28 10Q30 26 14 28M14 28L25 15' stroke='%23f1f4da' fill='none' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar">
+  <a href="#" class="brand" aria-label="Canopy home"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path d="M5 21C5 8 15 4 26 4C27 17 20 25 8 24M7 25L22 10"/></svg>Canopy<span>Field guide / 01</span></a>
+  <nav aria-label="Main navigation"><a href="#architecture">Architecture</a><a href="#components">Inventory</a><a href="#storage">Data</a><a href="#contribute">Contribute</a></nav>
+  <a class="source-link" href="https://github.com/acse-yl222/canopy">Repository <span aria-hidden="true">↗</span></a>
+</header>
+<main id="main">
+  <section class="hero wrap">
+    <div>
+      <p class="eyebrow"><span class="dot"></span> A framework for physics in place</p>
+      <h1>One city.<br>Shared models.<br><em>Clear connections.</em></h1>
+      <p class="lead">Canopy connects reusable simulation tools, data owned by a scenario, and a consistent way to see the results.</p>
+      <a class="button primary" href="#architecture">Explore the architecture <span aria-hidden="true">↓</span></a>
+    </div>
+    <aside class="case-stamp" aria-label="Current case">
+      <p class="eyebrow">The included scenario</p>
+      <div class="coordinate-art" aria-hidden="true"><span class="cross c1">+</span><span class="cross c2">+</span><span class="cross c3">+</span><span class="cross c4">+</span><div class="extent-square"><span>London</span><svg viewBox="0 0 200 110"><path d="M0 59C30 10 48 100 76 65S116 18 136 69S170 90 200 25"/></svg><i>8 km × 8 km</i></div></div>
+      <h2>London, Imperial Corridor</h2>
+      <p>One curated case. Its geometry, recorded fields and view settings stay together.</p>
+      <p class="small muted">Nominal study area · source coverage retained</p>
+    </aside>
+  </section>
+
+  <section id="architecture" class="architecture wrap section">
+    <div class="section-head"><p class="eyebrow">01 / Architecture</p><h2>Three components.<br>One scenario to connect them.</h2><p>Scenario is the declaration: where the work happens, which assets belong to it, which methods to run, and how to view the result.</p></div>
+    <figure class="architecture-figure"><img src="architecture.svg" width="1440" height="828" alt="Scenario selects shared Models, owns Assets and configures the Visualizer. Geometry tools produce Geometry. Physics simulators read Geometry and optional Physics results. Both Asset types feed the Visualizer directly."><figcaption><span><i class="line solid"></i>Data moves through explicit interfaces</span><span><i class="line dashed"></i>Configuration and ownership</span><a href="architecture.svg">Open full-size diagram ↗</a></figcaption></figure>
+    <div class="principles"><p><b>Model runs.</b> Geometry tools and physics simulators share the same Method lifecycle.</p><p><b>Asset records.</b> Geometry and physics results are versioned data owned by their Scenario.</p><p><b>Visualizer reads.</b> A shared shell displays both geometry and results. Scenario presets adjust presentation.</p></div>
+  </section>
+
+  <section id="components" class="section inventory-section">
+    <div class="wrap">
+      <div class="section-head"><p class="eyebrow">02 / Current inventory</p><h2>What is actually in Canopy?</h2><p>Explore the registered interfaces and the London assets. This inventory is generated from Method specs and validated asset metadata.</p></div>
+      <div id="inventory-status" class="load-status" role="status">Loading the repository inventory…</div>
+      <div class="tablist" role="tablist" aria-label="Component inventory">
+        <button id="tab-model" role="tab" aria-selected="true" aria-controls="panel-model" data-tab="model">Model <span id="model-count">—</span></button>
+        <button id="tab-asset" role="tab" aria-selected="false" aria-controls="panel-asset" data-tab="asset" tabindex="-1">Asset <span id="asset-count">—</span></button>
+        <button id="tab-visualizer" role="tab" aria-selected="false" aria-controls="panel-visualizer" data-tab="visualizer" tabindex="-1">Visualizer <span>1 template</span></button>
+      </div>
+      <div id="panel-model" role="tabpanel" aria-labelledby="tab-model" tabindex="0">
+        <div class="panel-intro"><div><h3>Reusable methods, explicit ports.</h3><p>Geometry → solar, flood or wind. Temperature and pollution also read wind results. Select a Method to inspect its interface and open its run guide.</p></div><label class="search-label">Find a Method<input type="search" id="method-search" placeholder="Try wind, heightfield, numpy…" autocomplete="off"></label></div>
+        <p id="method-result" class="small muted" role="status"></p><div id="method-list"></div>
+        <p class="note">The imported Physics4D research code is also retained under <code>model/src/</code>. A source file becomes a supported Method only after registration, validation and a run guide.</p>
+      </div>
+      <div id="panel-asset" role="tabpanel" aria-labelledby="tab-asset" tabindex="0" hidden>
+        <div class="panel-intro"><div><h3>Two asset kinds. Exact versions.</h3><p>Geometry bundles hold display meshes and computational representations. Physics bundles hold recorded fields, clocks, masks and provenance.</p></div><div id="asset-totals" class="inventory-total"></div></div>
+        <div class="filter-row" role="group" aria-label="Filter assets"><button class="chip" data-filter="all" aria-pressed="true">All</button><button class="chip" data-filter="geometry" aria-pressed="false">Geometry</button><button class="chip" data-filter="physics" aria-pressed="false">Physics</button><p id="asset-result" class="small muted" role="status"></p></div>
+        <div class="table-scroll" tabindex="0" aria-label="London Asset inventory"><table><thead><tr><th>Asset / purpose</th><th>Layers & units</th><th>Encoding</th><th>Recorded samples</th><th>Bundle size</th></tr></thead><tbody id="asset-rows"></tbody></table></div>
+        <p class="note">Bundle sizes include descriptors and provenance. “Verification” assets belong to the same London Scenario and are not selected in its default view. Historical run clocks are independent; relative display alignment does not establish physical synchronization.</p>
+      </div>
+      <div id="panel-visualizer" role="tabpanel" aria-labelledby="tab-visualizer" tabindex="0" hidden>
+        <div class="panel-intro"><div><h3>A fixed frame, with small variations.</h3><p>One template owns camera, time and layer state. Widgets interpret supported data. Presets change presentation without moving simulation code into the browser.</p></div><a class="text-link" href="https://github.com/acse-yl222/canopy/blob/main/visualizer/CONTRIBUTING.md">Visualizer standard ↗</a></div>
+        <div id="visualizer-inventory" class="viewer-stack"></div>
+        <p class="note">The detailed London viewer also has terrain/context, traffic and UAV adapters. These preserved resources are not all registered V2 Assets. The current field widgets display exported slices; arbitrary 3D volume slicing is a future feature.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="storage" class="section wrap">
+    <div class="section-head"><p class="eyebrow">03 / Data & storage</p><h2>Small descriptions.<br>Binary data. Independent storage.</h2><p>Keep file formats separate from where files live. GLB, NPY and JSON work today; the same immutable bundles can be backed up and distributed through object storage.</p></div>
+    <div class="storage-path"><article><p class="step-number">01 <span>Implemented</span></p><h3>Track in Git</h3><p>Code, schemas, Method specs, Scenario JSON and review metadata.</p><code>model/ · scenario/<br>asset/schemas/ · visualizer/</code></article><article><p class="step-number">02 <span>Implemented</span></p><h3>Retain on disk</h3><p>Complete, validated bundles on local SSD or a mounted data volume.</p><code>&lt;data_root&gt;/project/<br>imperial_corridor_8km/assets/</code></article><article><p class="step-number">03 <span class="proposed">Recommended next</span></p><h3>Back up & distribute</h3><p>S3-compatible object storage, immutable keys, checksums and an independent backup.</p><code>Upload → verify → publish index</code></article></div>
+    <div class="storage-details"><div><h3>A practical format stack</h3><dl class="format-list"><div><dt>JSON</dt><dd>Scenario, Asset descriptors, manifests, timestamps, entity IDs and provenance.</dd></div><div><dt>GLB</dt><dd>Geometry for loading and display. Solvers request a declared heightfield, grid or native representation separately.</dd></div><div><dt>NPY</dt><dd>Typed numerical arrays. Use frame indexes for time series, with explicit axes, units, masks and real sample times.</dd></div><div><dt>Zarr <span class="badge future">Future</span></dt><dd>A candidate for large 3D time series and spatial subset reads. It needs a new codec, validator and reader before adoption.</dd></div></dl></div><aside class="storage-advice"><p class="eyebrow">Storage choice</p><h3>Start local.<br>Add an object-store replica.</h3><p>Cloudflare R2 offers an S3-compatible API and no direct egress charge. AWS S3 is a good fit when native object versioning is a priority. Costs and API support differ.</p><p>Git LFS is useful for a small set of large, versioned binaries. It is less convenient than an object store for a growing collection of simulation frames.</p><p class="small">No bucket has been provisioned and no remote Asset resolver is implemented by this change. Existing local loading remains the supported path.</p><a class="text-link" href="https://github.com/acse-yl222/canopy/blob/main/asset/docs/storage.md">Read the storage decision ↗</a></aside></div>
+    <p class="source-note">Primary references: <a href="https://developers.cloudflare.com/r2/get-started/s3/">R2 API</a> · <a href="https://developers.cloudflare.com/r2/how-r2-works/">R2 charging model</a> · <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/Versioning.html">S3 versioning</a> · <a href="https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-git-large-file-storage">Git LFS</a> · <a href="https://zarr.readthedocs.io/en/latest/user-guide/performance/">Zarr chunks & sharding</a>. Reviewed 17 November 2026.</p>
+  </section>
+
+  <section id="contribute" class="section contribute-section"><div class="wrap">
+    <div class="section-head"><p class="eyebrow">04 / Extending Canopy</p><h2>An entry point for every change.</h2><p>Agents and people follow the same component standards. Start with the contract, implement the interface, verify the behavior, then refresh the inventory.</p></div>
+    <div class="contribute-layout"><div class="contribute-select"><label for="change-type">What are you adding?</label><select id="change-type"><option value="model">A Model Method</option><option value="asset">An Asset representation</option><option value="visualizer">A widget or preset</option><option value="scenario">London data or view settings</option></select><a href="https://github.com/acse-yl222/canopy/blob/main/model/docs/framework/contributing.md">All component standards ↗</a><p>Each component includes <code>AGENTS.md</code>, <code>CONTRIBUTING.md</code> and a focused <code>README.md</code>.</p></div><div id="contribution-detail" aria-live="polite"></div></div>
+    <div class="lifecycle"><span>describe</span><i>→</i><span>validate</span><i>→</i><span>prepare</span><i>→</i><span>execute</span><i>→</i><span>export</span><p>The shared runner validates and retains the export before registering an Asset.</p></div>
+  </div></section>
+
+  <section id="london" class="section wrap london-section"><div><p class="eyebrow">05 / The London case</p><h2>8,000 × 8,000 m.<br>A single place to build on.</h2><p>The nominal study area spans the Imperial Corridor. Its original bounds and terrain-normalized height datum are preserved. South Kensington and White City are places within this case.</p><div id="london-facts" class="london-facts"></div><a class="button primary" href="https://acse-yl222.github.io/canopy/viewer/3d/?scene=imperial_corridor_8km">Open the London viewer <span aria-hidden="true">↗</span></a></div><aside class="case-boundary"><p class="eyebrow">Current reproduction boundary</p><h3>Recorded results are available.<br>Full-domain recipes are still to come.</h3><p id="rerun-status">The imported full-domain results do not yet have registered task recipes.</p><p>The small verified crop and solar run is evidence for that pipeline, not for a complete rerun of every historical London field.</p><a class="text-link" href="https://github.com/acse-yl222/canopy/blob/main/scenario/imperial_corridor_8km/README.md">Case details & provenance ↗</a></aside></section>
+</main>
+<footer class="wrap"><a class="brand" href="#">Canopy</a><p>Shared tools. Scenario-owned results. A consistent view.</p><a href="https://github.com/acse-yl222/canopy/blob/main/model/docs/framework/protocol-v2.md">Data protocol ↗</a></footer>
+<div id="copy-status" class="toast" role="status" aria-live="polite"></div>
+<noscript><p class="wrap">Enable JavaScript to explore the generated inventory. The architecture and storage guide remain readable; the repository contains all component standards.</p></noscript>
+</body>
+</html>

@@ -10,11 +10,13 @@ Install with `python -m pip install -e '.[physics]'`. This Method requires SciPy
 | `diffusivity_m2_s` | 0.1 | Strictly positive isotropic diffusivity, m²/s |
 | `sources` | `[{"cell_zyx":[3,4,4],"mass_g_s":1}]` | Nonnegative mass emissions; explicit cell indexes must lie in fluid; sources in the same cell are added |
 
+Use an isolated example workspace: run the example tool and set `EXAMPLE_ROOT` to the printed path. For a real London geometry conversion, set it to the Canopy checkout and use actual London Asset references.
+
 ```sh
-canopy --root . demo --physics wind pollution
+python model/tools/run_example.py --physics wind pollution
 # For a standalone run, replace both placeholders with exact geometry and wind versions:
-canopy --root . run scenario/examples/canopy/pollution.json --dry-run
-canopy --root . run scenario/examples/canopy/pollution.json
+canopy --root "$EXAMPLE_ROOT" run model/tests/fixtures/canopy/pollution.json --dry-run
+canopy --root "$EXAMPLE_ROOT" run model/tests/fixtures/canopy/pollution.json
 ```
 
 Outputs: static YX `concentration` layer, invalid mask, full `concentration_zyx.npy` and `scalar_volume.json`. time.samples is empty; the driving wind snapshot time is recorded in diagnostics. A steady solution is not a time sequence. Both geometry and wind references are retained in derived_from.

@@ -101,5 +101,5 @@
     "progress": "phases"
   },
   "guide": "model/temperature/README.md",
-  "example": "scenario/examples/canopy/temperature_torch.json"
+  "example": "model/tests/fixtures/canopy/temperature_torch.json"
 }

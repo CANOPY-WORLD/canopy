@@ -15,6 +15,8 @@ The London 8 km case uses [scenario.json](scenario.json) to select the shared Mo
 
 Full 3D computational representations and full-domain rerun recipes are separate from importing recorded display layers. The [migration record](migration.json) and [integration status](../../model/docs/framework/migration-status.md) describe the boundary.
 
+The generated [Asset review catalog](asset-catalog.json) lists every registered bundle, its layer encodings, units, sample count, size and manifest hash. Follow the [Scenario contribution standard](../CONTRIBUTING.md) when changing this case and the [Asset standard](../../asset/CONTRIBUTING.md) when retaining new data. The catalog is a review summary; `scenario.json` remains the runtime registry.
+
 ## Detailed website
 
 Physics Urban World — Imperial Corridor, London.

@@ -16,11 +16,13 @@ Install with `python -m pip install -e '.[geometry]'`. Uncompressed GLB can use 
 | `uncovered_ground_m` | null | Samples not covered by triangles: null rejects the input; a number explicitly supplies a ground elevation in m |
 | `obstacle_threshold_m` | 0.05 | Height above the planar datum in m at which a cell is marked solid |
 
+Use an isolated example workspace: run the example tool and set `EXAMPLE_ROOT` to the printed path. For a real London geometry conversion, set it to the Canopy checkout and use actual London Asset references.
+
 ```sh
 canopy --root . models geometry rasterize_glb
-# Edit scenario/examples/canopy/rasterize_glb.json: scenario_id, actual asset reference, layer_id, crop and datum.
-canopy --root . run scenario/examples/canopy/rasterize_glb.json --dry-run
-canopy --root . run scenario/examples/canopy/rasterize_glb.json
+# Edit model/tests/fixtures/canopy/rasterize_glb.json: scenario_id, actual asset reference, layer_id, crop and datum.
+canopy --root "$EXAMPLE_ROOT" run model/tests/fixtures/canopy/rasterize_glb.json --dry-run
+canopy --root "$EXAMPLE_ROOT" run model/tests/fixtures/canopy/rasterize_glb.json
 ```
 
 Outputs: original GLB, float32 `height.npy`, uint8 `solid.npy`, uint8 `coverage.npy`, `heightfield.json` and `entities.json`. `height` is relative to the planar datum. coverage=1 means coverage by source triangles; 0 records an explicit fill assumption. derived_from pins the input geometry version. Pass the new geometry reference to wind/solar/flood or other Methods requiring a heightfield.

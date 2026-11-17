@@ -2,6 +2,8 @@
 
 [Canopy](../README.md) / Scenario
 
+Before adding a feature, read the [Scenario contribution standard](CONTRIBUTING.md). [All component standards](../model/docs/framework/contributing.md) provide the shared entrypoint.
+
 A Scenario is a declarative JSON description of a scene. It records spatial meaning, references its own Assets, pins computation recipes and configures the shared Visualizer. Loading a Scenario does not execute a Blender script, Three.js program or simulator.
 
 ## Internal structure
@@ -34,40 +36,29 @@ The complete schema is [scenario-v2.schema.json](../asset/schemas/scenario-v2.sc
 
 ```text
 scenario/
-  south_ken/scenario.json
-  white_city/scenario.json
-  imperial_corridor_8km/scenario.json
-  examples/                    # Portable request and payload examples
-  demo/scenario.json           # Generated locally; ignored by Git
+  imperial_corridor_8km/
+    scenario.json             # The only curated Scenario
+    migration.json            # Import provenance
+    asset-catalog.json        # Generated review metadata, no raw payloads
+    README.md
 ```
+
 
 Geometry and physics payloads are stored separately under `<data_root>/project/<scenario>/assets/`. The default data root is `asset/data/`. Each Scenario owns its geometry and results; reusable Model implementations and the Visualizer template are shared. See [Asset storage](../asset/README.md#storage).
 
 View is the `visualization` section of a Scenario, not a fourth core data concept. The supported presets are `engineering`, `city` and `laboratory`; the template, widget interfaces and loading rules stay consistent.
 
-## Create and run a Scenario
+## Work with the London case
 
-After [installing Canopy](../model/README.md#run-the-small-example), run from the repository root:
+The only curated Scenario is [Imperial Corridor, London](imperial_corridor_8km/README.md). Its nine registered Assets include seven historical bundles and two crop/solar verification bundles; the standard view selects nine historical layers.
 
 ```sh
-canopy --root . init demo
-canopy --root . run scenario/examples/canopy/geometry.json --dry-run
-canopy --root . run scenario/examples/canopy/geometry.json
-# Use the printed Asset reference in a physics request before running it.
-canopy --root . validate demo
+canopy --root . validate imperial_corridor_8km
+canopy --root . serve --port 8769
 ```
 
-`init` without `--spatial` creates a synthetic local frame. For a real scene, supply `--spatial /path/to/spatial.json` with the actual origin and vertical datum. Use `canopy demo` to generate a complete small scene with input references filled automatically. Its named recipes can be inspected in `scenario/demo/scenario.json` and run through `canopy run-task demo TASK`.
+Metadata is included in Git. Private retained payloads must be supplied locally or imported explicitly; copying `scenario.json` alone does not copy the dataset. The [London import guide](../model/docs/framework/migration-status.md#importing-recorded-scenes) describes the required sources. Historical full-domain task recipes are not yet migrated.
 
-Select retained Assets for display with `canopy view SCENARIO GEOMETRY_REF PHYSICS_REF --preset city`. Loading that view reads the selected results without scheduling computation.
+## Development fixtures
 
-## Included scenes
-
-| Scenario | Contents and scope |
-| --- | --- |
-| [South Kensington](south_ken/README.md) | Recorded geometry, wind and temperature |
-| [White City](white_city/README.md) | Recorded geometry, wind and temperature |
-| [Imperial Corridor, London](imperial_corridor_8km/README.md) | The 8 km case, historical physics layers and detailed presentation |
-| [Examples](examples/README.md) | Small portable payloads and Method request templates |
-
-Metadata is included in Git. Private retained payloads must be supplied locally or imported explicitly; copying `scenario.json` alone does not copy a dataset. [Recorded-scene import](../model/docs/framework/migration-status.md#importing-recorded-scenes) describes the import tools and required sources.
+Small protocol examples and Method request templates live under [model/tests/fixtures](../model/tests/fixtures/README.md). Run `python model/tools/run_example.py` to create a synthetic example in a disposable metadata workspace under cache. It prints the workspace path for subsequent `canopy --root ...` commands. Synthetic tests do not add entries to the curated London catalog.

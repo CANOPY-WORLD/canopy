@@ -107,5 +107,5 @@
     "progress": "phases"
   },
   "guide": "model/pollution/steady_tracer/README.md",
-  "example": "scenario/examples/canopy/pollution.json"
+  "example": "model/tests/fixtures/canopy/pollution.json"
 }

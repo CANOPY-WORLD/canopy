@@ -8,11 +8,12 @@ const puppeteer=require(process.env.PUPPETEER_MODULE||'puppeteer-core');
  try{
   const page=await browser.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400)errors.push(`${r.status()} ${r.url()}`)});
   await page.setViewport({width:1440,height:1000});await page.goto(base+'/',{waitUntil:'networkidle0'});
-  assert.match(page.url(),/catalog/);assert((await page.$$('article.card')).length>=4);
+  assert.match(page.url(),/catalog/);assert.equal((await page.$$('article.card')).length,1);
+  assert.match(await page.$eval('article.card',e=>e.textContent),/imperial_corridor_8km/);
   fs.mkdirSync('cache/qa',{recursive:true});await page.screenshot({path:'cache/qa/canopy-catalog.png'});
   await page.setViewport({width:390,height:844});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:'cache/qa/canopy-catalog-mobile.png'});
   const summary=[];
-  for(const [scenario,count] of [['south_ken',3],['white_city',3],['imperial_corridor_8km',9],['coupled_demo',4]]){
+  for(const [scenario,count] of [['imperial_corridor_8km',9]]){
    await page.setViewport({width:1440,height:1000});await page.goto(base+`/src/visualization/viewer/?scenario=${scenario}`,{waitUntil:'networkidle0',timeout:90000});
    await page.waitForFunction(()=>Boolean(window.urbanViewer),{timeout:90000});
    assert.equal(await page.$eval('#status',e=>e.textContent),`${count} / ${count} layers ready`);

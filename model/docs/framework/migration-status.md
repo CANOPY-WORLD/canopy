@@ -21,7 +21,7 @@ The Visualizer uses a fixed standard template. The engineering/city/laboratory p
 
 ## Real scenarios and validation scope
 
-- South Kensington / White City: each retains its GLB, recorded wind and temperature in its own assets. The source Physics4D checkout was not modified.
+- Only Imperial Corridor is shipped as a curated Scenario. Earlier separate city and synthetic workspaces were archived outside the checkout; reusable source implementations and original provenance remain.
 - Imperial Corridor: retained local_viewer_20261102 physics geometry, wind, temperature, summer/winter solar and shadow, pollution and flood were imported as 7 private assets / 9 display layers. Large NPY arrays were split into individual frames without changing samples. All original float16 values, times, units and masks are preserved, with no further spatial aggregation.
 - A separate real Imperial Corridor GLB computation completed a 128 m crop → 32×32 heightfield → solar chain. A ground value of 0 m for uncovered cells is an explicitly recorded assumption in the terrain-normalized frame, not a claim of GLB coverage at those samples.
 - Small reference tests check flood mass conservation, MAC pressure projection, NumPy/PyTorch temperature agreement, steady-pollution residuals and mass conservation, GLB parent transforms and rejection of uncovered samples. These do not establish long-term city calibration or experimental accuracy.
@@ -43,14 +43,6 @@ The Visualizer uses a fixed standard template. The engineering/city/laboratory p
 The data and visualization migration is complete for the listed layers. Reproducing every historical full-domain simulation through a single standardized task chain remains separate work. Importing recorded output does not rerun or revalidate the original solver, and display slices do not automatically supply the native 3D inputs required by coupled Methods.
 
 ## Importing recorded scenes
-
-Import South Kensington and White City from a Physics4D source checkout, then validate each scenario:
-
-```sh
-python model/tools/migrate_physics4d.py --source /path/to/physics4d --scene south_ken --scene white_city
-canopy --root . validate south_ken
-canopy --root . validate white_city
-```
 
 Imperial Corridor uses the retained local_viewer_20261102 data and its provenance report:
 

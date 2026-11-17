@@ -15,7 +15,7 @@ class BinaryTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
         self.root=Path(self.tmp.name);self.path=self.root/'manifest.json'
-        self.manifest=json.loads((ROOT / 'scenario/examples/contract-v1/manifest.json').read_text())
+        self.manifest=json.loads((ROOT / 'model/tests/fixtures/contract-v1/manifest.json').read_text())
         self.manifest['schema_version']='1.1.0'
         self.layer={'id':'flow','kind':'vector_field','format':'npy','asset':'flow.npy','sampling':'linear','field':{'name':'velocity','unit':'m/s'},'encoding':{'coordinate_frame':'ENU','dtype':'<f4','shape':[2,3,4,5],'axes':'TCYX','origin_m':[0,0,1],'spacing_m':[2,2],'sample_location':'cell_center','byte_order':'little','compression':'none'},'display':{'widget':'vector_field','capabilities':['pick']}}
         self.manifest['layers']=[self.layer];np.save(self.root/'flow.npy',np.ones((2,3,4,5),dtype='<f4'))

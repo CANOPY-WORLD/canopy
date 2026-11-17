@@ -15,12 +15,14 @@ Install with `python -m pip install -e '.[physics]'`. Running the NumPy backend 
 | `max_courant` | 0.15 | Advective Courant limit for adaptive substeps |
 | `diffusivity_m2_s` | 0.01 | Thermal diffusivity, m²/s |
 
+Use an isolated example workspace: run the example tool and set `EXAMPLE_ROOT` to the printed path. For a real London geometry conversion, set it to the Canopy checkout and use actual London Asset references.
+
 ```sh
-canopy --root . demo --physics wind temperature
+python model/tools/run_example.py --physics wind temperature
 # Alternatively, generate wind first and edit the examples with the returned geometry / wind references:
-canopy --root . run scenario/examples/canopy/temperature_numpy.json --dry-run
-canopy --root . run scenario/examples/canopy/temperature_numpy.json
-canopy --root . run scenario/examples/canopy/temperature_torch.json
+canopy --root "$EXAMPLE_ROOT" run model/tests/fixtures/canopy/temperature_numpy.json --dry-run
+canopy --root "$EXAMPLE_ROOT" run model/tests/fixtures/canopy/temperature_numpy.json
+canopy --root "$EXAMPLE_ROOT" run model/tests/fixtures/canopy/temperature_torch.json
 ```
 
 Outputs: a TYX scalar display slice in degC, solid-cell invalid mask, full `temperature_tzyx.npy`, `scalar_volume.json`, and actual dt/substeps/backend diagnostics. An input epoch is preserved when present. Boundary conditions follow the original method: ±0.1°C vertical variation at the west inlet, ambient temperature at the top, and zero gradient on the remaining lateral boundaries; solid roof temperatures are prescribed. This does not solve a radiative energy balance or implicitly couple weather or solar models.

@@ -102,5 +102,5 @@
     "progress": "steps"
   },
   "guide": "model/flood/shallow_water/README.md",
-  "example": "scenario/examples/canopy/flood.json"
+  "example": "model/tests/fixtures/canopy/flood.json"
 }

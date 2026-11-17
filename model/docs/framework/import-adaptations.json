@@ -33,7 +33,7 @@
     "src/visualization/": "visualizer/src/visualization/",
     "src/": "model/src/",
     "schemas/": "asset/schemas/",
-    "examples/": "scenario/examples/",
+    "examples/": "model/tests/fixtures/",
     "tools/": "model/tools/"
   },
   "path_resolution": "Inventory and modified_after_import paths identify the original source snapshot. Apply the longest matching path_relocations prefix to locate the current checkout file; original hashes are unchanged."

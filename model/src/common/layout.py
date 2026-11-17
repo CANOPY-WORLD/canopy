@@ -37,7 +37,7 @@ def site_root(root):
 
 
 def examples_root(root):
-    return Path(root) / ('scenario/examples' if domain_layout(root) else 'examples')
+    return Path(root) / ('model/tests/fixtures' if domain_layout(root) else 'examples')
 
 
 def source_path(relative, root=None):

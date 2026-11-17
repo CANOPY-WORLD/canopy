@@ -62,5 +62,5 @@
     "progress": "phases"
   },
   "guide": "model/geometry/heightfield/README.md",
-  "example": "scenario/examples/canopy/geometry.json"
+  "example": "model/tests/fixtures/canopy/geometry.json"
 }

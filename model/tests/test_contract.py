@@ -18,7 +18,7 @@ class ContractTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.run = Path(self.tmp.name) / 'run'
-        shutil.copytree(ROOT / 'scenario/examples/contract-v1', self.run)
+        shutil.copytree(ROOT / 'model/tests/fixtures/contract-v1', self.run)
         self.path = self.run / 'manifest.json'
         self.manifest = json.loads(self.path.read_text())
 

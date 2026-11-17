@@ -1,5 +1,26 @@
 # Verification record
 
+## London-only catalog and contributor guide — 2026-11-17
+
+The curated catalog now contains only `imperial_corridor_8km`. Other local Scenario datasets and the unrelated windfarm presentation were moved to a local archive outside the checkout, preserving the data. Synthetic contract examples now live under `model/tests/fixtures/`; `model/tools/run_example.py` creates separate disposable metadata workspaces.
+
+| Check | Result and scope |
+| --- | --- |
+| Python | 69 tests passed, including fixture relocation and the new bounded `/guide/` HTTP mount |
+| JavaScript | 5 viewer unit checks passed; V1 and V1.1 examples validated |
+| London retained data | All 9 Assets passed payload and checksum validation; default view has 9 selected layers |
+| London browser | Exactly one catalog entry at desktop/mobile widths; all 9 layers ready and all 8 dynamic layers' final recorded samples available; no page or HTTP errors |
+| Isolated example | Geometry plus solar, flood, wind, temperature and pollution completed as 6 retained Assets in a separate cache workspace; the curated catalog remained London-only |
+| Explanation website | Search, Method details, command copy, 2/7 Geometry/Physics filters, keyboard tabs and all 4 contribution guides passed at 1440 px and 390 px; no page/HTTP errors or page-wide overflow |
+| Documentation | Repository checker validates component standards, local Markdown links, English text, schema mirrors, Method example/guide references and generated inventory without private data |
+| Static resource integrity | 869 local listed files matched their sizes and SHA-256 hashes; 684 remotely routed London entries were preserved |
+| Source retention | All 661 imported inventory files still resolve; original source hashes are unchanged |
+| Hosting | Documentation-only Site published with owner-private access; the existing GitHub Pages deployment was not changed |
+
+Local evidence is retained under `cache/qa/london-guide/`: Python log, example output, London validation, static integrity report and desktop/mobile screenshots. The generated review inventory comes from Method specs and a validated safe Asset catalog; it contains no raw fields or private provenance paths.
+
+The new storage guide is a design recommendation. No bucket or paid storage service was provisioned, and no remote Asset resolver or Zarr codec was added. Historical full-domain London task recipes remain unmigrated. These checks do not establish physical prediction accuracy or rerun the full historical London simulations.
+
 ## Four-domain organization review — 2026-11-17
 
 The tracked root now contains only `model/`, `scenario/`, `asset/` and `visualizer/`, plus repository metadata files. The root README presents one overview SVG and directory navigation; internal diagrams, run guides and scene details live below those domains. Earlier records below describe checks before this relocation and retain their historical command paths.

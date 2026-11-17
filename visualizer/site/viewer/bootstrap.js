@@ -1,5 +1,4 @@
 // Keep recovery controls independent of WebGL and scene data initialization.
-const windfarm = location.pathname.includes('/windfarm-movie/');
 const root = new URL('../', import.meta.url);
 const home = root.pathname.endsWith('/src/visualization/legacy/') ? new URL('../../../', root) : root;
 const panel = document.createElement('section');
@@ -15,8 +14,8 @@ function link(text, href, id) {
   actions.append(a);
 }
 link('Retry', location.href, 'viewer-retry');
-if (!windfarm) { const lite = new URL(location.href);lite.searchParams.set('lite','1');link('Use lightweight geometry',lite.href,'viewer-lite'); }
-link('All scenes', home.href, 'viewer-home');
+{ const lite = new URL(location.href);lite.searchParams.set('lite','1');link('Use lightweight geometry',lite.href,'viewer-lite'); }
+link('London case', home.href, 'viewer-home');
 box.append(title,message,actions);panel.append(box);document.body.append(panel);
 
 function fail(error) {
@@ -41,5 +40,5 @@ if (quality) {
     location.assign(url.href);
   });
 }
-try { await import(windfarm ? './windfarm-movie/main.js' : './3d/main.js'); }
+try { await import('./3d/main.js'); }
 catch(error) { fail(error); }

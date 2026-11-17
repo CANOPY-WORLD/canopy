@@ -32,22 +32,19 @@ Purpose and assumptions; exact implementation paths; environment installation; i
 ## Common commands, from a Canopy checkout
 
 ```sh
-python -m venv .venv
+python3 -m venv .venv
 .venv/bin/python -m pip install -e '.[physics]'
 .venv/bin/canopy --root . models
 .venv/bin/canopy --root . models flood shallow_water
-.venv/bin/canopy --root . init demo
-.venv/bin/canopy --root . run scenario/examples/canopy/geometry.json --dry-run
-.venv/bin/canopy --root . run scenario/examples/canopy/geometry.json
-# Replace the physics request's placeholder with the printed geometry asset reference.
-.venv/bin/canopy --root . run scenario/examples/canopy/flood.json --dry-run
-.venv/bin/canopy --root . run scenario/examples/canopy/flood.json
-.venv/bin/canopy --root . validate demo
-.venv/bin/canopy --root . view demo GEOMETRY_REF PHYSICS_REF --preset laboratory
-.venv/bin/canopy --root . serve
+.venv/bin/python model/tools/run_example.py --physics solar flood wind
+# Set EXAMPLE_ROOT to the separate workspace printed by the tool.
+EXAMPLE_ROOT=/absolute/path/from-example-output
+.venv/bin/canopy --root "$EXAMPLE_ROOT" validate demo
+.venv/bin/canopy --root "$EXAMPLE_ROOT" run-task demo flood --dry-run
+.venv/bin/canopy --root "$EXAMPLE_ROOT" serve --port 8770
 ```
 
-Use `canopy --root . demo` to run the complete small example with actual asset references filled automatically. `demo --physics` generates geometry only; `demo --physics flood` adds only flood computation. Prepare real inputs separately for research scenarios.
+Use `python model/tools/run_example.py --physics` for geometry only. This keeps synthetic runs separate from the curated London Scenario. Request templates live under `model/tests/fixtures/canopy/`; replace input placeholders with exact references from the same example workspace. Prepare real inputs separately for research work.
 
 `canopy cancel SCENARIO MODEL RUN_ID` requests cooperative cancellation; Ctrl-C also records a cancelled state. Cancellation takes effect at checkpoints and does not forcibly terminate an active GPU kernel. Current registered methods do not support checkpoint resume. Rerunning creates a new asset version without overwriting an existing asset.
 
@@ -55,12 +52,12 @@ Other imported Physics4D sources remain compatibility implementations; their his
 
 ## Scenario packaging
 
-`canopy pack demo /absolute/output/demo.tar.gz` validates and packages the complete scenario index, all registered assets and provenance. It excludes cache, does not download unknown dependencies and does not publish anything. The output must be outside the scenario asset directory; existing archives cannot be overwritten. Archives use project/<scenario>/... paths. When restoring to a new local data root, place scenario.json in the checkout's metadata root and other assets under the configured data_root.
+`canopy --root "$EXAMPLE_ROOT" pack demo /absolute/output/demo.tar.gz` validates and packages the complete scenario index, all registered assets and provenance. It excludes cache, does not download unknown dependencies and does not publish anything. The output must be outside the scenario asset directory; existing archives cannot be overwritten. Archives use project/<scenario>/... paths. When restoring to a new local data root, place scenario.json in the checkout's metadata root and other assets under the configured data_root.
 
 `canopy run-task SCENARIO TASK --dry-run` checks the request stored in Scenario.tasks. Remove --dry-run to execute the same pinned inputs. The demo saves geometry/solar/flood/wind tasks automatically; physics tasks reference the exact geometry generated for that run, with no later `latest` lookup.
 
 ## Physics results as model inputs
 
-`canopy demo --physics temperature pollution` first generates geometry and wind, then passes their exact versions to both coupled models. The two temperature methods share a port and parameter contract; NumPy and PyTorch are separately versioned methods. Pollution requires the native MAC face artifact, which cannot be replaced by a cell-center display slice. Inspect all methods with `canopy models`; each spec includes its guide path.
+`python model/tools/run_example.py --physics temperature pollution` first generates geometry and wind, then passes their exact versions to both coupled models. The two temperature methods share a port and parameter contract; NumPy and PyTorch are separately versioned methods. Pollution requires the native MAC face artifact, which cannot be replaced by a cell-center display slice. Inspect all methods with `canopy models`; each spec includes its guide path.
 
 `source_snapshot.tar.gz` records the Canopy and imported packages actually resolved by the running Python interpreter, including a per-file SHA-256 inventory. `code_revision` identifies that content by hash; the metadata checkout selected by `--root` is not assumed to contain the executed code. Third-party dependency versions are saved separately in environment.json.

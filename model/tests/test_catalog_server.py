@@ -21,7 +21,7 @@ class RegistryServerTests(unittest.TestCase):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
         self.root=Path(self.tmp.name)/'repo';self.root.mkdir();(self.root/'AGENTS.md').write_text('fixture')
         shutil.copytree(ROOT / 'asset/schemas',self.root/'schemas')
-        run=self.root/'project/south_ken/runs/synthetic_v1';shutil.copytree(ROOT / 'scenario/examples/contract-v1',run)
+        run=self.root/'project/south_ken/runs/synthetic_v1';shutil.copytree(ROOT / 'model/tests/fixtures/contract-v1',run)
         m=json.loads((run/'manifest.json').read_text());p=run.parents[1]
         (p/'project.json').write_text(json.dumps({'schema_version':'1.1.0','scene_id':'south_ken','title':'Synthetic','spatial':m['spatial'],'inputs':[],'default_view':'default'}))
         (p/'views').mkdir();self.viewpath=p/'views/default.json'

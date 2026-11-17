@@ -99,5 +99,5 @@
     "progress": "steps"
   },
   "guide": "model/geometry/rasterize_glb/README.md",
-  "example": "scenario/examples/canopy/rasterize_glb.json"
+  "example": "model/tests/fixtures/canopy/rasterize_glb.json"
 }

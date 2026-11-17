@@ -26,7 +26,7 @@ class StorageTests(unittest.TestCase):
 
     def fixture(self):
         path = self.root / 'cache/south_ken/contract_demo/synthetic_v1'
-        shutil.copytree(ROOT / 'scenario/examples/contract-v1', path)
+        shutil.copytree(ROOT / 'model/tests/fixtures/contract-v1', path)
         return path
 
     def test_default_and_alias(self):

@@ -26,15 +26,17 @@ The geometry asset must contain a heightfield and solid mask. The default initia
 
 ## Minimal run
 
+Set `EXAMPLE_ROOT` to the disposable workspace printed by the example tool before running subsequent commands.
+
 ```sh
 canopy --root . models flood shallow_water
-canopy --root . demo --scenario demo --physics flood
-canopy --root . validate demo
-canopy --root . serve --port 8769
+python model/tools/run_example.py --physics flood
+canopy --root "$EXAMPLE_ROOT" validate demo
+canopy --root "$EXAMPLE_ROOT" serve --port 8769
 ```
 
 Open http://127.0.0.1:8769/src/visualization/viewer/?scenario=demo in a browser.
-Standalone request template: scenario/examples/canopy/flood.json. Start with `canopy init demo`. In physics requests, replace REPLACE_WITH_GEOMETRY_ASSET with the asset reference returned by the geometry run, then use `canopy run REQUEST --dry-run` and `canopy run REQUEST`. Placeholders are not valid inputs.
+Standalone request template: model/tests/fixtures/canopy/flood.json. Use the disposable workspace printed by `python model/tools/run_example.py`; pass it with `--root` on subsequent commands. In physics requests, replace REPLACE_WITH_GEOMETRY_ASSET with the asset reference returned by the geometry run, then use `canopy run REQUEST --dry-run` and `canopy run REQUEST`. Placeholders are not valid inputs.
 
 ## Outputs and validation
 
