@@ -15,3 +15,5 @@ node_modules/
 /project/*/.canopy.lock
 # The CLI regenerates the local synthetic demonstration and its runtime IDs.
 /project/demo/
+
+/project/coupled_demo/

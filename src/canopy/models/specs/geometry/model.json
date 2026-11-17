@@ -6,6 +6,10 @@
     "heightfield": {
       "version": "1.0.0",
       "spec": "heightfield.json"
+    },
+    "rasterize_glb": {
+      "version": "1.0.0",
+      "spec": "rasterize_glb.json"
     }
   }
 }

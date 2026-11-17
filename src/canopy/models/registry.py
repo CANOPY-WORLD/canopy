@@ -25,6 +25,8 @@ def describe(model, method):
 
 def implementation(spec):
     from .methods import Heightfield, Solar, Flood, Wind
-    trusted={'heightfield':Heightfield,'solar_shadow':Solar,'flood_swe':Flood,'wind_mac':Wind}
+    from .geometry import RasterizeGLB
+    from .transport import Temperature,SteadyPollution
+    trusted={'glb_rasterize':RasterizeGLB,'temperature_numpy':Temperature,'temperature_torch':Temperature,'steady_tracer':SteadyPollution,'heightfield':Heightfield,'solar_shadow':Solar,'flood_swe':Flood,'wind_mac':Wind}
     if spec['adapter'] not in trusted: raise ValueError('Unregistered implementation')
     return trusted[spec['adapter']](spec)

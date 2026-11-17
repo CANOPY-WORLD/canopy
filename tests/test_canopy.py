@@ -98,6 +98,56 @@ class CanopyTests(unittest.TestCase):
             a,m,path=asset_load(self.storage,'alpha',result['assets'][0]);self.assertEqual(a['kind'],'physics')
             self.assertTrue(all(np.isfinite(np.load(path.parent/layer['asset'])).all() for layer in m['layers']))
             if model=='wind':self.assertTrue((path.parent/'velocity_tczyx.npy').exists())
+    def test_snapshot_tracks_runtime_not_metadata_checkout(self):
+        import tarfile,hashlib
+        result=run(self.storage,self.request());a,m,path=asset_load(self.storage,'alpha',result['assets'][0])
+        with tarfile.open(path.parent/'provenance/source_snapshot.tar.gz') as archive:
+            content=archive.extractfile('src/canopy/models/methods.py').read()
+            self.assertEqual(content,(ROOT/'src/canopy/models/methods.py').read_bytes())
+            index=json.load(archive.extractfile('runtime-source.json'))
+            self.assertEqual(index['files']['src/canopy/models/methods.py'],hashlib.sha256(content).hexdigest())
+            self.assertEqual(index['identity'],m['provenance']['code_revision'])
+    def test_glb_parent_transform_and_coverage_are_preserved(self):
+        import struct
+        ref=run(self.storage,self.request(parameters={'obstacle_height_m':0,'cell_m':2}))['assets'][0]
+        a,m,path=asset_load(self.storage,'alpha',ref);stage=Path(self.tmp.name)/'transform';shutil.copytree(path.parent,stage)
+        raw=(stage/'visual.glb').read_bytes();length,kind=struct.unpack_from('<II',raw,12);doc=json.loads(raw[20:20+length])
+        doc['nodes'].append({'translation':[1,2,-1],'children':[0]});doc['scenes'][0]['nodes']=[1]
+        encoded=json.dumps(doc).encode();encoded+=b' '*((-len(encoded))%4);tail=raw[20+length:]
+        (stage/'visual.glb').write_bytes(struct.pack('<III',0x46546c67,2,20+len(encoded)+len(tail))+struct.pack('<II',len(encoded),kind)+encoded+tail)
+        m['run_id']='transformed_source';write(stage/'manifest.json',m)
+        transformed=import_run(self.storage,'alpha',stage)[0]
+        request=self.request('geometry','rasterize_glb',{'geometry':transformed},{'bounds_xy_m':[2,2,30,30]})
+        result=run(self.storage,request);a,m,path=asset_load(self.storage,'alpha',result['assets'][0])
+        np.testing.assert_allclose(np.load(path.parent/'height.npy'),2)
+        self.assertTrue(np.load(path.parent/'coverage.npy').all())
+        self.assertEqual((path.parent/'visual.glb').read_bytes(),(stage/'visual.glb').read_bytes())
+        with self.assertRaisesRegex(ValueError,'cover every sample'):
+            run(self.storage,self.request('geometry','rasterize_glb',{'geometry':transformed},{'bounds_xy_m':[0,0,32,32]}))
+    def test_coupled_temperature_backends_and_tracer_conservation(self):
+        geometry=self.geometry();wind=run(self.storage,self.request('wind','mac',{'geometry':geometry}))['assets'][0]
+        inputs={'geometry':geometry,'wind':wind};values=[]
+        for backend in ['numpy','torch']:
+            result=run(self.storage,self.request('temperature','finite_difference_'+backend,inputs))
+            a,m,path=asset_load(self.storage,'alpha',result['assets'][0]);values.append(np.load(path.parent/'temperature_tzyx.npy'))
+            self.assertEqual(set(a['derived_from']),set(inputs.values()));self.assertEqual(m['time']['samples'],[0,.2,.4])
+        np.testing.assert_allclose(values[0],values[1],rtol=1e-6,atol=1e-5)
+        self.assertGreater(values[0][:,0].max(),20)
+        result=run(self.storage,self.request('pollution','steady_tracer',inputs))
+        a,m,path=asset_load(self.storage,'alpha',result['assets'][0]);self.assertEqual(m['time']['samples'],[])
+        self.assertEqual(m['layers'][0]['sampling'],'static');self.assertEqual(m['layers'][0]['encoding']['axes'],'YX')
+        self.assertLess(result['diagnostics']['mass_balance_relative_error'],1e-6)
+        self.assertLess(result['diagnostics']['linear_relative_residual'],1e-6)
+        self.assertGreater(np.load(path.parent/'concentration.npy').max(),0)
+        other=self.geometry()
+        with self.assertRaisesRegex(ValueError,'selected geometry version'):
+            prepare_request(self.storage,self.request('temperature','finite_difference_numpy',{'geometry':other,'wind':wind}))
+        with self.assertRaisesRegex(ValueError,'inside a fluid cell'):
+            prepare_request(self.storage,self.request('pollution','steady_tracer',inputs,{'sources':[{'cell_zyx':[0,8,8],'mass_g_s':1}]}))
+    def test_geometry_nodes_reject_cycles(self):
+        from canopy.models.geometry import meshes
+        with self.assertRaisesRegex(ValueError,'cyclic'):
+            list(meshes({'scenes':[{'nodes':[0]}],'nodes':[{'children':[0]}]}))
     def test_bad_solar_time_axis_rejected(self):
         ref=self.geometry()
         with self.assertRaises(ValueError):prepare_request(self.storage,self.request('solar','shadow',{'geometry':ref},{'times_s':[2,1]}))

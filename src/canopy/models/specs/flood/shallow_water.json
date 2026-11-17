@@ -12,6 +12,9 @@
       "kind": "geometry",
       "required_layers": [
         "mesh"
+      ],
+      "required_artifacts": [
+        "heightfield"
       ]
     }
   },

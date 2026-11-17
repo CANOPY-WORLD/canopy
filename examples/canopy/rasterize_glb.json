@@ -1,0 +1,22 @@
+{
+  "schema_version": "2.0.0",
+  "scenario_id": "demo",
+  "model_id": "geometry",
+  "method_id": "rasterize_glb",
+  "method_version": "1.0.0",
+  "inputs": {
+    "geometry": "REPLACE_GEOMETRY_ASSET@1"
+  },
+  "parameters": {
+    "bounds_xy_m": [
+      0,
+      0,
+      32,
+      32
+    ]
+  },
+  "execution": {
+    "device": "cpu",
+    "threads": 1
+  }
+}

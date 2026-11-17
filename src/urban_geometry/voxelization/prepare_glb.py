@@ -12,8 +12,12 @@ from collections import Counter
 from pathlib import Path
 
 import numpy as np
-from numba import njit
-from PIL import Image
+try:
+    from numba import njit
+except ImportError:
+    def njit(**kwargs):
+        return lambda function: function
+
 
 if __package__ in (None, ''):
     import sys
@@ -29,13 +33,22 @@ def read_accessor(doc, f, base, index):
     if 'sparse' in acc or 'bufferView' not in acc:
         raise ValueError('Sparse or bufferless accessors are not supported')
     bv = doc['bufferViews'][acc['bufferView']]
-    dtype = np.dtype(COMPONENT[acc['componentType']]); width = WIDTH[acc['type']]
+    dtype = np.dtype(COMPONENT[acc['componentType']]).newbyteorder('<'); width = WIDTH[acc['type']]
     item = dtype.itemsize * width; stride = bv.get('byteStride', item); count = acc['count']
+    size = stride * (count - 1) + item
+    if count < 1 or stride < item or acc.get('byteOffset', 0) + size > bv['byteLength']:
+        raise ValueError('Invalid GLB accessor layout')
     f.seek(base + bv.get('byteOffset', 0) + acc.get('byteOffset', 0))
-    raw = np.frombuffer(f.read(stride * (count - 1) + item), np.uint8)
+    raw = np.frombuffer(f.read(size), np.uint8)
+    if len(raw) != size: raise ValueError('Truncated GLB accessor')
     if stride != item:
         raw = np.lib.stride_tricks.as_strided(raw, (count, item), (stride, 1)).copy().reshape(-1)
-    return raw.view(dtype).reshape(count, width)
+    values = raw.view(dtype).reshape(count, width)
+    if acc.get('normalized', False):
+        if acc['componentType'] not in (5120, 5121, 5122, 5123):raise ValueError('Invalid normalized GLB component type')
+        values = values.astype(np.float64) / np.iinfo(dtype).max
+        if dtype.kind == 'i':values = np.maximum(values, -1)
+    return values
 
 
 def read_primitive(doc, f, base, primitive):
@@ -98,6 +111,7 @@ def category(name, material):
 
 
 def main():
+    from PIL import Image
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--cell', type=int, choices=(1,2,4), default=1)
     ap.add_argument('--source', type=Path, required=True)

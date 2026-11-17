@@ -54,3 +54,5 @@ velocity.npy 为选定高度 TCYX；完整 velocity_tczyx.npy + volume.json 保�
 缺 torch：安装 physics extra；资产不存在：检查同一 Scenario 的确切引用；缺 heightfield：使用兼容 geometry tool，GLB 不能自动替代；计算不收敛：检查边界、网格与时间步，查看 diagnostics/事件日志。错误不应通过隐藏失败状态来处理。
 
 源码快照、输入哈希和完整参数保存在资产 provenance 中。设备浮点差异可能导致不同结果；原始移植文件校验值见 docs/framework/physics4d-import.json。
+
+末帧另外输出 `faces_czyx.npy`（正向 cell-face ENU 速度）、`fluid_zyx.npy`、`inlet_zy.npy` 和 `mac_state.json`。此表示由 pollution/steady_tracer 消费；温度消费 `volume.json` 中的 cell-center 时间序列。旧资产不被补写，缺少这些 artifacts 时应重新计算。

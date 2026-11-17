@@ -70,7 +70,7 @@ async function load(){
     document.body.dataset.preset=view.profile.preset;
     $('scene').replaceChildren();
     const scenarios=await json(new URL('/api/canopy/scenarios',location.href));
-    for(const entry of scenarios){const option=document.createElement('option');option.value='scenario:'+entry.scenario_id;option.textContent=entry.title;option.dataset.viewer=`?scenario=${entry.scenario_id}`;$('scene').append(option);}
+    for(const entry of scenarios){const option=document.createElement('option');option.value='scenario:'+entry.scenario_id;option.textContent=entry.title;option.dataset.viewer=`?scenario=${entry.scenario_id}`;option.disabled=entry.available===false;$('scene').append(option);}
     $('scene').value='scenario:'+id;$('view').hidden=true;
     for(const item of view.runs){const url=new URL(item.url,location.href);const data=await json(url);validateManifest(data);if(data.scene_id!==id)throw new Error('Asset from another scenario');runs.push({manifest:data,url});}
   }else if(chosen){

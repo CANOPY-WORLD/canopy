@@ -13,6 +13,8 @@ def geometry_grid(context):
     entry=next((x for x in manifest.get('artifacts',[]) if x['id']=='heightfield'),None)
     if entry is None: raise ValueError('Geometry requires heightfield artifact; a visual GLB alone is insufficient')
     grid=read(relative(path.parent,entry['asset']))
+    declared={a['asset'] for a in manifest.get('artifacts',[])}
+    if not {grid['height'],grid['solid']}<=declared:raise ValueError('Heightfield arrays must be declared artifacts')
     height=np.load(relative(path.parent,grid['height']),allow_pickle=False)
     solid=np.load(relative(path.parent,grid['solid']),allow_pickle=False)
     if height.ndim!=2 or min(height.shape)<3 or solid.shape!=height.shape or not np.isfinite(height).all():
@@ -23,6 +25,9 @@ def geometry_grid(context):
     if len(grid['origin_m'])!=3 or not np.isfinite(grid['origin_m']).all(): raise ValueError('Invalid grid origin')
     if grid.get('shape_yx') != list(height.shape) or grid.get('coordinate_frame')!='ENU' or grid.get('sample_location')!='cell_center':
         raise ValueError('Heightfield shape, frame or sampling convention mismatch')
+    lo=np.asarray(context.scenario['spatial']['bounds_m']['min']);hi=np.asarray(context.scenario['spatial']['bounds_m']['max'])
+    origin=np.asarray(grid['origin_m']);upper=origin+np.array([height.shape[1]*grid['spacing_m'],height.shape[0]*grid['spacing_m'],float(height.max())])
+    if (height<0).any() or (origin<lo).any() or (upper>hi).any():raise ValueError('Heightfield lies outside scenario bounds')
     return grid,height,solid
 
 
@@ -181,13 +186,17 @@ class Wind(Fields):
                 solver.advect(dt);diagnostics.append(solver.project(rtol=p['pressure_rtol'],maxiter=p['pressure_iterations']));time+=dt
             record(target);context.emit('progress',completed=frame,total=p['frames'])
         full=np.asarray(volumes,dtype='<f4');k=p['slice_index'];sampling_grid=dict(grid,origin_m=[*grid['origin_m'][:2],grid['origin_m'][2]+float(z[k])])
-        return {'grid':sampling_grid,'height':np.zeros_like(height),'times':times,'fields':{'velocity':(full[:,:,k],'m/s',True)},'volume':full,'invalid':(~fluid[k]).cpu().numpy().astype(np.uint8),'diagnostics':{'quality':'pressure_projection_passed','max_divergence_rms':max(x['divergence_rms'] for x in diagnostics),'assumptions':'incompressible inviscid staggered MAC; west inlet/east pressure outlet; no turbulence closure','slice_index':k}}
+        return {'grid':sampling_grid,'height':np.zeros_like(height),'times':times,'fields':{'velocity':(full[:,:,k],'m/s',True)},'volume':full,'faces':torch.stack(solver.vel).cpu().numpy(),'fluid':fluid.cpu().numpy().astype('u1'),'inlet':inlet.cpu().numpy(),'invalid':(~fluid[k]).cpu().numpy().astype(np.uint8),'diagnostics':{'quality':'pressure_projection_passed','max_divergence_rms':max(x['divergence_rms'] for x in diagnostics),'assumptions':'incompressible inviscid staggered MAC; west inlet/east pressure outlet; no turbulence closure','slice_index':k}}
     def export(self,result,context):
         from canopy._io import digest
         folder=super().export(result,context);m=read(folder/'manifest.json')
         np.save(folder/'velocity_tczyx.npy',result['volume']);np.save(folder/'invalid.npy',result['invalid'])
         write(folder/'volume.json',{'file':'velocity_tczyx.npy','dtype':'<f4','axes':'TCZYX','shape':list(result['volume'].shape),'coordinate_frame':'ENU','components':['east','north','up'],'unit':'m/s','spacing_m':[result['grid']['spacing_m']]*3,'origin_m':geometry_grid(context)[0]['origin_m'],'sample_location':'cell_center','time_s':result['times']})
-        for name in ['velocity_tczyx.npy','volume.json']:
+        np.save(folder/'faces_czyx.npy',result['faces'].astype('<f4'))
+        np.save(folder/'fluid_zyx.npy',result['fluid'])
+        np.save(folder/'inlet_zy.npy',result['inlet'].astype('<f4'))
+        write(folder/'mac_state.json',{'schema_version':'1.0.0','faces':'faces_czyx.npy','fluid':'fluid_zyx.npy','inlet':'inlet_zy.npy','axes':'CZYX','face_convention':'positive_face_of_cell','components':['east','north','up'],'spacing_m':result['grid']['spacing_m'],'origin_m':geometry_grid(context)[0]['origin_m'],'time_s':result['times'][-1],'open_top':context.request['parameters']['open_top']})
+        for name in ['velocity_tczyx.npy','volume.json','faces_czyx.npy','fluid_zyx.npy','inlet_zy.npy','mac_state.json']:
             m['artifacts'].append({'id':name.replace('.','_'),'asset':name,'sha256':digest(folder/name),'media_type':'application/octet-stream'})
         m['layers'][0]['encoding'].update(mask_asset='invalid.npy',mask_dtype='|u1',mask_semantics='invalid_nonzero')
         write(folder/'manifest.json',m);return folder

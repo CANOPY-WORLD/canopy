@@ -1,0 +1,111 @@
+{
+  "schema_version": "2.0.0",
+  "model_id": "pollution",
+  "method_id": "steady_tracer",
+  "version": "1.0.0",
+  "category": "physics",
+  "adapter": "steady_tracer",
+  "title": "Steady conservative passive tracer",
+  "description": "Physics4D finite-volume donor-cell advection/diffusion on a frozen native MAC face field.",
+  "inputs": {
+    "geometry": {
+      "kind": "geometry",
+      "required_layers": [
+        "mesh"
+      ],
+      "required_artifacts": [
+        "heightfield"
+      ]
+    },
+    "wind": {
+      "kind": "physics",
+      "required_layers": [
+        "vector_field"
+      ],
+      "required_artifacts": [
+        "volume_json",
+        "mac_state_json"
+      ]
+    }
+  },
+  "parameters": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "slice_index": {
+        "type": "integer",
+        "default": 3,
+        "minimum": 0,
+        "maximum": 127,
+        "description": "Horizontal slice to visualize",
+        "x-unit": "1"
+      },
+      "diffusivity_m2_s": {
+        "type": "number",
+        "default": 0.1,
+        "minimum": 1e-06,
+        "maximum": 100,
+        "description": "Isotropic passive tracer diffusivity",
+        "x-unit": "m2/s"
+      },
+      "sources": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 10000,
+        "default": [
+          {
+            "cell_zyx": [
+              3,
+              4,
+              4
+            ],
+            "mass_g_s": 1.0
+          }
+        ],
+        "description": "Nonnegative emission in fluid cells; explicit indices refer to the wind grid",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "cell_zyx": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "minItems": 3,
+              "maxItems": 3
+            },
+            "mass_g_s": {
+              "type": "number",
+              "minimum": 0,
+              "x-unit": "g/s"
+            }
+          },
+          "required": [
+            "cell_zyx",
+            "mass_g_s"
+          ]
+        }
+      }
+    },
+    "required": [
+      "slice_index",
+      "diffusivity_m2_s",
+      "sources"
+    ]
+  },
+  "outputs": [
+    "scalar_field"
+  ],
+  "dependencies": [
+    "scipy"
+  ],
+  "capabilities": {
+    "cancel": true,
+    "resume": false,
+    "progress": "phases"
+  },
+  "guide": "docs/models/pollution-steady_tracer.md",
+  "example": "examples/canopy/pollution.json"
+}

@@ -4,7 +4,7 @@ from pathlib import Path
 import shutil
 import tempfile
 from canopy._io import read, write, check, relative, digest
-from canopy.scenario.store import load as load_scenario, data_root, register
+from canopy.scenario.store import load as load_scenario, data_root, lock
 from common.contract import validate as validate_payload, asset_references
 
 
@@ -42,6 +42,7 @@ def load(storage, scenario, reference, *, verify=True):
 
 def import_run(storage, scenario, source, *, derived_from=(), expected_kind=None):
     """Copy validated payload once; index geometry/physics independently. Never overwrite."""
+    derived_from=tuple(derived_from)
     scenario_data = load_scenario(storage, scenario)
     source = Path(source).resolve(); validate_payload(source / 'manifest.json')
     manifest = read(source / 'manifest.json')
@@ -81,10 +82,13 @@ def import_run(storage, scenario, source, *, derived_from=(), expected_kind=None
             check(asset,'asset');write(stage/f'{kind}.asset.json',asset)
             references[aid+'@1']=str((destination/f'{kind}.asset.json').relative_to(base))
         # Atomic directory rename; reject collisions rather than overwrite historical output.
-        with __import__('canopy.scenario.store',fromlist=['lock']).lock(storage, scenario):
-            if destination.exists(): raise FileExistsError(destination)
+        with lock(storage, scenario):
+            current=load_scenario(storage,scenario)
+            if destination.exists() or set(references)&current['assets'].keys(): raise FileExistsError(destination)
+            if not set(derived_from)<=current['assets'].keys():raise ValueError('Asset dependency disappeared during import')
+            current['assets'].update(references);check(current,'scenario')
             stage.rename(destination);moved=True
-        register(storage,scenario,references)
+            write(storage.metadata(scenario)/'scenario.json',current)
     except BaseException:
         if stage.exists(): shutil.rmtree(stage)
         if moved: shutil.rmtree(destination)

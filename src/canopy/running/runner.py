@@ -13,7 +13,7 @@ from canopy.scenario.store import load as scenario_load
 from canopy.assets.store import load as asset_load, import_run
 from canopy.models.registry import describe, implementation
 from canopy.models.interface import Context
-from common.provenance import snapshot_sources
+from .provenance import snapshot_runtime
 from common.contract import validate as validate_payload
 
 
@@ -33,8 +33,10 @@ def prepare_request(storage, request):
         if asset['kind']!=port['kind']:raise ValueError(f'{name}: wrong asset kind')
         kinds={x['kind'] for x in manifest['layers'] if x['id'] in asset['payload']['layers']}
         if not set(port['required_layers'])<=kinds:raise ValueError(f'{name}: required layer type missing')
+        artifacts={x['id'] for x in manifest.get('artifacts',[])}
+        if not set(port.get('required_artifacts',[]))<=artifacts:raise ValueError(f'{name}: required computational representation missing')
     for dependency in spec['dependencies']:
-        if importlib.util.find_spec(dependency) is None:raise ValueError(f'Missing {dependency}; install the physics optional dependencies in the chosen environment')
+        if importlib.util.find_spec(dependency) is None:raise ValueError(f'Missing {dependency}; install the dependencies documented by this method in the chosen environment')
     if 'torch' in spec['dependencies']:
         import torch
         if request['execution'].get('device','cpu')=='cuda' and not torch.cuda.is_available():raise ValueError('CUDA requested but unavailable')
@@ -54,7 +56,7 @@ def run(storage,request,*,retain=True):
     context=Context(storage,scenario,workspace,rid,inputs,emit,lambda:(workspace/'cancel.request').exists())
     context.request=request;context.created_at=datetime.now(timezone.utc).isoformat()
     try:
-        revision=snapshot_sources(storage.root,workspace/'source_snapshot.tar.gz')
+        revision=snapshot_runtime(workspace/'source_snapshot.tar.gz')
         context.provenance={'code_revision':revision,'dirty':True,'parameters':request,'inputs':[{'id':name,'sha256':digest(value[2])} for name,value in inputs.items()]}
         write(workspace/'environment.json',{'python':platform.python_version(),'platform':platform.platform(),'method_version':spec['version'],'dependencies':{name:importlib.metadata.version(name) for name in ['numpy','jsonschema',*spec['dependencies']]},'execution':request['execution']})
         method=implementation(spec)

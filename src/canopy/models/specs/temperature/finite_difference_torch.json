@@ -1,0 +1,105 @@
+{
+  "schema_version": "2.0.0",
+  "model_id": "temperature",
+  "method_id": "finite_difference_torch",
+  "version": "1.0.0",
+  "category": "physics",
+  "adapter": "temperature_torch",
+  "title": "3D temperature (torch)",
+  "description": "Physics4D upwind advection/diffusion with prescribed surface forcing and recorded wind intervals.",
+  "inputs": {
+    "geometry": {
+      "kind": "geometry",
+      "required_layers": [
+        "mesh"
+      ],
+      "required_artifacts": [
+        "heightfield"
+      ]
+    },
+    "wind": {
+      "kind": "physics",
+      "required_layers": [
+        "vector_field"
+      ],
+      "required_artifacts": [
+        "volume_json"
+      ]
+    }
+  },
+  "parameters": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "slice_index": {
+        "type": "integer",
+        "default": 3,
+        "minimum": 0,
+        "maximum": 127,
+        "description": "Horizontal slice to visualize",
+        "x-unit": "1"
+      },
+      "ambient_c": {
+        "type": "number",
+        "default": 20,
+        "minimum": -80,
+        "maximum": 80,
+        "description": "Prescribed ambient and west inflow baseline",
+        "x-unit": "degC"
+      },
+      "surface_excess_c": {
+        "type": "number",
+        "default": 5,
+        "minimum": -50,
+        "maximum": 100,
+        "description": "Prescribed ground and roof excess above ambient",
+        "x-unit": "K"
+      },
+      "surface_exchange_per_s": {
+        "type": "number",
+        "default": 0.01,
+        "minimum": 0,
+        "maximum": 1,
+        "description": "Bottom fluid-layer surface exchange coefficient",
+        "x-unit": "1/s"
+      },
+      "max_courant": {
+        "type": "number",
+        "default": 0.15,
+        "minimum": 0.001,
+        "maximum": 0.3,
+        "description": "Maximum advection Courant factor",
+        "x-unit": "1"
+      },
+      "diffusivity_m2_s": {
+        "type": "number",
+        "default": 0.01,
+        "minimum": 1e-06,
+        "maximum": 100,
+        "description": "Isotropic thermal diffusivity",
+        "x-unit": "m2/s"
+      }
+    },
+    "required": [
+      "slice_index",
+      "ambient_c",
+      "surface_excess_c",
+      "surface_exchange_per_s",
+      "max_courant",
+      "diffusivity_m2_s"
+    ]
+  },
+  "outputs": [
+    "scalar_field"
+  ],
+  "dependencies": [
+    "torch"
+  ],
+  "capabilities": {
+    "cancel": true,
+    "resume": false,
+    "progress": "phases"
+  },
+  "guide": "docs/models/temperature-finite_difference.md",
+  "example": "examples/canopy/temperature_torch.json"
+}

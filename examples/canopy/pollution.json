@@ -1,0 +1,16 @@
+{
+  "schema_version": "2.0.0",
+  "scenario_id": "demo",
+  "model_id": "pollution",
+  "method_id": "steady_tracer",
+  "method_version": "1.0.0",
+  "inputs": {
+    "geometry": "REPLACE_GEOMETRY_ASSET@1",
+    "wind": "REPLACE_WIND_ASSET@1"
+  },
+  "parameters": {},
+  "execution": {
+    "device": "cpu",
+    "threads": 1
+  }
+}

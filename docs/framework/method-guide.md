@@ -1,6 +1,6 @@
 # Model / Method 开发与运行标准
 
-共享 Model 下的每个注册 Method 都必须有 JSON 契约、参数 schema、例子和运行指南。可信注册表在 canopy.models.registry；场景文件不能指定任意 import 或 shell 命令。
+共享 Model 下的每个注册 Method 都必须有 JSON 契约、参数 schema、例子和运行指南。输入端口还可声明 `required_artifacts`，用于区分展示 layer 和求解器实际需要的计算表示。可信注册表在 canopy.models.registry；场景文件不能指定任意 import 或 shell 命令。
 
 ## 接入步骤
 
@@ -49,7 +49,7 @@ python -m venv .venv
 
 直接跑完整小示例可用 `canopy --root . demo`，它自动填充真实资产引用。`demo --physics` 只生成几何，`demo --physics flood` 只追加洪水计算。真实研究情景不要使用合成 demo 代替数据准备。
 
-`canopy cancel SCENARIO MODEL RUN_ID` 请求合作式取消；Ctrl-C 也记录取消状态。取消响应在检查点发生，正在执行的单次 GPU kernel 不会被强杀。当前四个 method 不提供 checkpoint resume，重新运行会产生新版本，不覆盖旧资产。
+`canopy cancel SCENARIO MODEL RUN_ID` 请求合作式取消；Ctrl-C 也记录取消状态。取消响应在检查点发生，正在执行的单次 GPU kernel 不会被强杀。当前注册的 method 不提供 checkpoint resume，重新运行会产生新版本，不覆盖旧资产。
 
 移植的其他 Physics4D 源代码属于 compatibility 实现目录，不代表其所有历史脚本已经注册到统一接口。见 migration-status.md 和 legacy-entrypoints.json；扩展时按本指南逐个升级，不把实验脚本自动暴露为稳定工具。
 
@@ -58,3 +58,9 @@ python -m venv .venv
 `canopy pack demo /absolute/output/demo.tar.gz` 校验并打包完整场景索引、全部已登记资产和 provenance；不包含 cache，不下载未知依赖，不发布任何内容。输出路径不得位于场景资产目录内，已有归档拒绝覆盖。归档内采用 project/<scenario>/... 布局；恢复到新的本地数据根之后，scenario.json 放仓库 metadata 根，其余资产放配置 data_root 对应位置。
 
 `canopy run-task SCENARIO TASK --dry-run` 检查 Scenario.tasks 中保存的请求；去掉 --dry-run 执行同一固定版本输入。demo 自动保存 geometry/solar/flood/wind 对应任务，物理任务引用生成时的确切几何资产，而非以后生成的 latest。
+
+## 物理结果作为模型输入
+
+`canopy demo --physics temperature pollution` 自动先生成几何与风场，再将它们的确切版本传入两个耦合模型。两个 temperature method 使用同一端口/参数契约；NumPy 与 PyTorch 分别是独立版本化 method。pollution 依赖 native MAC face artifact，不能用展示用的 cell-center 切片替代。全部 method 可通过 `canopy models` 查看，指南路径包含在 spec 中。
+
+`source_snapshot.tar.gz` 记录当前 Python 解释器实际解析的 Canopy 与移植包，包含逐文件 SHA-256 清单。`code_revision` 使用该内容的 hash，不把 `--root` 指向的元数据 checkout 当成实际执行代码；第三方依赖版本另保存在 environment.json。
