@@ -1,29 +1,29 @@
 # Solar shadow and irradiance — solar/shadow@1.0.0
 
-## 用途与实现
+## Purpose and implementation
 
-调用 urban_flow.physics.solar.model 的 ShadowNet / HorizonNet / ground_irradiance。预设太阳方向 + ASHRAE 晴空条件，不替代气象测量。
+Uses ShadowNet / HorizonNet / ground_irradiance from urban_flow.physics.solar.model, with prescribed sun directions and ASHRAE clear-sky conditions. This does not replace meteorological observations.
 
-统一适配器：src/canopy/models/methods.py。机器接口：src/canopy/models/specs/solar/shadow.json。
+Shared adapter: src/canopy/models/methods.py. Machine-readable interface: src/canopy/models/specs/solar/shadow.json.
 
-## 安装与输入
+## Installation and inputs
 
-Python 3.11+；在仓库根执行 `python -m pip install -e '.[physics]'`。几何 method 只需要基础 NumPy/jsonschema。CPU 默认可跑；GPU 使用对应 CUDA 构建的 PyTorch，request execution.device 设为 cuda；不可用时明确报错。无需下载学习权重。
+Requires Python 3.11+. From the repository root, run `python -m pip install -e '.[physics]'`. The geometry method only needs the base NumPy/jsonschema dependencies. CPU execution is the default. GPU execution requires a matching CUDA build of PyTorch and request execution.device set to cuda; unavailable devices raise an explicit error. No learned weights are required.
 
-Geometry asset 必须包含 heightfield artifact；等距 ENU 网格。times_s 与 altitudes_deg 一一对应且时间递增。
+The geometry asset must contain a heightfield artifact on a uniform ENU grid. times_s and altitudes_deg correspond one-to-one, with strictly increasing times.
 
-## 参数
+## Parameters
 
-| 参数 | 默认值 | 单位 | 含义与限制 |
+| Parameter | Default | Unit | Meaning and constraints |
 | --- | --- | --- | --- |
-| `times_s` | `[0, 3600]` | 见说明 | Relative physical sample times in seconds, strictly increasing |
-| `altitudes_deg` | `[30, 45]` | 见说明 | Prescribed sun altitudes, one per time |
+| `times_s` | `[0, 3600]` | See description | Relative physical sample times in seconds, strictly increasing |
+| `altitudes_deg` | `[30, 45]` | See description | Prescribed sun altitudes, one per time |
 | `azimuth_deg` | `180` | deg | Clockwise from north [0, 360] |
 | `month` | `6` | 1 | ASHRAE clear-sky monthly coefficients [1, 12] |
 | `albedo` | `0.2` | 1 | Ground albedo [0, 1] |
 | `horizon_directions` | `8` | 1 | Azimuth samples for sky-view integration [4, 64] |
 
-## 最小运行
+## Minimal run
 
 ```sh
 canopy --root . models solar shadow
@@ -32,22 +32,22 @@ canopy --root . validate demo
 canopy --root . serve --port 8769
 ```
 
-浏览器打开 http://127.0.0.1:8769/src/visualization/viewer/?scenario=demo 。
-独立请求模板：examples/canopy/solar.json。先 `canopy init demo`，物理请求用几何运行返回的 asset 引用替换 REPLACE_WITH_GEOMETRY_ASSET，再 `canopy run REQUEST --dry-run` 和 `canopy run REQUEST`。不要将占位符作为有效输入。
+Open http://127.0.0.1:8769/src/visualization/viewer/?scenario=demo in a browser.
+Standalone request template: examples/canopy/solar.json. Start with `canopy init demo`. In physics requests, replace REPLACE_WITH_GEOMETRY_ASSET with the asset reference returned by the geometry run, then use `canopy run REQUEST --dry-run` and `canopy run REQUEST`. Placeholders are not valid inputs.
 
-## 输出与验证
+## Outputs and validation
 
-irradiance.npy (TYX, W/m2)、shadow.npy (TYX, 1)、height.npy。
+irradiance.npy (TYX, W/m2), shadow.npy (TYX, 1) and height.npy.
 
-检查辐照有限、阴影 0/1；对应太阳方向为输入，不从 relative 秒推算真实日期。
+Checks finite irradiance and binary 0/1 shadows. Sun directions are inputs; real dates are not inferred from relative seconds.
 
-每次运行返回 run_id 和 assets。run.json / events.jsonl 位于 cache/demo/solar/RUN_ID/；保留后的资产位于 data_root/project/demo/assets/bundles/RUN_ID/，可删除 cache 而不丢结果。
+Each run returns run_id and assets. run.json / events.jsonl are in cache/demo/solar/RUN_ID/. Retained assets are in data_root/project/demo/assets/bundles/RUN_ID/ and remain available after cache is deleted.
 
-## 资源、停止与排错
+## Resources, cancellation, and troubleshooting
 
-默认 16×16 高度场（wind 为 8×16×16 体网格），单 CPU 线程用于小型检验。资源随网格、帧数和 horizon 方向数增长；不把小示例耗时当成城市性能承诺。当前适配器在内存中收集帧，大规模任务应改成分帧导出后再扩容。
+The default is a 16×16 heightfield, or an 8×16×16 volume for wind, using one CPU thread for small checks. Resource use grows with grid size, frame count and horizon-direction count; small-example timings do not establish city-scale performance. Current adapters collect frames in memory. Large workloads require incremental frame export before scaling up.
 
-`canopy cancel demo solar RUN_ID` 或 Ctrl-C 请求取消；不支持恢复，重新运行生成新资产。
-缺 torch：安装 physics extra；资产不存在：检查同一 Scenario 的确切引用；缺 heightfield：使用兼容 geometry tool，GLB 不能自动替代；计算不收敛：检查边界、网格与时间步，查看 diagnostics/事件日志。错误不应通过隐藏失败状态来处理。
+Use `canopy cancel demo solar RUN_ID` or Ctrl-C to request cancellation. Resume is unsupported; rerunning creates new assets.
+Missing torch: install the physics extra. Missing asset: check the exact reference in the same Scenario. Missing heightfield: use a compatible geometry tool; GLB cannot automatically replace it. Nonconvergence: check boundaries, grid and timestep, then inspect diagnostics and event logs. Do not hide failure states to bypass errors.
 
-源码快照、输入哈希和完整参数保存在资产 provenance 中。设备浮点差异可能导致不同结果；原始移植文件校验值见 docs/framework/physics4d-import.json。
+The asset provenance retains a source snapshot, input hashes and complete parameters. Device-dependent floating-point behavior may change results. Original imported-file checksums are in docs/framework/physics4d-import.json.

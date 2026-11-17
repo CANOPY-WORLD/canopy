@@ -1,4 +1,5 @@
 # Canopy development contract
+Write all project documentation in English, including README text, diagram labels, interface descriptions and run guides.
 Read docs/framework/protocol-v2.md and docs/framework/method-guide.md before adding a method, asset or scenario.
 Shared implementation: src/. Scenario metadata: project/<scenario>/scenario.json.
 Assets are private to their scenario, stored under the configured data_root/project/<scenario>/assets/.

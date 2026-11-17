@@ -1,25 +1,33 @@
-# 验证记录
+# Verification record
 
-验证日期：2026-11-17。修改目录为独立 Canopy checkout；Physics4D 源 checkout 未修改。
+Verification date: 2026-11-17. Changes were made in the separate Canopy checkout; the source Physics4D checkout was not modified.
 
-| 检查 | 结果与实际范围 |
+| Check | Result and actual scope |
 | --- | --- |
-| Python | 63 项通过：43 项移植协议检查 + 20 项 Canopy 生命周期、归属、校验和、取消、失败、归档、GLB 变换、计算耦合及数值检查 |
-| JavaScript | 5 项通过：ENU 转换、时间范围/插值、静态层、路径隔离、稀疏轨迹实体生命周期 |
-| V1 示例 | `python3 tools/check_contract.py examples/contract-v1/manifest.json` 通过，5 layers |
-| README 图 | 4 张 Mermaid 图均通过浏览器实际渲染；截图与 SVG 在 cache/qa/readme-diagrams |
-| 合成查看器 | 6/6 layers；图层显隐、时间、播放/暂停、相机；1440×1000 与 390×844 无水平溢出、页面/网络错误 |
-| 场景入口页 | 真实和合成场景使用同一入口；1440×1000 / 390×844 布局通过；仅提供只读数据加载 |
-| 真实场景查看器 | South Kensington 3/3、White City 3/3、Imperial Corridor 9/9；全部记录末帧可用，无页面或 HTTP 错误 |
-| 耦合查看器 | geometry → wind → temperature / pollution，4/4 layers；温度沿用风场时间，稳态污染物为 static layer |
-| Imperial 数据保留 | 7 个历史资产的 GLB、8 组数组、806 个逐帧 NPY 与来源比较：数值、dtype、时间及 mask 完全相同；无空间重采样 |
-| 真实几何计算 | Imperial GLB 节点变换 → 128×128 m 裁剪、4 m 格距、32×32 高度场 → solar，两个运行完整成功；458 个未覆盖采样点显式采用已记录的 0 m 平面基准假设 |
-| 安装包 | wheel 构建成功，约 1.9 MB；从独立安装目录、仓库外 cwd 发现全部 8 个 Method，执行几何与五类物理模型、校验 6 个资产；schema 从 wheel 加载 |
-| 场景包 | 独立 wheel 运行产物打包为 dist/canopy-demo-scenario-v2.tar.gz，74 文件、约 8.3 MB；包含 Scenario、全部 Asset、请求与 provenance，排除 cache |
-| 来源 | physics4d-import.json 的移植文件无缺失；修改清单已更新；两份 V2 schema 完全同步 |
+| Python | 63 passed: 43 imported protocol checks + 20 Canopy lifecycle, ownership, checksum, cancellation, failure, archive, GLB transform, coupling and numerical checks |
+| JavaScript | 5 passed: ENU conversion, time bounds/interpolation, static layers, path isolation and sparse-trajectory entity lifecycle |
+| V1 example | `python3 tools/check_contract.py examples/contract-v1/manifest.json` passed, with 5 layers |
+| README diagrams | All 4 Mermaid diagrams rendered in a real browser; screenshots and SVGs are in cache/qa/readme-diagrams |
+| Synthetic viewer | 6/6 layers; visibility, time, play/pause and camera controls; no horizontal overflow, page errors or network errors at 1440×1000 and 390×844 |
+| Scenario landing page | Shared entrypoint for real and synthetic scenes; layout passed at 1440×1000 / 390×844; data loading is read-only |
+| Real-scenario viewer | South Kensington 3/3, White City 3/3, Imperial Corridor 9/9; all final recorded frames available, with no page or HTTP errors |
+| Coupled viewer | geometry → wind → temperature / pollution, 4/4 layers; temperature preserves wind timestamps, and steady pollution is a static layer |
+| Imperial data preservation | Compared the GLB, 8 array groups and 806 individual NPY frames in 7 historical assets with their sources: identical values, dtype, timestamps and masks; no spatial resampling |
+| Real-geometry computation | Imperial GLB node transforms → 128×128 m crop, 4 m spacing, 32×32 heightfield → solar; both runs completed; 458 uncovered samples explicitly used the recorded 0 m planar ground assumption |
+| Installation package | Wheel built successfully, approximately 1.9 MB; a separate installation, invoked outside the repository, discovered all 8 Methods, ran geometry and five physics model types, and validated 6 assets; schemas loaded from the wheel |
+| Scenario package | Independent wheel outputs packaged as dist/canopy-demo-scenario-v2.tar.gz: 74 files, approximately 8.3 MB; includes Scenario, all Assets, requests and provenance, and excludes cache |
+| Provenance | No imported files missing from physics4d-import.json; adaptation inventory updated; both copies of the V2 schemas match |
 
-数值检查包括平底封闭盆地降雨质量守恒、MAC 原生压力投影验收、温度 NumPy/PyTorch 一致性、稳态污染物的非负性/线性残差/质量守恒。来源测试确认运行快照包含解释器实际解析的包，即使 metadata workspace 没有源码也可完整记录。
+Numerical checks cover rainfall mass conservation in a flat closed basin, native MAC pressure-projection acceptance, NumPy/PyTorch temperature agreement, and steady-pollution nonnegativity, linear residual and mass conservation. Provenance tests confirm that run snapshots include packages resolved by the executing interpreter, even when the metadata workspace contains no source code.
 
-可重算日志和截图在 `cache/qa/`：`python-tests.log`、`javascript-tests.log`、`scenarios-browser.json`、`corridor-preservation.json`、`real-glb-run.json`、`wheel-smoke.json`。构建产物在 `dist/`，均不自动发布。
+Reproducible logs and screenshots are in `cache/qa/`: `python-tests.log`, `javascript-tests.log`, `scenarios-browser.json`, `corridor-preservation.json`, `real-glb-run.json` and `wheel-smoke.json`. Build outputs are in `dist/`; they are not published automatically.
 
-没有重跑长期城市风场、RANS、交通或研究耦合热环境模拟，也未验证全部 historical compatibility entrypoint 的外部软件和数据。测试验证实现和所列数值性质，不能证明城市预测精度。完整三维场仍作为 artifact 保留；当前统一查看器展示导出的水平切片。原网站的细节地图、交通和 UAV 呈现保留兼容入口，详见 migration-status.md。
+Long-running city wind, RANS, traffic and coupled thermal-environment research simulations were not rerun. External software and data requirements of every historical compatibility entrypoint were not validated. These tests verify the implementation and listed numerical properties; they do not establish city prediction accuracy. Full 3D fields remain artifacts, while the unified viewer displays exported horizontal slices. Detailed maps, traffic and UAV presentation retain compatibility entrypoints; see migration-status.md.
+
+## English documentation review
+
+The documentation review on 2026-11-17 translated 21 Markdown and HTML files and added an English-only documentation requirement to AGENTS.md. A scan of all 62 tracked documentation/HTML files, plus 40 JSON contracts, examples and scenario descriptors, found no remaining Chinese text. Markdown command blocks and link targets were compared against the pre-translation copies. Both HTML method pages retain their element structure, equations and every numeric value.
+
+All four English README diagrams rendered successfully. Both method pages loaded at 1440×1000 and 390×844 with English language metadata, no horizontal overflow, no script errors and no new HTTP errors. The browser's fallback request for /favicon.ico returns 404 in both the original and translated page; this pre-existing request is recorded separately. The Imperial Corridor API still reports nine available selected layers. Translation evidence is retained under `cache/qa/english-docs/`.
+
+The import inventory still contains all 661 source files, with zero missing files. Original source hashes remain unchanged in physics4d-import.json; import-adaptations.json records the seven translated imported documents alongside earlier implementation changes. This documentation review did not rerun the numerical simulations listed above.

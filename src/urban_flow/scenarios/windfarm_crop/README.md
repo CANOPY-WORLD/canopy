@@ -1,20 +1,20 @@
-# 全部 23 台风机的裁剪对照试验
+# Cropped comparison experiment with all 23 turbines
 
-独立输出，不改变原 region 数据或求解器。
+Outputs are independent; the original region data and solver are unchanged. Paths below refer to the original workstation project.
 
-- 由原 GLB 的轮毂和叶片顶点确定全部风机位置与近似叶轮半径；不是厂商实测参数。
-- 5D 上游、8D 下游、3D 横向最低余量，向多重网格兼容尺寸补齐。
-- 区域 4096×2048×512 m；原点 (-1776,-992,0)；4 m 等距网格 (128,512,1024)，67,108,864 cells。
-- 地形从原 GLB 重新光栅化，保留塔筒、机舱和其他静态几何；移除 69 片叶片和 23 个 hub/spinner。
-- 地形原始 DSM 约 30 m；4 m 计算网格不增加实测地形信息。原数据覆盖 93.75%，外围采用最近边缘延拓。
-- 假设 +x 来流和叶轮迎风，U0=8 m/s，离地速度剖面 8*(1-exp(-h/12))，无气象标定。
-- C′T=4/3（控制组为零），rho=1.225，轴向平滑 sigma=8 m、径向边缘宽度 4 m，5 秒力启动斜坡。
-- 力采用 https://lesgo.me.jhu.edu/actuator-disk.html 的归一化轴向阻力形式，以瞬时盘区加权速度估计，不含时间滤波、旋转扭矩或功率。
-- 使用 AI4Urban 参考算子，本独立试验将空间梯度乘二，修正线性场半增益；10 次 MG，出口速度零梯度、压力零，入口固定剖面。
-- 控制组和致动盘组初值一致，每组 400 步，dt=0.025 s，共 10 秒，每 20 步存一帧，21 帧。
-- 初试 dt=0.1 s 在第 60 步超过 CFL 阈值，停止并保留在 `control_dt01_stopped`，不作为最终对照。
+- All turbine positions and approximate rotor radii come from hub and blade vertices in the original GLB; these are not manufacturer measurements.
+- Minimum margins are 5D upstream, 8D downstream and 3D laterally, padded to multigrid-compatible dimensions.
+- Domain: 4096×2048×512 m; origin (-1776,-992,0); uniform 4 m grid (128,512,1024), with 67,108,864 cells.
+- Terrain is rerasterized from the original GLB, retaining towers, nacelles and other static geometry while removing 69 blades and 23 hubs/spinners.
+- The source terrain DSM is approximately 30 m. A 4 m computational grid adds no measured terrain information. Original coverage is 93.75%; uncovered margins use nearest-edge extension.
+- Assumes +x inflow and rotors facing the wind, U0=8 m/s, and the above-ground profile 8*(1-exp(-h/12)), without meteorological calibration.
+- C′T=4/3 (zero for the control), rho=1.225, axial smoothing sigma=8 m, radial edge width 4 m and a 5-second force ramp.
+- Force follows the normalized axial-drag formulation at https://lesgo.me.jhu.edu/actuator-disk.html , using instantaneous weighted disc velocity, without temporal filtering, rotational torque or power prediction.
+- Uses AI4Urban reference operators. This independent experiment doubles spatial gradients to correct half-gain on a linear field; 10 MG iterations, zero-gradient outlet velocity, zero outlet pressure and a prescribed inlet profile.
+- Control and actuator cases share initial conditions: 400 steps each, dt=0.025 s, 10 seconds total, one saved frame every 20 steps, 21 frames.
+- The initial dt=0.1 s trial exceeded the CFL threshold at step 60. It was stopped and retained in `control_dt01_stopped`, excluded from the final comparison.
 
-运行位置：workstation UrbanWorldModel 项目，`.venv-region/bin/python`。
+Run in the workstation UrbanWorldModel project with `.venv-region/bin/python`.
 
 ```sh
 python input/windfarm_crop/prepare.py --plan-only
@@ -24,7 +24,7 @@ python input/windfarm_crop/run.py --case actuator --steps 400
 python input/windfarm_crop/verify.py
 ```
 
-输出在 `output/region_crop/geometry`、`visualizer/scenes/windfarm_crop`。
-展示原生 4 m 地形随动切片、相同色标的控制/致动盘场、控制减去致动盘的速度差、全部风机及单机局部视图。
-这是启动过程，未形成全场充分发展的尾流，不作稳态、工程精度或发电量结论。
-压力投影残差、边界位置、网格/时间收敛及湍流模型仍需验证。
+Outputs are in `output/region_crop/geometry` and `visualizer/scenes/windfarm_crop`.
+Displays native 4 m terrain-following slices, control/actuator fields on the same colour scale, control-minus-actuator velocity differences, and whole-farm and individual-turbine views.
+This is a startup simulation without fully developed wakes across the domain. It does not establish steady-state behavior, engineering accuracy or electricity generation.
+Pressure-projection residuals, boundary placement, grid/time convergence and the turbulence model still require validation.

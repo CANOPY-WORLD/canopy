@@ -1,42 +1,57 @@
-# Canopy 重构状态与边界
+# Canopy refactor status and scope
 
-## 已落地
+## Implemented
 
-Scenario / Asset / Model / Running / Visualization 均有实际代码、schema 与 CLI；README 的四张架构图对应这些已实现接口。三个主体独立打包：共享实现与契约进入 Python wheel，场景和私有资产通过 `canopy pack` 导出自包含归档。
+Scenario / Asset / Model / Running / Visualization have working code, schemas and CLI commands. The four README diagrams describe these implemented interfaces. Shared implementations and contracts are packaged in the Python wheel; scenarios and their private assets are exported as self-contained archives with `canopy pack`.
 
-| Model | 已注册 Method | 实际实现 / 输入 |
+| Model | Registered Method | Implementation / inputs |
 | --- | --- | --- |
-| geometry | heightfield | 小型合成高度场与 GLB，用于接口示例 |
-| geometry | rasterize_glb | 移植 GLB 读取/栅格化，累积节点变换，显式裁剪与地面假设 |
-| solar | shadow | Physics4D ShadowNet / HorizonNet / ground_irradiance；heightfield |
-| flood | shallow_water | Physics4D ShallowWater；heightfield / solid |
-| wind | mac | Physics4D MAC；heightfield，保留展示切片、完整体场及 native faces |
-| temperature | finite_difference_numpy | 提取 Physics4D NumPy 热输运内核；同版本 geometry + wind |
-| temperature | finite_difference_torch | 同一热输运契约，PyTorch CPU/CUDA 实现 |
-| pollution | steady_tracer | Physics4D 守恒有限体积被动标量；geometry + native MAC faces |
+| geometry | heightfield | Small synthetic heightfield and GLB for interface examples |
+| geometry | rasterize_glb | Imported GLB reader and rasterizer, accumulated node transforms, explicit clipping and ground assumptions |
+| solar | shadow | Physics4D ShadowNet / HorizonNet / ground_irradiance; heightfield |
+| flood | shallow_water | Physics4D ShallowWater; heightfield / solid |
+| wind | mac | Physics4D MAC; heightfield, retaining display slices, the full volume and native faces |
+| temperature | finite_difference_numpy | Extracted Physics4D NumPy thermal-transport kernels; exact-version geometry + wind |
+| temperature | finite_difference_torch | The same thermal-transport contract, implemented in PyTorch for CPU/CUDA |
+| pollution | steady_tracer | Physics4D conservative finite-volume passive scalar; geometry + native MAC faces |
 
-所有八个 Method 均有输入端口、参数 schema、输出类型、依赖、能力、运行指南和示例，统一实现 describe/validate/prepare/execute/export。失败、取消或数值检查未通过的运行不登记结果。输入保持不可覆盖的版本引用、SHA-256 与 derived_from；源代码快照来自实际执行包，不冒充元数据 checkout 的 Git revision。
+All eight Methods provide input ports, parameter schemas, output types, dependencies, capabilities, run guides and examples. Each implements describe/validate/prepare/execute/export. Failed or cancelled runs, and runs that fail numerical acceptance checks, do not register results. Inputs retain immutable version references, SHA-256 checksums and derived_from relationships. Source snapshots come from the actual executing packages, without substituting the metadata checkout's Git revision.
 
-Visualizer 固定为 standard 模板：engineering/city/laboratory preset 复用相机、图层、选择、时间轴和图例；Scenario 声明默认内容。`canopy serve` 首页提供场景入口，不启动求解。未知的专用面板不是可执行配置，需在共享 widget 接口中显式接入。
+The Visualizer uses a fixed standard template. The engineering/city/laboratory presets share camera, layer, picking, timeline and legend controls; Scenarios declare the defaults. The `canopy serve` landing page provides scene entrypoints without starting solvers. Specialized panels require explicit integration through the shared widget interface; unknown panels are not executable configuration.
 
-## 真实场景与验证边界
+## Real scenarios and validation scope
 
-- South Kensington / White City：各自保留 GLB、已记录风场与温度；导入到各自 assets，原 Physics4D checkout 未修改。
-- Imperial Corridor：保留的 local_viewer_20261102 物理几何及风、温度、夏/冬太阳与阴影、污染物、洪水，导入为 7 个私有资产 / 9 个展示 layer。大型 NPY 按原样拆成逐帧文件；所有 float16 样本、原时间、单位、mask 均保留，无再次空间聚合。
-- 另执行一次真实 Imperial Corridor GLB 的 128 m 裁剪 → 32×32 高度场 → solar 链路；未覆盖 cell 的地面 0 m 是 terrain-normalized 基准下明确记录的计算假设，不声称这些格点被 GLB 观测覆盖。
-- 小型参考测试检查洪水质量守恒、MAC 压力投影、温度 NumPy/PyTorch 一致性、稳态污染物残差/质量守恒、GLB 父级变换及缺口拒绝。不是长期城市模型校准或实验验证。
-- 三个真实场景与耦合示例使用同一查看器，检查全部选定图层、末帧可用性、相机与移动端布局。详细证据见 verification.md。
+- South Kensington / White City: each retains its GLB, recorded wind and temperature in its own assets. The source Physics4D checkout was not modified.
+- Imperial Corridor: retained local_viewer_20261102 physics geometry, wind, temperature, summer/winter solar and shadow, pollution and flood were imported as 7 private assets / 9 display layers. Large NPY arrays were split into individual frames without changing samples. All original float16 values, times, units and masks are preserved, with no further spatial aggregation.
+- A separate real Imperial Corridor GLB computation completed a 128 m crop → 32×32 heightfield → solar chain. A ground value of 0 m for uncovered cells is an explicitly recorded assumption in the terrain-normalized frame, not a claim of GLB coverage at those samples.
+- Small reference tests check flood mass conservation, MAC pressure projection, NumPy/PyTorch temperature agreement, steady-pollution residuals and mass conservation, GLB parent transforms and rejection of uncovered samples. These do not establish long-term city calibration or experimental accuracy.
+- The three real scenarios and the coupled example use the same viewer. Checks cover every selected layer, final recorded frames, cameras and mobile layout. See verification.md for evidence.
 
-## 明确保留的兼容部分
+### London 8 km × 8 km case
 
-Physics4D 共享源码保留原 import 路径及来源清单，历史脚本列于 legacy-entrypoints.json。依赖特定场景、训练检查点、SUMO、OpenFOAM、Blender、Triton 的研究脚本仍是兼容入口，不自动成为正式 Method。它们的专用环境与研究参数不纳入这八个稳定适配器的验证范围。
+`project/imperial_corridor_8km/scenario.json` is the V2 entrypoint for the existing London case. Its declared bounds follow the retained source coverage rather than forcing every imported asset onto an exact 8,000 m square.
 
-原 Canopy Imperial Corridor 公开网站继续保留既有 URL、细节 tiles、地形/地图上下文、交通与 UAV 演示。上述物理数据现已能够通过 V2 统一查看器读取；不声称已经在统一模板中重做所有旧网站呈现功能。原始 terrain 与 terrain-normalized 物理几何必须保持区分。
+| Part | Current integration |
+| --- | --- |
+| Scenario | One declarative V2 scene with its own spatial metadata and asset index |
+| Asset | Seven historical geometry/physics assets, plus two assets from the real-geometry crop/solar verification; no shared asset references to other scenarios |
+| Model | Uses the common registry; the crop → heightfield → solar chain has run through standard Methods |
+| Running | Full-domain historical computation recipes have not been migrated into Scenario.tasks; the current tasks object is empty |
+| Visualization | The shared standard template with the city preset reads all nine selected historical layers |
+| Detailed website | Original terrain/context, traffic and UAV presentation remain available through the compatibility viewer |
 
-完整三维场可作为 artifact 保留；当前查看器显示明确导出的水平切片。Zarr、任意非结构网格、动态网格、checkpoint resume、分布式调度仍未实现。温度和风场的小型计算适配器在内存中保存全体场；逐帧展示不等于求解器支持无限大小的流式计算。
+The data and visualization migration is complete for the listed layers. Reproducing every historical full-domain simulation through a single standardized task chain remains separate work. Importing recorded output does not rerun or revalidate the original solver, and display slices do not automatically supply the native 3D inputs required by coupled Methods.
 
-## 来源与发布
+## Retained compatibility components
 
-physics4d-import.json 固定来源 revision 和逐文件原始 SHA-256，import-adaptations.json 记录后续改动；temperature-extraction.json 单独记录提取的数值函数。源仓库存在未提交研究工作，因此原移植清单明确是工作树快照。原版权/引用保留，未额外赋予第三方代码授权。
+Imported Physics4D source retains its import paths and provenance inventory. Historical scripts are listed in legacy-entrypoints.json. Research scripts that depend on specific scenes, trained checkpoints, SUMO, OpenFOAM, Blender or Triton remain compatibility entrypoints; they do not automatically become registered Methods. Their specialized environments and research parameters are outside the validation scope of the eight adapters above.
 
-私有资产、cache 和机器配置不进入 Git 或 wheel；场景元数据和迁移工具保留在仓库。实际发布、push 与网站部署未执行。
+The original public Canopy Imperial Corridor website retains its URLs, detailed tiles, terrain/map context, traffic and UAV demos. Its listed physical data can now be read through the unified V2 viewer. The unified template does not yet reproduce every presentation feature of the old website. Original terrain and terrain-normalized physics geometry must remain distinct.
+
+Full 3D fields can be retained as artifacts; the current viewer displays explicitly exported horizontal slices. Zarr, arbitrary unstructured meshes, dynamic meshes, checkpoint resume and distributed scheduling are not implemented. The small temperature and wind adapters retain complete field sequences in memory; loading display frames on demand does not make the solvers capable of unlimited streaming computation.
+
+## Provenance and publication
+
+physics4d-import.json pins the source revision and original per-file SHA-256 values. import-adaptations.json records subsequent changes; temperature-extraction.json separately records the extracted numerical functions. The source repository contained uncommitted research work, so the import inventory explicitly identifies a working-tree snapshot. Original copyright and citation notices are preserved; no additional rights to third-party code are granted.
+
+Private assets, cache and machine configuration are excluded from Git and the wheel. Scenario metadata and migration tools remain in the repository. Pushing repository changes does not upload private datasets; website deployment and dataset releases are separate operations.

@@ -1,61 +1,63 @@
 # Tower Hamlets energy pilot
 
-已有 Canary Wharf 4 km 场景上的公开能源设施叠加与假设供需测试。
-复用统一查看器、坐标、时间轴、JSON 标量/曲线和 GLB 图层。
+Public energy-facility overlays and assumed supply/demand tests for the existing Canary Wharf 4 km scene.
+Reuses the shared viewer, coordinates, timeline, JSON scalar/curve data and GLB layers.
+This imported guide describes the original Physics4D scene and commands.
 
-## 数据与边界
+## Data and scope
 
-- GLA London Heat Map：下载现有/规划热网线位、能源中心及热网规划项目。
-  保存官方 ArcGIS 元数据、完整查询 URL、获取时间、许可和 SHA-256。
-  按原图层保留现有/规划类别，逐项状态见 `inventory.json`。
-- 电力设施和充电站：复用场景已保留的 2026-10-07 OSM 文件，保留 OSM ID、
-  tags、版本和时间。不是实时运营清单。UKPN 公开目录要求登录，未获取受限记录。
-- 坐标：沿用场景以 (-0.0188, 51.5053) 为原点的 WGS84 AEQD 米制坐标，
-  先投影再裁剪到 [-2000,2000]²。范围跨行政边界，不代表塔村区全区统计。
-- 设施球体位于屋顶上方以便辨认；热网线宽、显示高度不是实测管径或埋深。
-  粉色实线是 GLA 现有热网，橙色虚线是规划热网，蓝色虚线是假设电连接。
-  OSM 原始电缆/线路标签保存在输入中，未推断或展示完整馈线拓扑。
+- GLA London Heat Map: downloads existing/planned heat-network routes, energy centres and planned heat-network projects.
+  Retains official ArcGIS metadata, complete query URLs, retrieval times, licenses and SHA-256 checksums.
+  Existing/planned categories follow the source layers; individual status is recorded in `inventory.json`.
+- Electricity facilities and charging stations: reuses the scene's retained 2026-10-07 OSM files, including OSM IDs,
+  tags, versions and timestamps. This is not a live operating inventory. The public UKPN catalog requires login;
+  restricted records were not retrieved.
+- Coordinates: uses the scene's WGS84 AEQD metric frame centred at (-0.0188, 51.5053),
+  projecting before clipping to [-2000,2000]². The area crosses administrative boundaries and does not represent borough-wide Tower Hamlets statistics.
+- Facility spheres sit above roofs for visibility. Heat-network line widths and display elevations are not measured pipe diameters or burial depths.
+  Solid pink lines show existing GLA heat networks, dashed orange lines planned networks, and dashed blue lines assumed electricity connections.
+  Original OSM cable/line tags remain in the inputs; a complete feeder topology is neither inferred nor displayed.
 
-## 假设计算
+## Assumed calculation
 
-选取六个不同名称建筑的互不重复高位栅格区域。使用已保存的
-`canary_wharf_sunlight027` 11 帧水平顶面辐照（2026-06-21 12:00–12:10 UTC）。
-保留原来的 600 秒窗口，不补全天数据。屋顶适用性、坡度、实际设备均未核实。
+Selects nonoverlapping elevated grid regions for six differently named buildings. Uses the 11 retained horizontal rooftop-irradiance frames from
+`canary_wharf_sunlight027` (2026-06-21 12:00–12:10 UTC).
+The original 600-second window is preserved without inventing full-day data. Roof suitability, slope and actual equipment have not been verified.
 
-配置明确假设：20% 顶面面积铺光伏、20% 转换效率、0.85 性能系数；
-每栋建筑基础用电 120 kW、供热 60 kW、热泵 COP=3；
-Canary Wharf 已标注充电站的测试用电从 20 增至 220 kW。
-这不是该站真实负荷或设备额定容量。
+The configuration explicitly assumes photovoltaic coverage on 20% of rooftop area, 20% conversion efficiency and a 0.85 performance factor;
+120 kW base electricity demand and 60 kW heating demand per building, with heat-pump COP=3;
+and test charging demand increasing from 20 to 220 kW at the mapped Canary Wharf charging station.
+These are not the station's measured demand or rated equipment capacity.
 
-电网净取电 = 基础用电 + 热泵用电 + 充电用电 - 光伏。
-热泵供热 = 热泵用电 + 环境取热。允许电网净取电为负表示反送。
-这是无网络损耗的供需平衡测试，没有求解电压、交流潮流、线路容量或热网水力。
-假设热泵不代表已连接地图中的任一供热网络。
+Net grid import = base electricity + heat-pump electricity + charging electricity - photovoltaic generation.
+Heat-pump heat output = heat-pump electricity + environmental heat extraction. Negative net grid import represents export.
+This is a supply/demand balance without network losses. It does not solve voltage, AC power flow, line capacity or heat-network hydraulics.
+The assumed heat pumps are not necessarily connected to any mapped heat network.
 
-## 重跑
+## Rerun
 
-在含 `src/energy/requirements.txt` 可选依赖的 Python 环境中：
+Use a Python environment with the optional dependencies in `src/energy/requirements.txt`:
 
 ```bash
 PYTHONPATH=src python -m energy.pilot \
   --config project/tower_hamlets/configs/energy_pilot.json --retain
 ```
 
-添加 `--source project/tower_hamlets/input/energy_open_<时间与标识>` 可以复用校验后的
-下载快照。每次运行创建新目录；`--retain` 保留到 runs 并注册独立视图，不改默认视图。
-输入位于 project/input，试跑位于 cache，所需输入、配置与源码快照随正式运行保留。
-`catalog/*.json` 把标量图层的数组索引映射到设施/建筑名称；`inventory.json` 保存公开属性。
+Add `--source project/tower_hamlets/input/energy_open_<timestamp_and_id>` to reuse a validated download snapshot.
+Each run creates a new directory; `--retain` saves it under runs and registers a separate view without changing the default view.
+Inputs live in project/input and trial runs in cache. Retained runs include the required inputs, configuration and source snapshot.
+`catalog/*.json` maps scalar-layer array indexes to facility/building names; `inventory.json` retains public attributes.
 
 ```bash
 PYTHONPATH=src python -m unittest discover -s tests -p 'test_energy_pilot.py' -v
 python3 tools/check_contract.py project/tower_hamlets/runs/<run_id>/manifest.json
-PUPPETEER_MODULE=<puppeteer-core入口绝对路径> \
+PUPPETEER_MODULE=<absolute_path_to_puppeteer_core> \
 UWM_VIEWER_URL='http://127.0.0.1:8937/src/visualization/viewer/?scene=tower_hamlets&view=<view_id>' \
 node tests/browser_energy.cjs
 ```
 
-浏览器检查图层加载、300 秒供需平衡、点击取值、显隐、时间越界隐藏和资源释放。
-只在本地保留数据与结果；未发布。
+Browser checks cover layer loading, the supply/demand balance at 300 seconds, picking, visibility, hiding data outside the time range and resource disposal.
+Data and results were retained locally only; they were not published.
 
 ### ATES city prototype
 

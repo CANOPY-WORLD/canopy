@@ -1,23 +1,23 @@
-# 无人机模型
+# UAV models
 
-原创通用外形模型，不对应特定厂商型号。全部采用 GLB / glTF 2.0，材质内嵌，无外部贴图依赖。
+Original generic designs, without association with a specific manufacturer. All use GLB / glTF 2.0 with embedded materials and no external texture dependencies.
 
-| 文件 | 类型 | 大致尺寸（宽 × 长 × 高，米） |
+| File | Type | Approximate dimensions (width × length × height, metres) |
 | --- | --- | --- |
-| `quadcopter.glb` | 四旋翼航拍机，含云台相机、起落架 | 0.69 × 0.69 × 0.405 |
-| `hexacopter_cargo.glb` | 六旋翼运输机，含货箱、相机、GPS | 1.358 × 1.228 × 0.517 |
-| `fixed_wing.glb` | 固定翼无人机，含前置螺旋桨、尾翼、轮式起落架 | 2.36 × 1.542 × 0.719 |
+| `quadcopter.glb` | Aerial-photography quadcopter with gimbal camera and landing gear | 0.69 × 0.69 × 0.405 |
+| `hexacopter_cargo.glb` | Cargo hexacopter with cargo box, camera and GPS | 1.358 × 1.228 × 0.517 |
+| `fixed_wing.glb` | Fixed-wing UAV with front propeller, tail and wheeled landing gear | 2.36 × 1.542 × 0.719 |
 
-单位为米。GLB 坐标为 +Y 向上、+Z 机头方向；源脚本 Blender 坐标为 +Z 向上、-Y 机头方向。模型横向居中，地面接近高度零。
+Units are metres. GLB uses +Y up and +Z forward; the source Blender scripts use +Z up and -Y forward. Models are centred laterally, with the ground near zero height.
 
-机身、旋翼和附件保持独立网格。各 `Rotor_*` / `Nose_propeller` 节点为旋翼中心，可用于后续添加旋转动画；当前文件为静态模型，未包含动画、碰撞体或飞行动力学参数。
+Bodies, rotors and attachments remain separate meshes. Each `Rotor_*` / `Nose_propeller` node is centred on its rotor for future rotation animation. Current files are static and contain no animation, collision bodies or flight-dynamics parameters.
 
-同名 PNG 是从导出的 GLB 重新导入后渲染的预览。`validation.json` 记录文件大小、网格数、三角形数和导入验证。
+Matching PNG previews were rendered after reimporting the exported GLBs. `validation.json` records file sizes, mesh counts, triangle counts and import validation.
 
-重新生成：
+Regenerate from the original source checkout:
 
 ```bash
 blender --background --python pipelines/geometry/uav/generate_models.py
 ```
 
-需要 Blender 4.2 或兼容版本。执行会覆盖本目录下同名模型、预览和验证报告。
+Requires Blender 4.2 or a compatible version. Running the script overwrites models, previews and validation reports with matching names in this directory.

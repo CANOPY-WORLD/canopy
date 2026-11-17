@@ -1,17 +1,19 @@
-# Geometry model：场景与动态实体
+# Geometry model: scenes and dynamic entities
 
-| 逻辑模块 | 当前实现 |
+This imported layout record retains paths from the original integration workspace.
+
+| Logical module | Recorded implementation |
 | --- | --- |
-| 静态城市：建筑、道路、树木 | ../expansion/src/ |
-| 场景合并 | geometry/south_kensington_core008_merge.py |
-| 体素化 | geometry/voxelize_core008.py、validate_padded_voxels.py |
-| Draco GLB 场景适配 | voxelization/prepare_glb.py；支持烘焙变换的场景，1/2/4 m 格心采样 |
-| 鸟群 | birds/、geometry/birds/ |
-| 交通 | traffic/、geometry/traffic/ |
-| UAV 外形、站点、调度 | uav/、geometry/uav/、mfmu-uwm-integration-preview/ |
-| 原集成入口 | integrate.py |
+| Static city: buildings, roads and trees | ../expansion/src/ |
+| Scene merging | geometry/south_kensington_core008_merge.py |
+| Voxelization | geometry/voxelize_core008.py, validate_padded_voxels.py |
+| Draco GLB scene adaptation | voxelization/prepare_glb.py; supports scenes with baked transforms and 1/2/4 m cell-centre sampling |
+| Birds | birds/, geometry/birds/ |
+| Traffic | traffic/, geometry/traffic/ |
+| UAV shapes, stations and scheduling | uav/, geometry/uav/, mfmu-uwm-integration-preview/ |
+| Original integration entrypoint | integrate.py |
 
-静态建模逻辑归入 geometry；expansion 暂保留物理位置，维持 Blender 工程和快照引用。
-geometry/ 仍混有输入资产与适配脚本，后续逐项拆分。
-原集成入口说明见 [README.md](README.md)，从 pipelines/geometry/ 运行。
-鸟群、交通和 UAV 同属动态实体，但共享目录不代表坐标已对齐。
+Static modeling belongs to geometry; expansion retained its physical location to preserve Blender project and snapshot references.
+The geometry/ directory still mixed input assets and adapter scripts, with separation planned item by item.
+Original integration instructions are in [README.md](README.md), run from pipelines/geometry/ in that layout.
+Birds, traffic and UAVs are dynamic entities, but a shared directory does not establish coordinate alignment.

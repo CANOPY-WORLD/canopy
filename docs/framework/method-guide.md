@@ -1,35 +1,35 @@
-# Model / Method 开发与运行标准
+# Model / Method development and execution standard
 
-共享 Model 下的每个注册 Method 都必须有 JSON 契约、参数 schema、例子和运行指南。输入端口还可声明 `required_artifacts`，用于区分展示 layer 和求解器实际需要的计算表示。可信注册表在 canopy.models.registry；场景文件不能指定任意 import 或 shell 命令。
+Every registered Method under a shared Model must provide a JSON contract, parameter schema, example and run guide. Input ports can also declare `required_artifacts` to distinguish display layers from computational representations required by the solver. The trusted registry is canopy.models.registry; scenario files cannot specify arbitrary imports or shell commands.
 
-## 接入步骤
+## Integration steps
 
-1. 将可复用求解代码放在 src 中，保留来源与许可证；禁止把场景数据、模型权重和本机路径嵌入代码。
-2. 在 src/canopy/models/specs/<model>/<method>.json 声明版本、输入类型、输出 layer kind、依赖、能力及文档路径。参数 schema 禁止额外属性，每个参数有描述、类型、范围、默认值、单位（适用时）。
-3. 实现 canopy.models.interface.Method 的 describe / validate / prepare / execute / export。注册可信 adapter，不动态执行 JSON 代码。
-4. 输入从 context.inputs 读取，使用精确资产版本；输出只写 context.workspace，不修改输入。不依赖 cwd 或全局环境中的场景身份。
-5. execute 在安全步检查 context.checkpoint()；进度 emit('progress',completed=...,total=...)。不支持 resume 时必须明确 false，不能伪造进度百分比。
-6. export 返回 manifest.json 所在目录。必须保留坐标、单位、真实时间和缺失掩码；运行框架添加来源快照并校验、登记资产。
-7. 编写最小 CPU 示例和适用的数值检验。登记输出之后应能删除 cache 并继续验证和展示。
+1. Put reusable solver code in src, preserving provenance and licenses. Do not embed scene data, model weights or machine-specific paths in the code.
+2. Declare the version, input types, output layer kinds, dependencies, capabilities and documentation paths in src/canopy/models/specs/<model>/<method>.json. Parameter schemas must reject extra properties; each parameter needs a description, type, range, default and unit where applicable.
+3. Implement describe / validate / prepare / execute / export from canopy.models.interface.Method. Register a trusted adapter; do not execute code supplied in JSON.
+4. Read exact-version assets through context.inputs. Write outputs only to context.workspace, leaving inputs unchanged. Do not infer scenario identity from cwd or global environment state.
+5. Call context.checkpoint() at safe execution boundaries. Report progress with emit('progress',completed=...,total=...). Declare resume as false when unsupported, and do not invent progress percentages.
+6. Return the directory containing manifest.json from export. Preserve coordinates, units, actual times and missing-data masks. The runtime adds a source snapshot, validates the output and registers the assets.
+7. Provide a minimal CPU example and appropriate numerical checks. Registered results must remain valid and viewable after cache is deleted.
 
-## 接口
+## Interface
 
 ```python
 class Method:
     def describe(self): ...
-    def validate(self, request, context): ...  # 失败抛出明确错误，无副作用
-    def prepare(self, request, context): ...   # 缓存内原生输入
-    def execute(self, prepared, context): ...  # 结果及 diagnostics
-    def export(self, result, context): ...    # 自包含 payload 路径
+    def validate(self, request, context): ...  # Clear errors, no side effects
+    def prepare(self, request, context): ...   # Native inputs within cache
+    def execute(self, prepared, context): ...  # Results and diagnostics
+    def export(self, result, context): ...    # Self-contained payload directory
 ```
 
-框架 `canopy.running.runner.run(storage, request, retain=True)` 统一调用这些阶段。request 的 inputs 是场景内引用；parameters 是物理/算法参数；execution 是 cpu/cuda 和线程数。未知字段和 method version 会被拒绝；默认值在保存 request 前补齐。运行状态与数值诊断是不同概念。
+The framework calls these stages through `canopy.running.runner.run(storage, request, retain=True)`. Request inputs are references within a scenario; parameters describe the physics or algorithm; execution specifies cpu/cuda and thread count. Unknown fields and Method versions are rejected. Defaults are filled before saving the request. Execution status and numerical diagnostics are separate concepts.
 
-## 每份指南必须包含
+## Required guide contents
 
-用途和假设；精确实现路径；环境安装；输入资产要求；全部参数说明；最小运行命令；预期输出；数值有效性检查；资源与停止方式；常见错误；复现边界。外部权重/数据不存在时明确报错，不能静默合成替代结果。
+Purpose and assumptions; exact implementation paths; environment installation; input asset requirements; every parameter; minimal commands; expected outputs; numerical validity checks; resources and cancellation; common errors; and limits on reproducibility. Missing external weights or data must produce an explicit error, without silently substituting synthetic results.
 
-## 常用命令（在 Canopy checkout）
+## Common commands, from a Canopy checkout
 
 ```sh
 python -m venv .venv
@@ -39,7 +39,7 @@ python -m venv .venv
 .venv/bin/canopy --root . init demo
 .venv/bin/canopy --root . run examples/canopy/geometry.json --dry-run
 .venv/bin/canopy --root . run examples/canopy/geometry.json
-# 用打印出的 geometry asset 引用替换 physics request 中的占位符。
+# Replace the physics request's placeholder with the printed geometry asset reference.
 .venv/bin/canopy --root . run examples/canopy/flood.json --dry-run
 .venv/bin/canopy --root . run examples/canopy/flood.json
 .venv/bin/canopy --root . validate demo
@@ -47,20 +47,20 @@ python -m venv .venv
 .venv/bin/canopy --root . serve
 ```
 
-直接跑完整小示例可用 `canopy --root . demo`，它自动填充真实资产引用。`demo --physics` 只生成几何，`demo --physics flood` 只追加洪水计算。真实研究情景不要使用合成 demo 代替数据准备。
+Use `canopy --root . demo` to run the complete small example with actual asset references filled automatically. `demo --physics` generates geometry only; `demo --physics flood` adds only flood computation. Prepare real inputs separately for research scenarios.
 
-`canopy cancel SCENARIO MODEL RUN_ID` 请求合作式取消；Ctrl-C 也记录取消状态。取消响应在检查点发生，正在执行的单次 GPU kernel 不会被强杀。当前注册的 method 不提供 checkpoint resume，重新运行会产生新版本，不覆盖旧资产。
+`canopy cancel SCENARIO MODEL RUN_ID` requests cooperative cancellation; Ctrl-C also records a cancelled state. Cancellation takes effect at checkpoints and does not forcibly terminate an active GPU kernel. Current registered methods do not support checkpoint resume. Rerunning creates a new asset version without overwriting an existing asset.
 
-移植的其他 Physics4D 源代码属于 compatibility 实现目录，不代表其所有历史脚本已经注册到统一接口。见 migration-status.md 和 legacy-entrypoints.json；扩展时按本指南逐个升级，不把实验脚本自动暴露为稳定工具。
+Other imported Physics4D sources remain compatibility implementations; their historical scripts are not all registered in the shared interface. See migration-status.md and legacy-entrypoints.json. Upgrade integrations individually using this guide, rather than automatically exposing experimental scripts as stable tools.
 
-## 场景打包
+## Scenario packaging
 
-`canopy pack demo /absolute/output/demo.tar.gz` 校验并打包完整场景索引、全部已登记资产和 provenance；不包含 cache，不下载未知依赖，不发布任何内容。输出路径不得位于场景资产目录内，已有归档拒绝覆盖。归档内采用 project/<scenario>/... 布局；恢复到新的本地数据根之后，scenario.json 放仓库 metadata 根，其余资产放配置 data_root 对应位置。
+`canopy pack demo /absolute/output/demo.tar.gz` validates and packages the complete scenario index, all registered assets and provenance. It excludes cache, does not download unknown dependencies and does not publish anything. The output must be outside the scenario asset directory; existing archives cannot be overwritten. Archives use project/<scenario>/... paths. When restoring to a new local data root, place scenario.json in the checkout's metadata root and other assets under the configured data_root.
 
-`canopy run-task SCENARIO TASK --dry-run` 检查 Scenario.tasks 中保存的请求；去掉 --dry-run 执行同一固定版本输入。demo 自动保存 geometry/solar/flood/wind 对应任务，物理任务引用生成时的确切几何资产，而非以后生成的 latest。
+`canopy run-task SCENARIO TASK --dry-run` checks the request stored in Scenario.tasks. Remove --dry-run to execute the same pinned inputs. The demo saves geometry/solar/flood/wind tasks automatically; physics tasks reference the exact geometry generated for that run, with no later `latest` lookup.
 
-## 物理结果作为模型输入
+## Physics results as model inputs
 
-`canopy demo --physics temperature pollution` 自动先生成几何与风场，再将它们的确切版本传入两个耦合模型。两个 temperature method 使用同一端口/参数契约；NumPy 与 PyTorch 分别是独立版本化 method。pollution 依赖 native MAC face artifact，不能用展示用的 cell-center 切片替代。全部 method 可通过 `canopy models` 查看，指南路径包含在 spec 中。
+`canopy demo --physics temperature pollution` first generates geometry and wind, then passes their exact versions to both coupled models. The two temperature methods share a port and parameter contract; NumPy and PyTorch are separately versioned methods. Pollution requires the native MAC face artifact, which cannot be replaced by a cell-center display slice. Inspect all methods with `canopy models`; each spec includes its guide path.
 
-`source_snapshot.tar.gz` 记录当前 Python 解释器实际解析的 Canopy 与移植包，包含逐文件 SHA-256 清单。`code_revision` 使用该内容的 hash，不把 `--root` 指向的元数据 checkout 当成实际执行代码；第三方依赖版本另保存在 environment.json。
+`source_snapshot.tar.gz` records the Canopy and imported packages actually resolved by the running Python interpreter, including a per-file SHA-256 inventory. `code_revision` identifies that content by hash; the metadata checkout selected by `--root` is not assumed to contain the executed code. Third-party dependency versions are saved separately in environment.json.

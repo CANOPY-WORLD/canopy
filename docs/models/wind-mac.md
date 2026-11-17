@@ -1,20 +1,20 @@
 # MAC incompressible wind — wind/mac@1.0.0
 
-## 用途与实现
+## Purpose and implementation
 
-调用 urban_flow.solvers.mac_torch.MAC；不可压无粘流的交错网格投影，不包含 RANS/LES 湍流闭合。西入口、东压力出口，顶部可选压力出口。
+Uses urban_flow.solvers.mac_torch.MAC: a staggered-grid projection for incompressible inviscid flow, without RANS/LES turbulence closure. The west boundary is an inlet, the east is a pressure outlet, and the top can optionally be a pressure outlet.
 
-统一适配器：src/canopy/models/methods.py。机器接口：src/canopy/models/specs/wind/mac.json。
+Shared adapter: src/canopy/models/methods.py. Machine-readable interface: src/canopy/models/specs/wind/mac.json.
 
-## 安装与输入
+## Installation and inputs
 
-Python 3.11+；在仓库根执行 `python -m pip install -e '.[physics]'`。几何 method 只需要基础 NumPy/jsonschema。CPU 默认可跑；GPU 使用对应 CUDA 构建的 PyTorch，request execution.device 设为 cuda；不可用时明确报错。无需下载学习权重。
+Requires Python 3.11+. From the repository root, run `python -m pip install -e '.[physics]'`. The geometry method only needs the base NumPy/jsonschema dependencies. CPU execution is the default. GPU execution requires a matching CUDA build of PyTorch and request execution.device set to cuda; unavailable devices raise an explicit error. No learned weights are required.
 
-Geometry heightfield 转换成列状 solid 体素。多重网格粗化前各维必须为偶数；必须留有顶部流体。
+Converts the geometry heightfield into columns of solid voxels. Each dimension must be even before multigrid coarsening, and fluid cells must remain above the obstacles.
 
-## 参数
+## Parameters
 
-| 参数 | 默认值 | 单位 | 含义与限制 |
+| Parameter | Default | Unit | Meaning and constraints |
 | --- | --- | --- | --- |
 | `nz` | `8` | 1 | Vertical cells [3, 128] |
 | `slice_index` | `3` | 1 | Horizontal slice to visualize; full volume retained [0, 127] |
@@ -22,11 +22,11 @@ Geometry heightfield 转换成列状 solid 体素。多重网格粗化前各维�
 | `frame_seconds` | `0.2` | s | Saved time spacing [0.001, 3600] |
 | `dt_max_s` | `0.1` | s | Integration step cap [1e-06, 10] |
 | `inlet_m_s` | `1` | m/s | West boundary eastward velocity [0.001, 100] |
-| `open_top` | `false` | 见说明 | Pressure outlet at top; otherwise slip lid |
+| `open_top` | `false` | See description | Pressure outlet at top; otherwise slip lid |
 | `pressure_rtol` | `0.0001` | 1 | Projection relative residual target [1e-08, 0.01] |
 | `pressure_iterations` | `100` | 1 | PCG iteration cap [1, 1000] |
 
-## 最小运行
+## Minimal run
 
 ```sh
 canopy --root . models wind mac
@@ -35,24 +35,24 @@ canopy --root . validate demo
 canopy --root . serve --port 8769
 ```
 
-浏览器打开 http://127.0.0.1:8769/src/visualization/viewer/?scenario=demo 。
-独立请求模板：examples/canopy/wind.json。先 `canopy init demo`，物理请求用几何运行返回的 asset 引用替换 REPLACE_WITH_GEOMETRY_ASSET，再 `canopy run REQUEST --dry-run` 和 `canopy run REQUEST`。不要将占位符作为有效输入。
+Open http://127.0.0.1:8769/src/visualization/viewer/?scenario=demo in a browser.
+Standalone request template: examples/canopy/wind.json. Start with `canopy init demo`. In physics requests, replace REPLACE_WITH_GEOMETRY_ASSET with the asset reference returned by the geometry run, then use `canopy run REQUEST --dry-run` and `canopy run REQUEST`. Placeholders are not valid inputs.
 
-## 输出与验证
+## Outputs and validation
 
-velocity.npy 为选定高度 TCYX；完整 velocity_tczyx.npy + volume.json 保留三维体；invalid.npy 标记切片固体。
+velocity.npy contains the selected-height TCYX slice. The full 3D field is retained in velocity_tczyx.npy + volume.json; invalid.npy marks solid samples in the slice.
 
-原求解器校验压力残差；记录 divergence_rms。小 CPU 示例是实现检验，不是城市 CFD 验证。
+The original solver checks the pressure residual and records divergence_rms. The small CPU example checks implementation behavior; it does not validate city-scale CFD.
 
-每次运行返回 run_id 和 assets。run.json / events.jsonl 位于 cache/demo/wind/RUN_ID/；保留后的资产位于 data_root/project/demo/assets/bundles/RUN_ID/，可删除 cache 而不丢结果。
+Each run returns run_id and assets. run.json / events.jsonl are in cache/demo/wind/RUN_ID/. Retained assets are in data_root/project/demo/assets/bundles/RUN_ID/ and remain available after cache is deleted.
 
-## 资源、停止与排错
+## Resources, cancellation, and troubleshooting
 
-默认 16×16 高度场（wind 为 8×16×16 体网格），单 CPU 线程用于小型检验。资源随网格、帧数和 horizon 方向数增长；不把小示例耗时当成城市性能承诺。当前适配器在内存中收集帧，大规模任务应改成分帧导出后再扩容。
+The default is a 16×16 heightfield, or an 8×16×16 volume for wind, using one CPU thread for small checks. Resource use grows with grid size, frame count and horizon-direction count; small-example timings do not establish city-scale performance. Current adapters collect frames in memory. Large workloads require incremental frame export before scaling up.
 
-`canopy cancel demo wind RUN_ID` 或 Ctrl-C 请求取消；不支持恢复，重新运行生成新资产。
-缺 torch：安装 physics extra；资产不存在：检查同一 Scenario 的确切引用；缺 heightfield：使用兼容 geometry tool，GLB 不能自动替代；计算不收敛：检查边界、网格与时间步，查看 diagnostics/事件日志。错误不应通过隐藏失败状态来处理。
+Use `canopy cancel demo wind RUN_ID` or Ctrl-C to request cancellation. Resume is unsupported; rerunning creates new assets.
+Missing torch: install the physics extra. Missing asset: check the exact reference in the same Scenario. Missing heightfield: use a compatible geometry tool; GLB cannot automatically replace it. Nonconvergence: check boundaries, grid and timestep, then inspect diagnostics and event logs. Do not hide failure states to bypass errors.
 
-源码快照、输入哈希和完整参数保存在资产 provenance 中。设备浮点差异可能导致不同结果；原始移植文件校验值见 docs/framework/physics4d-import.json。
+The asset provenance retains a source snapshot, input hashes and complete parameters. Device-dependent floating-point behavior may change results. Original imported-file checksums are in docs/framework/physics4d-import.json.
 
-末帧另外输出 `faces_czyx.npy`（正向 cell-face ENU 速度）、`fluid_zyx.npy`、`inlet_zy.npy` 和 `mac_state.json`。此表示由 pollution/steady_tracer 消费；温度消费 `volume.json` 中的 cell-center 时间序列。旧资产不被补写，缺少这些 artifacts 时应重新计算。
+The final frame also exports `faces_czyx.npy` (positive cell-face ENU velocities), `fluid_zyx.npy`, `inlet_zy.npy` and `mac_state.json`. pollution/steady_tracer consumes this representation; temperature consumes the cell-center sequence declared in `volume.json`. Existing assets are not amended. Rerun the computation when these artifacts are missing.
