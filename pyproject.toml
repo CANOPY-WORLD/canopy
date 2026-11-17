@@ -20,7 +20,7 @@ p4d = "common.cli:main"
 uwm = "common.cli:main"
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["model/src", "visualizer/src"]
 include = ["canopy*", "common*", "urban_flow*", "urban_geometry*", "urban_planning*", "traffic*", "uav_routing*", "energy*", "visualization.adapters*"]
 
 [tool.setuptools.package-data]

@@ -1,0 +1,120 @@
+{
+  "schema_version": "2.0.0",
+  "model_id": "wind",
+  "method_id": "mac",
+  "version": "1.0.0",
+  "category": "physics",
+  "title": "MAC incompressible wind",
+  "description": "Physics4D PyTorch MAC, multigrid-preconditioned projection; small reference grids.",
+  "adapter": "wind_mac",
+  "inputs": {
+    "geometry": {
+      "kind": "geometry",
+      "required_layers": [
+        "mesh"
+      ],
+      "required_artifacts": [
+        "heightfield"
+      ]
+    }
+  },
+  "parameters": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "nz": {
+        "type": "integer",
+        "default": 8,
+        "minimum": 3,
+        "maximum": 128,
+        "description": "Vertical cells",
+        "x-unit": "1"
+      },
+      "slice_index": {
+        "type": "integer",
+        "default": 3,
+        "minimum": 0,
+        "maximum": 127,
+        "description": "Horizontal slice to visualize; full volume retained",
+        "x-unit": "1"
+      },
+      "frames": {
+        "type": "integer",
+        "default": 2,
+        "minimum": 1,
+        "maximum": 1000,
+        "description": "Saved intervals",
+        "x-unit": "1"
+      },
+      "frame_seconds": {
+        "type": "number",
+        "default": 0.2,
+        "minimum": 0.001,
+        "maximum": 3600,
+        "description": "Saved time spacing",
+        "x-unit": "s"
+      },
+      "dt_max_s": {
+        "type": "number",
+        "default": 0.1,
+        "minimum": 1e-06,
+        "maximum": 10,
+        "description": "Integration step cap",
+        "x-unit": "s"
+      },
+      "inlet_m_s": {
+        "type": "number",
+        "default": 1,
+        "minimum": 0.001,
+        "maximum": 100,
+        "description": "West boundary eastward velocity",
+        "x-unit": "m/s"
+      },
+      "open_top": {
+        "type": "boolean",
+        "default": false,
+        "description": "Pressure outlet at top; otherwise slip lid"
+      },
+      "pressure_rtol": {
+        "type": "number",
+        "default": 0.0001,
+        "minimum": 1e-08,
+        "maximum": 0.01,
+        "description": "Projection relative residual target",
+        "x-unit": "1"
+      },
+      "pressure_iterations": {
+        "type": "integer",
+        "default": 100,
+        "minimum": 1,
+        "maximum": 1000,
+        "description": "PCG iteration cap",
+        "x-unit": "1"
+      }
+    },
+    "required": [
+      "nz",
+      "slice_index",
+      "frames",
+      "frame_seconds",
+      "dt_max_s",
+      "inlet_m_s",
+      "open_top",
+      "pressure_rtol",
+      "pressure_iterations"
+    ]
+  },
+  "outputs": [
+    "vector_field"
+  ],
+  "dependencies": [
+    "torch"
+  ],
+  "capabilities": {
+    "cancel": true,
+    "resume": false,
+    "progress": "steps"
+  },
+  "guide": "model/wind/mac/README.md",
+  "example": "scenario/examples/canopy/wind.json"
+}

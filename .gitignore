@@ -7,6 +7,14 @@ __pycache__/
 *.egg-info/
 /build/
 /dist/
+/asset/data/
+/scenario/*/assets/
+/scenario/*/runs/
+/scenario/*/geometry/
+/scenario/*/input/
+/scenario/*/.canopy.lock
+/scenario/demo/
+/scenario/coupled_demo/
 node_modules/
 /project/*/assets/
 /project/*/runs/

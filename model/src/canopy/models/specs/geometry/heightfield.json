@@ -1,0 +1,66 @@
+{
+  "schema_version": "2.0.0",
+  "model_id": "geometry",
+  "method_id": "heightfield",
+  "version": "1.0.0",
+  "category": "geometry",
+  "title": "Synthetic heightfield and GLB",
+  "description": "Create a small synthetic heightfield; does not reconstruct real geography.",
+  "adapter": "heightfield",
+  "inputs": {},
+  "parameters": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "nx": {
+        "type": "integer",
+        "default": 16,
+        "minimum": 3,
+        "maximum": 512,
+        "description": "Columns along east",
+        "x-unit": "1"
+      },
+      "ny": {
+        "type": "integer",
+        "default": 16,
+        "minimum": 3,
+        "maximum": 512,
+        "description": "Rows along north",
+        "x-unit": "1"
+      },
+      "cell_m": {
+        "type": "number",
+        "default": 1,
+        "minimum": 0.01,
+        "maximum": 1000,
+        "description": "Uniform cell spacing",
+        "x-unit": "m"
+      },
+      "obstacle_height_m": {
+        "type": "number",
+        "default": 2,
+        "minimum": 0,
+        "maximum": 10000,
+        "description": "Central synthetic 2x2-cell obstacle height; 0 means flat",
+        "x-unit": "m"
+      }
+    },
+    "required": [
+      "nx",
+      "ny",
+      "cell_m",
+      "obstacle_height_m"
+    ]
+  },
+  "outputs": [
+    "mesh"
+  ],
+  "dependencies": [],
+  "capabilities": {
+    "cancel": true,
+    "resume": false,
+    "progress": "phases"
+  },
+  "guide": "model/geometry/heightfield/README.md",
+  "example": "scenario/examples/canopy/geometry.json"
+}

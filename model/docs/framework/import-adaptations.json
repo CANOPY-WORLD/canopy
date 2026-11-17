@@ -1,0 +1,40 @@
+{
+  "modified_after_import": [
+    "src/common/city_tools.py",
+    "src/common/cli.py",
+    "src/common/contract.py",
+    "src/common/layout.py",
+    "src/common/pipeline/core008.py",
+    "src/common/pipeline/export_scene_web.py",
+    "src/common/pipeline/live_progress.py",
+    "src/common/pipeline/run_scene.py",
+    "src/common/pipeline/run_scene_surface.py",
+    "src/common/pipeline/scene_pollution.py",
+    "src/common/pipeline/scene_scaled_latent.py",
+    "src/common/pipeline/scene_temperature_physical.py",
+    "src/common/runs.py",
+    "src/common/server.py",
+    "src/common/storage.py",
+    "src/urban_flow/physics/MODEL_INVENTORY.md",
+    "src/urban_flow/physics/README.md",
+    "src/urban_flow/scenarios/actuator_lab/README.md",
+    "src/urban_flow/scenarios/windfarm_crop/README.md",
+    "src/urban_geometry/voxelization/prepare_glb.py",
+    "src/energy/README.md",
+    "src/visualization/viewer/index.html",
+    "src/visualization/viewer/main.mjs",
+    "src/visualization/viewer/style.css",
+    "src/urban_geometry/STRUCTURE.md",
+    "src/urban_geometry/uav/README.md"
+  ],
+  "missing": [],
+  "note": "Original hashes remain in physics4d-import.json. Git history records content adaptations separately from the four-domain directory relocation. Imported documentation is English; historical paths may describe the source repository. Temperature extraction is tracked in temperature-extraction.json.",
+  "path_relocations": {
+    "src/visualization/": "visualizer/src/visualization/",
+    "src/": "model/src/",
+    "schemas/": "asset/schemas/",
+    "examples/": "scenario/examples/",
+    "tools/": "model/tools/"
+  },
+  "path_resolution": "Inventory and modified_after_import paths identify the original source snapshot. Apply the longest matching path_relocations prefix to locate the current checkout file; original hashes are unchanged."
+}

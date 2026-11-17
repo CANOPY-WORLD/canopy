@@ -1,0 +1,110 @@
+{
+  "schema_version": "2.0.0",
+  "model_id": "solar",
+  "method_id": "shadow",
+  "version": "1.0.0",
+  "category": "physics",
+  "title": "Solar shadow and irradiance",
+  "description": "Physics4D ShadowNet + HorizonNet; clear-sky irradiance, no learned weights.",
+  "adapter": "solar_shadow",
+  "inputs": {
+    "geometry": {
+      "kind": "geometry",
+      "required_layers": [
+        "mesh"
+      ],
+      "required_artifacts": [
+        "heightfield"
+      ]
+    }
+  },
+  "parameters": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "times_s": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 1000,
+        "items": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000000000.0
+        },
+        "default": [
+          0,
+          3600
+        ],
+        "description": "Relative physical sample times in seconds, strictly increasing"
+      },
+      "altitudes_deg": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 1000,
+        "items": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 90
+        },
+        "default": [
+          30,
+          45
+        ],
+        "description": "Prescribed sun altitudes, one per time"
+      },
+      "azimuth_deg": {
+        "type": "number",
+        "default": 180,
+        "minimum": 0,
+        "maximum": 360,
+        "description": "Clockwise from north",
+        "x-unit": "deg"
+      },
+      "month": {
+        "type": "integer",
+        "default": 6,
+        "minimum": 1,
+        "maximum": 12,
+        "description": "ASHRAE clear-sky monthly coefficients",
+        "x-unit": "1"
+      },
+      "albedo": {
+        "type": "number",
+        "default": 0.2,
+        "minimum": 0,
+        "maximum": 1,
+        "description": "Ground albedo",
+        "x-unit": "1"
+      },
+      "horizon_directions": {
+        "type": "integer",
+        "default": 8,
+        "minimum": 4,
+        "maximum": 64,
+        "description": "Azimuth samples for sky-view integration",
+        "x-unit": "1"
+      }
+    },
+    "required": [
+      "times_s",
+      "altitudes_deg",
+      "azimuth_deg",
+      "month",
+      "albedo",
+      "horizon_directions"
+    ]
+  },
+  "outputs": [
+    "scalar_field"
+  ],
+  "dependencies": [
+    "torch"
+  ],
+  "capabilities": {
+    "cancel": true,
+    "resume": false,
+    "progress": "steps"
+  },
+  "guide": "model/solar/shadow/README.md",
+  "example": "scenario/examples/canopy/solar.json"
+}
