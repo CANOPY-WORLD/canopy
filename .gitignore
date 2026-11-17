@@ -1,0 +1,17 @@
+/cache/
+/storage.local.json
+/sources.local.json
+/.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+/build/
+/dist/
+node_modules/
+/project/*/assets/
+/project/*/runs/
+/project/*/geometry/
+/project/*/input/
+/project/*/.canopy.lock
+# The CLI regenerates the local synthetic demonstration and its runtime IDs.
+/project/demo/

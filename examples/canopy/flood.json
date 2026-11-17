@@ -1,0 +1,23 @@
+{
+  "schema_version": "2.0.0",
+  "scenario_id": "demo",
+  "model_id": "flood",
+  "method_id": "shallow_water",
+  "method_version": "1.0.0",
+  "inputs": {
+    "geometry": "REPLACE_WITH_GEOMETRY_ASSET"
+  },
+  "parameters": {
+    "frames": 4,
+    "frame_seconds": 1,
+    "dt_max_s": 0.1,
+    "rain_mm_h": 20,
+    "initial_depth_m": 0,
+    "manning": 0.03,
+    "cg_max": 400
+  },
+  "execution": {
+    "device": "cpu",
+    "threads": 1
+  }
+}

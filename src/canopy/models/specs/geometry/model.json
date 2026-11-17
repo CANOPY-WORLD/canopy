@@ -1,0 +1,11 @@
+{
+  "schema_version": "2.0.0",
+  "model_id": "geometry",
+  "category": "geometry",
+  "methods": {
+    "heightfield": {
+      "version": "1.0.0",
+      "spec": "heightfield.json"
+    }
+  }
+}

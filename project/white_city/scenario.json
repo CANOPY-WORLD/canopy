@@ -1,0 +1,55 @@
+{
+  "schema_version": "2.0.0",
+  "scenario_id": "white_city",
+  "title": "White City 9 km²",
+  "spatial": {
+    "frame": "ENU",
+    "units": "m",
+    "origin": {
+      "longitude": -0.22405,
+      "latitude": 51.5145,
+      "height_m": 0,
+      "vertical_datum": "GLB ground mesh, near planar and not surveyed elevation; uncovered cells at local zero"
+    },
+    "bounds_m": {
+      "min": [
+        -1492.0,
+        -2548.0,
+        0
+      ],
+      "max": [
+        2092.0,
+        1036.0,
+        128
+      ]
+    }
+  },
+  "assets": {
+    "legacy_web_geometry_geometry@1": "assets/bundles/legacy_web_geometry/geometry.asset.json",
+    "city_wind_20260930T095257Z_f293ce_physics@1": "assets/bundles/city_wind_20260930T095257Z_f293ce/physics.asset.json",
+    "city_temperature_20260930T095257Z_f293ce_physics@1": "assets/bundles/city_temperature_20260930T095257Z_f293ce/physics.asset.json"
+  },
+  "tasks": {},
+  "visualization": {
+    "template": "standard",
+    "preset": "city",
+    "layers": [
+      {
+        "asset": "legacy_web_geometry_geometry@1",
+        "layer": "geometry",
+        "visible": true
+      },
+      {
+        "asset": "city_wind_20260930T095257Z_f293ce_physics@1",
+        "layer": "wind",
+        "visible": true
+      },
+      {
+        "asset": "city_temperature_20260930T095257Z_f293ce_physics@1",
+        "layer": "temperature",
+        "visible": true
+      }
+    ],
+    "time_alignment": "relative"
+  }
+}

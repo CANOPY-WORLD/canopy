@@ -1,0 +1,28 @@
+{
+  "schema_version": "2.0.0",
+  "scenario_id": "demo",
+  "model_id": "solar",
+  "method_id": "shadow",
+  "method_version": "1.0.0",
+  "inputs": {
+    "geometry": "REPLACE_WITH_GEOMETRY_ASSET"
+  },
+  "parameters": {
+    "times_s": [
+      0,
+      3600
+    ],
+    "altitudes_deg": [
+      30,
+      45
+    ],
+    "azimuth_deg": 180,
+    "month": 6,
+    "albedo": 0.2,
+    "horizon_directions": 8
+  },
+  "execution": {
+    "device": "cpu",
+    "threads": 1
+  }
+}

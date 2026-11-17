@@ -1,0 +1,12 @@
+{
+  "modified_after_import": [
+    "src/common/contract.py",
+    "src/common/server.py",
+    "src/common/storage.py",
+    "src/visualization/viewer/index.html",
+    "src/visualization/viewer/main.mjs",
+    "src/visualization/viewer/style.css"
+  ],
+  "missing": [],
+  "note": "physics4d-import.json retains original source hashes; adaptations are reviewed in Canopy Git history."
+}

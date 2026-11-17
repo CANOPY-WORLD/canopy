@@ -1,0 +1,1199 @@
+{
+  "description": "Explicit inventory: source availability does not imply unified-interface support. Four native methods are listed by canopy models.",
+  "entrypoints": [
+    {
+      "path": "src/common/city.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/common/city_tools.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/common/city_validation.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/common/city_view.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/common/cli.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/common/contract.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/common/pipeline/core008.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/common/pipeline/export_scene_web.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/common/pipeline/finish_scene.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/common/pipeline/live_progress.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/common/pipeline/plot_scene.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/common/pipeline/run_scene.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/common/pipeline/run_scene_surface.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/common/pipeline/scene_pollution.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/common/pipeline/scene_scaled_latent.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/common/pipeline/scene_surface_physics.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/common/pipeline/scene_temperature_physical.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/common/pipeline/verify_scene_results.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/common/recorded_city_fields.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/common/recorded_city_view.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/common/school_coupled_presentation.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/common/school_presentation.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/energy/ates.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/energy/ates_export.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/energy/inventory.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/energy/pilot.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/energy/stage_ates.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/traffic/acquisition/local_pbf_extract.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/traffic/emission.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/traffic/evaluate.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/traffic/export_legacy_replay.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/traffic/export_signal_movements.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/traffic/import_replay.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/traffic/observations.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/traffic/plot_recorded.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/traffic/predict_long_horizon.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/traffic/sumo_pipeline.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/traffic/train.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/traffic/transport.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/traffic/verification/convert_london.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/traffic/verification/export_prediction.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/traffic/verification/generate_complex_london.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/traffic/visualization/visualize_complex_prediction.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/uav_routing/audit.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/uav_routing/audit_voxel.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/uav_routing/compute.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/uav_routing/expand_sites.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/uav_routing/export.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/uav_routing/export_voxel.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/uav_routing/ground_sites.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/uav_routing/voxel_routes.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/uav_routing/wavepde_canopy_30m.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/uav_routing/wavepde_canopy_4m.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/uav_routing/wavepde_canopy_demo.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/uav_routing/wind_astar_demo.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/export/plot_recorded_wind.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/export/recorded_temperature.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/export/recorded_wind.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/analyze_reference.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/analyze_torch_farm.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/animate_alignment.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/audit_alignment_state.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/audit_alignment_stationarity.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/audit_grid_alignment.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/audit_paper_mesh_image.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/benchmark_parallel_scene.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/compare.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/compare_paper_profiles.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/compare_parallel_scene.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/compare_reference_force.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/compare_reference_grids.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/compare_three_way.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/export_alignment_animation.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/export_pywake_alignment.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/export_scene_movie.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/export_three_way_comparison.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/export_torch_reference.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/export_torch_windfarm.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/extract_paper_profiles.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/openfoam_reference.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/opus_centre_diagnostic.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/opus_compare_thrust_law.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/opus_force_resolution_diagnostic.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/opus_local_ct_diagnostic.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/opus_momentum_audit.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/package_scene.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/plot_experiment_comparison.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/plot_openfoam_reproduction.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/plot_paper_alignment.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/plot_pywake_alignment.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/prepare_windfarm.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/resume_scene.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/run_pywake_alignment.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/run_scheme_diagnostic.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/run_torch_rans.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/run_torch_windfarm.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/sample_foam_alignment.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/scene_diagnostics.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/scene_transient.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/verify.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/wind_tunnel.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/paper_rotor/windfarm_reference.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/build_core008_flood_terrain.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/build_core008_landcover_4m.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/city_diurnal.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/environment-integration/members/yiqi_temperature/models/physical_model/south_kensington_temperature.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/environment-integration/members/yiqi_temperature/models/physical_model/south_kensington_temperature_3d.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/environment-integration/members/yiqi_temperature/models/rollout_surrogate/test_virtual_geometry_rollout_surrogate.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/environment-integration/members/yiqi_temperature/models/rollout_surrogate/train_rollout_temperature_surrogate.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/environment-integration/members/yiqi_temperature/models/surrogate_modelling/south_kensington_temperature.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/environment-integration/members/yiqi_temperature/models/surrogate_modelling/south_kensington_temperature_3d.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/plot_core008_flood.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/plot_core008_pollution_1024.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/plot_core008_scaled.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/plot_core008_solar.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/plot_core008_temperature2d.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/plot_core008_temperature3d_diurnal.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/plot_core008_temperature3d_solar.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/plot_core008_wind_temperature.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/run_core008_flood_swe.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/run_core008_pollution_1024.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/run_core008_pollution_scaled_latent.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/run_core008_scaled_latent.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/run_core008_scaled_latent_1024.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/run_core008_scaled_wind_temperature.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/run_core008_solar.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/run_core008_temperature2d_scaled_1024.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/run_core008_temperature3d_diurnal.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/run_core008_temperature3d_solar.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/test_flood_swe.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/test_solar_np.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/wind_pollution_code/code/vendor/yuhang/data_generation/cache_velocity_latents.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/wind_pollution_code/code/vendor/yuhang/data_generation/generate_physical_pollution.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/wind_pollution_code/code/vendor/yuhang/data_generation/latent_shards.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/wind_pollution_code/code/vendor/yuhang/data_generation/test_generation.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/wind_pollution_code/code/vendor/yuhang/data_generation/validate_velocity_latents.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/wind_pollution_code/code/vendor/yuhang/inference.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/wind_pollution_code/code/vendor/yuhang/test_inference.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/wind_pollution_code/run_local.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/wind_temperature_teacher/code/original/south_kensington_temperature_3d.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/physics/wind_temperature_teacher/code/test_transfer.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/scenarios/actuator_lab/run.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/scenarios/canary_surface.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/scenarios/canary_surface_export.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/scenarios/canary_surface_prepare.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/scenarios/geometry_temperature.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/scenarios/geometry_wind.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/scenarios/osm_climate.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/scenarios/region/prepare_region.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/scenarios/region/run_ai4urban.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/scenarios/run_near_ground_tracer.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/scenarios/run_school_coupled.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/scenarios/run_school_pickup.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/scenarios/scaled_scene027.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/scenarios/scaled_scene028.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/scenarios/scaled_scene029.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/scenarios/windfarm_2m/prepare.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/scenarios/windfarm_2m/run.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/scenarios/windfarm_crop/prepare.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/scenarios/windfarm_crop/run.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/scenarios/windfarm_neural/prepare.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/scenarios/windfarm_neural/run.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_flow/scenarios/windfarm_neural/verify_rotor.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_geometry/agent/repair_generic_entries.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_geometry/birds/scripts/glb_to_geo.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_geometry/birds/scripts/run_sim.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_geometry/integrate.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_geometry/merge_static_glb.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_geometry/region_authoring/build_region.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_geometry/region_authoring/fast_exterior.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_geometry/region_authoring/fast_roof_details.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_geometry/region_authoring/lidar_evidence.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_geometry/region_authoring/osm_water_context.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_geometry/region_authoring/plot_selection.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_geometry/region_authoring/prepare_overture.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_geometry/region_authoring/prepare_peripheral_overture.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_geometry/region_inventory.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_geometry/render_review.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_geometry/voxelization/merge_volumes.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_geometry/voxelization/native_blend.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_geometry/voxelization/peripheral_grid.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_geometry/voxelization/prepare_glb.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_planning/__main__.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_planning/active_validation.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_planning/city_prepare.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_planning/climate_experiment.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_planning/harder_prepare.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_planning/large_domain.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_planning/rsi/__main__.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_planning/rsi/batch.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_planning/rsi/curriculum.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_planning/rsi/evaluator.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_planning/rsi_curriculum_analysis.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_planning/rsi_curriculum_recovery.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_planning/rsi_curriculum_retry.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_planning/traffic_morphology.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/urban_planning/traffic_morphology_analysis.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/visualization/adapters/import_city.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    },
+    {
+      "path": "src/visualization/adapters/import_experiments.py",
+      "status": "compatibility-source",
+      "registered_method": false,
+      "note": "Historical CLI; dependencies, external data and hardcoded assumptions need method-specific adaptation before stable registration."
+    }
+  ]
+}

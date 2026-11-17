@@ -1,0 +1,55 @@
+{
+  "schema_version": "2.0.0",
+  "scenario_id": "south_ken",
+  "title": "South Kensington core008",
+  "spatial": {
+    "frame": "ENU",
+    "units": "m",
+    "origin": {
+      "longitude": -0.176896,
+      "latitude": 51.498354,
+      "height_m": 0,
+      "vertical_datum": "Inherited estimated flat ground; not surveyed elevation"
+    },
+    "bounds_m": {
+      "min": [
+        -1636.0,
+        -1484.0,
+        0
+      ],
+      "max": [
+        1436.0,
+        1332.0,
+        128
+      ]
+    }
+  },
+  "assets": {
+    "legacy_web_geometry_geometry@1": "assets/bundles/legacy_web_geometry/geometry.asset.json",
+    "city_wind_20260930T095257Z_c63146_physics@1": "assets/bundles/city_wind_20260930T095257Z_c63146/physics.asset.json",
+    "city_temperature_20260930T095257Z_c63146_physics@1": "assets/bundles/city_temperature_20260930T095257Z_c63146/physics.asset.json"
+  },
+  "tasks": {},
+  "visualization": {
+    "template": "standard",
+    "preset": "city",
+    "layers": [
+      {
+        "asset": "legacy_web_geometry_geometry@1",
+        "layer": "geometry",
+        "visible": true
+      },
+      {
+        "asset": "city_wind_20260930T095257Z_c63146_physics@1",
+        "layer": "wind",
+        "visible": true
+      },
+      {
+        "asset": "city_temperature_20260930T095257Z_c63146_physics@1",
+        "layer": "temperature",
+        "visible": true
+      }
+    ],
+    "time_alignment": "relative"
+  }
+}

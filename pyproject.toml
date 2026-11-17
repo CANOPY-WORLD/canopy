@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "canopy-world"
+version = "0.2.0"
+description = "Scenario-owned assets, shared physics models, unified visualization"
+requires-python = ">=3.11"
+dependencies = ["numpy>=1.24", "jsonschema>=4.18,<5"]
+
+[project.optional-dependencies]
+physics = ["torch>=2.2"]
+geometry = ["scipy>=1.10", "trimesh>=4"]
+traffic = ["eclipse-sumo", "pyproj", "requests"]
+
+[project.scripts]
+canopy = "canopy.cli:main"
+p4d = "common.cli:main"
+uwm = "common.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["canopy*", "common*", "urban_flow*", "urban_geometry*", "urban_planning*", "traffic*", "uav_routing*", "energy*", "visualization.adapters*"]
+
+[tool.setuptools.package-data]
+"*" = ["LICENSE*", "NOTICE*", "COPYING*"]
+"canopy" = ["schemas/*.json"]
+"canopy.models" = ["specs/*/*.json"]

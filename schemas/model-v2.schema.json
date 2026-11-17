@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "model_id",
+    "category",
+    "methods"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "2.0.0"
+    },
+    "model_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "category": {
+      "enum": [
+        "geometry",
+        "physics"
+      ]
+    },
+    "methods": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "version",
+          "spec"
+        ],
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "spec": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
