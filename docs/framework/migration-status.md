@@ -1,8 +1,8 @@
-# Canopy refactor status and scope
+# Canopy capabilities and integration status
 
 ## Implemented
 
-Scenario / Asset / Model / Running / Visualization have working code, schemas and CLI commands. The four README diagrams describe these implemented interfaces. Shared implementations and contracts are packaged in the Python wheel; scenarios and their private assets are exported as self-contained archives with `canopy pack`.
+Canopy provides Scenario / Asset / Model / Running / Visualization interfaces, schemas and CLI commands. The four README diagrams describe these interfaces. Shared implementations and contracts are packaged in the Python wheel; scenarios and their private assets are exported as self-contained archives with `canopy pack`.
 
 | Model | Registered Method | Implementation / inputs |
 | --- | --- | --- |
@@ -41,6 +41,24 @@ The Visualizer uses a fixed standard template. The engineering/city/laboratory p
 | Detailed website | Original terrain/context, traffic and UAV presentation remain available through the compatibility viewer |
 
 The data and visualization migration is complete for the listed layers. Reproducing every historical full-domain simulation through a single standardized task chain remains separate work. Importing recorded output does not rerun or revalidate the original solver, and display slices do not automatically supply the native 3D inputs required by coupled Methods.
+
+## Importing recorded scenes
+
+Import South Kensington and White City from a Physics4D source checkout, then validate each scenario:
+
+```sh
+python tools/migrate_physics4d.py --source /path/to/physics4d --scene south_ken --scene white_city
+canopy --root . validate south_ken
+canopy --root . validate white_city
+```
+
+Imperial Corridor uses the retained local_viewer_20261102 data and its provenance report:
+
+```sh
+python tools/migrate_imperial_corridor.py --source /path/to/local_viewer_20261102 --report /path/to/local_physics_20261102.json
+```
+
+These commands import recorded assets. They do not rerun the original simulations or create full-domain task recipes.
 
 ## Retained compatibility components
 

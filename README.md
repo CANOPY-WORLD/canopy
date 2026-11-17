@@ -1,8 +1,10 @@
 # CANOPY
 
-Canopy organizes urban simulation around three concepts: **Scenario / Asset / Model**. A Scenario describes a scene and owns its assets; Models are computational tools shared by all scenarios; Assets store geometry and physics results. **Running executes computations, and Visualization reads and presents results**, using the same data contract.
+Canopy is a physics simulation framework for urban environments. Build geometry, run physical models and explore recorded results through a shared visualizer.
 
-## 1. Overall architecture: three concepts and two shared services
+The framework is organized around **Scenario / Asset / Model**. A Scenario describes a scene and owns its assets; Models are computational tools shared by all scenarios; Assets store geometry and physics results. **Running executes computations, and Visualization reads and presents results**, using the same data contract.
+
+## Architecture
 
 ```mermaid
 flowchart TB
@@ -32,7 +34,7 @@ flowchart TB
 
 Geometry can go directly to the Visualizer. Physics can depend on geometry or on existing physics results. The Visualizer reads exported, validated results; opening the current viewer does not start a computation. Model adapters convert native solver data into standard assets, while solver logic stays in shared code.
 
-## 2. Scenario ownership: shared tools, separate assets
+## Scenarios and assets
 
 ```mermaid
 flowchart LR
@@ -68,7 +70,7 @@ Asset references such as `asset_id@1` resolve only within the current Scenario. 
 
 **The storage standard is JSON + GLB + NPY.** Three.js implements the viewer; Blender / Python generate data. GLB describes display geometry and does not automatically replace a solver's computational grid. Large display sequences support loading NPY frames on demand. Full 3D fields can be retained as artifacts; the current viewer displays explicitly exported horizontal slices. See [Protocol v2](docs/framework/protocol-v2.md).
 
-## 3. Every Method uses the same execution interface
+## Model execution
 
 ```mermaid
 flowchart LR
@@ -91,7 +93,7 @@ flowchart LR
 
 Failed or cancelled runs do not register assets. `--dry-run` validates a request; `--no-retain` leaves trial results in cache. Each Method's diagnostics and acceptance checks assess numerical validity; file-format validation alone cannot establish physical accuracy. See the [Method guide](docs/framework/method-guide.md) for integration requirements and commands.
 
-## 4. Visualizer: a fixed template with scenario-specific configuration
+## Visualization
 
 ```mermaid
 flowchart TB
@@ -109,7 +111,7 @@ flowchart TB
     N["Future specialized panels<br/>Register interface and capabilities first"] -.-> W
 ```
 
-Each Scenario selects assets and layers, a default camera and a time mode. All three presets reuse the same layout and controls. Current configuration does not accept arbitrary scene scripts or page components. Future specialized panels must extend the shared widget interface and preserve common loading, time, picking and disposal conventions. See [Migration status](docs/framework/migration-status.md) for current capabilities and remaining work.
+Each Scenario selects assets and layers, a default camera and a time mode. All three presets reuse the same layout and controls. Configuration does not accept arbitrary scene scripts or page components. Specialized panels must extend the shared widget interface and preserve common loading, time, picking and disposal conventions. See [Supported capabilities](docs/framework/migration-status.md) for model and viewer coverage.
 
 ## Quick start
 
@@ -140,20 +142,16 @@ project/<scenario>/  scenario.json and scenario configuration
 
 Configure absolute `data_root` / `cache_root` paths in the Git-ignored `storage.local.json`. The Python wheel packages shared implementations and schemas. Package scenarios separately with `canopy pack SCENARIO /absolute/path/scenario.tar.gz`. After installing the wheel, use `canopy --root /path/to/checkout ...`; the checkout supplies scenario metadata, documentation and the static viewer.
 
-Migrate recorded Physics4D data:
+Recorded Physics4D scenes can be imported with their original samples, coordinates and provenance. See [Scene import](docs/framework/migration-status.md#importing-recorded-scenes) for commands and input requirements.
 
-```sh
-python tools/migrate_physics4d.py --source /path/to/physics4d --scene south_ken --scene white_city
-canopy --root . validate south_ken
-canopy --root . validate white_city
-# Imperial Corridor uses the retained local_viewer_20261102 and provenance report:
-python tools/migrate_imperial_corridor.py --source /path/to/local_viewer_20261102 --report /path/to/local_physics_20261102.json
-```
+## Documentation
 
 - [Data and ownership standard](docs/framework/protocol-v2.md)
 - [Method interfaces and run guides](docs/framework/method-guide.md)
-- [Implemented scope and compatibility entrypoints](docs/framework/migration-status.md)
+- [Supported models, scenarios and compatibility](docs/framework/migration-status.md)
 - [Geometry](docs/models/geometry-heightfield.md), [GLB → Heightfield](docs/models/geometry-rasterize_glb.md), [Solar](docs/models/solar-shadow.md), [Flood](docs/models/flood-shallow_water.md), [Wind](docs/models/wind-mac.md), [Temperature](docs/models/temperature-finite_difference.md), [Pollution](docs/models/pollution-steady_tracer.md)
+
+## Validation
 
 Check the interfaces and viewer:
 
@@ -164,9 +162,9 @@ node --test tests/test_viewer.mjs
 node tests/browser_canopy.cjs http://127.0.0.1:8769
 ```
 
-Importing source code does not register every historical research script as a Method. `canopy models` is the authoritative interface catalog; environment requirements and migration status are documented separately. The existing public website retains the compatibility entrypoints below. Deployment and data publication are separate operations.
+`canopy models` is the authoritative interface catalog. Each registered Method describes its accepted inputs, parameters, outputs, dependencies and run guide. [Verification records](docs/framework/verification.md) document the checks performed and their scope.
 
-## Existing Imperial Corridor website
+## Imperial Corridor, London
 
 Physics Urban World — Imperial Corridor, London.
 
