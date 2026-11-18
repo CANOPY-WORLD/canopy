@@ -2,11 +2,11 @@
 
 [Visualizer](../README.md) · [Contribution contract](../CONTRIBUTING.md) · [Unified upgrade plan](upgrade-plan.md)
 
-Baseline reviewed against Canopy source `4736907c95c58b0124b0860d9a63517d2895f809` on 18 November 2026, with the accompanying Scenario-tab navigation changes described below. This document describes the implementation; the upgrade plan describes work still to do.
+Baseline reviewed against Canopy source `4736907c95c58b0124b0860d9a63517d2895f809` on 18 November 2026, with subsequent navigation and minimal-player changes described below. This document describes the implementation; the upgrade plan describes work still to do.
 
 Canopy should have one Viewer runtime shared by every Scenario. The repository currently has two rendering paths: the scientific Viewer backed by the local Python API, and the detailed public London presentation backed by static snapshots. They share some concepts and utilities, but do not yet share a complete runtime, layer lifecycle or interface.
 
-Both paths now use the same [Scenario tab component](../src/visualization/shared/scenario-tabs.mjs). The top row selects Scenarios; public city camera/field shortcuts live under **Views and playback** in the side panel. Tabs come from the applicable catalog, preserve URL navigation/history and expose the active case with `aria-current`. This unifies navigation, not the rendering runtimes.
+The public city presentation now shows only its widget button row, full-page canvas and bottom play/pause + progress slider. Its previous detail controls remain in a hidden compatibility host because existing adapters still use them for state. The local scientific Viewer retains its [Scenario tab component](../src/visualization/shared/scenario-tabs.mjs) and inspection UI. Public Scenario selection uses catalog links or direct URLs. This presentation change does not consolidate the rendering runtimes.
 
 ## Current paths
 
@@ -73,7 +73,7 @@ For example, [complete-detail-tiles.js](../site/viewer/3d/complete-detail-tiles.
 
 There are already performance measures worth retaining: bounded detail loading, static matrices, field prefetch, compressed payloads and conditional drawing. The city loop schedules animation frames continuously, but calls the renderer only when its dirty/motion conditions require it. Describing this as unconditional rendering would be inaccurate.
 
-The static scene resolver now rejects an unknown `scene` with an explicit error instead of falling back to London. The top Scenario tabs remain available for recovery. Future Source adapters must preserve this behavior.
+The static scene resolver now rejects an unknown `scene` with an explicit error instead of falling back to London. The error panel offers retry, lightweight geometry and the catalog link for recovery. Future Source adapters must preserve this behavior.
 
 ## Data delivery and scale
 
@@ -90,7 +90,7 @@ The service worker already restricts remote reads to declared HTTPS roots, omits
 | Scientific meaning | ENU transforms, units, masks, source samples, actual bounds and provenance | One normalized descriptor that preserves these meanings across both sources |
 | Layer behavior | Existing scientific widget lifecycle and city capabilities | Explicit registry, predictable ownership and disposal for every layer |
 | Runtime | Three.js, camera utilities, picking, shared time helpers | One renderer, one clock, one selection model and one invalidation scheduler |
-| User interface | Layer controls, legends, recorded-time feedback and useful city presets | One shell and consistent loading, error, inspector and mobile states |
+| User interface | Widget selection, recorded progress, accessible controls and detailed scientific metadata | One minimal presentation shell; keep inspection UI separate from the public canvas |
 | Performance | Compression, batching, bounded loading and field prefetch | Shared request/decode budgets, visible-data priority and bounded memory |
 | Scenario variation | Declarative view selection and small presets | Remove Scenario-ID branches and global cross-module control as layers migrate |
 

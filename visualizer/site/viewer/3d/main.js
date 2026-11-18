@@ -1368,6 +1368,11 @@ function tick() {
     setStep(state.step + 1);
     return;
   }
+  // A widget owns its playback; reaching its last sample must not select another widget.
+  if (!ui.auto.checked) {
+    setPlaying(false);
+    return;
+  }
   if (seqMode()) {
     if (state.phase === 'solar' && solarPass === 0) { solarPass = 1; setStep(PHASES.solar.start); return; }
     const i = PHASE_ORDER.indexOf(state.phase);
@@ -1389,6 +1394,7 @@ function setPlaying(p) {
     section === 'campus' ? 12 : seqMode() ? phaseRate() : +ui.rate.value;
   syncFieldRate();
   if (p && !document.hidden) state.timer = setInterval(tick, 1000 / rate);
+  syncPlaybackUI();
 }
 const RATES = {
   replay: [
@@ -1420,9 +1426,16 @@ function setRateOptions(kind, value) {
   ui.rate.value = String(value);
 }
 ui.play.addEventListener('click', () => {
+  if (isOrbitWidget()) {
+    tour.paused = !tour.paused;
+    tour.active = true;
+    controls.enabled = tour.paused;
+    invalidate();
+    return;
+  }
   if(section==='campus'&&tour.shot==='birds'&&window.canopyBirds){window.canopyBirds.toggle();return;}
   if (section === 'campus' && tour.shot === 'traffic' && corridorContext) {corridorContext.setPlaying(!corridorContext.playing);return;}
-  if(section==='campus'&&tour.shot==='uavs'&&uavLayer?.flightSelection){uavLayer.playing=!uavLayer.playing;return;}
+  if(section==='campus'&&tour.shot==='uavs'&&uavLayer?.flightSelection){if(!uavLayer.playing&&uavLayer.t>=uavLayer.duration)uavLayer.update(0);uavLayer.playing=!uavLayer.playing;return;}
   if (section === 'campus' && replayLayer) {
     replayLayer.playing = !replayLayer.playing;
     ui.play.textContent = replayLayer.playing ? '❚❚' : '▶';
@@ -1431,7 +1444,10 @@ ui.play.addEventListener('click', () => {
     if (traffic) traffic.playing = !tour.paused;
     if (uavLayer) uavLayer.playing = !tour.paused;
     ui.play.textContent = tour.paused ? '▶' : '❚❚';
-  } else setPlaying(!state.playing);
+  } else {
+    if (!state.playing && state.step >= PHASES[state.phase].end) setStep(PHASES[state.phase].start);
+    setPlaying(!state.playing);
+  }
 });
 ui.rate.addEventListener('change', () => {
   if(section==='campus'&&tour.shot==='birds'&&window.canopyBirds){window.canopyBirds.setRate(ui.rate.value);return;}
@@ -1446,6 +1462,18 @@ ui.rate.addEventListener('change', () => {
   else if (state.playing) setPlaying(true);
 });
 ui.step.addEventListener('input', () => {
+  if (isOrbitWidget()) {
+    tour.elapsed = +ui.step.value;
+    tour.az = THREE.MathUtils.degToRad(-150) + tour.elapsed * orbitSpeed();
+    tour.active = true;
+    flight = null;
+    const pose = tourPose(tour.az);
+    camera.position.copy(pose.pos);
+    controls.target.copy(pose.target);
+    camera.lookAt(pose.target);
+    invalidate();
+    return;
+  }
   if(section==='campus'&&tour.shot==='birds'&&window.canopyBirds){window.canopyBirds.seek(ui.step.value);return;}
   if (section === 'campus' && tour.shot === 'traffic' && corridorContext) {const slider=document.querySelector('#corridor-traffic-step');slider.value=ui.step.value;slider.dispatchEvent(new Event('input'));return;}
   if (section === 'campus' && uavLayer && tour.shot === 'uavs') {
@@ -1843,8 +1871,53 @@ const tour = {
   t0: 0,
   dur: 16000,
   shot: 'overview',
-  hold: false,
+  hold: true,
+  elapsed: 0,
 };
+const orbitSpeed = () => tour.shot === 'overview' ? 0.09 : 0.05;
+const isOrbitWidget = () => section === 'campus' && !replayLayer && !TOUR_SHOTS[tour.shot]?.fixed && !['birds', 'traffic', 'uavs'].includes(tour.shot);
+
+// One visible control bar follows the selected widget's real clock.
+function syncPlaybackUI() {
+  let playing = false, available = false, label = ui.timeLabel.textContent;
+  const range = (min, max, step, value) => {
+    ui.step.min = min; ui.step.max = max; ui.step.step = step; ui.step.value = value;
+    available = max > min;
+  };
+  if (section === 'fields') {
+    const phase = PHASES[state.phase];
+    range(phase.start, phase.end, 1, state.step);
+    available &&= LAYERS[state.phase]?.frames > 1;
+    playing = state.playing;
+  } else if (section === 'campus') {
+    if (tour.shot === 'birds' && window.canopyBirds) {
+      const birds = window.canopyBirds;
+      range(0, birds.manifest.last_frame_t_s, 1.5, birds.time); playing = birds.playing;
+    } else if (tour.shot === 'traffic' && corridorContext) {
+      range(0, corridorContext.frames.length - 1, 1, corridorContext.frame); playing = corridorContext.playing;
+    } else if (tour.shot === 'uavs' && uavLayer) {
+      range(0, uavLayer.duration, 0.1, uavLayer.t); playing = uavLayer.playing;
+    } else if (replayLayer) {
+      range(replayLayer.traffic?.firstTime ?? 0, replayLayer.duration, 0.1, replayLayer.t); playing = replayLayer.playing;
+    } else if (['traffic', 'trafficMap'].includes(tour.shot) && traffic) {
+      range(traffic.start ?? 0, traffic.duration, 0.1, traffic.t); playing = traffic.playing;
+    } else if (isOrbitWidget()) {
+      range(0, Math.PI * 2 / orbitSpeed(), 0.1, tour.elapsed);
+      playing = tour.active && !tour.paused;
+      label = `Camera orbit ${tour.elapsed.toFixed(1)} seconds`;
+    } else {
+      range(0, 1, 1, 0); available = false;
+      label = tour.shot === 'whiteCity' ? 'Static camera view' : 'Loading recorded playback';
+    }
+  }
+  available &&= ui.loading.classList.contains('hide');
+  ui.play.disabled = !available;
+  ui.step.disabled = !available;
+  ui.play.textContent = playing && available ? '❚❚' : '▶';
+  ui.play.setAttribute('aria-label', playing && available ? 'Pause' : 'Play');
+  ui.step.setAttribute('aria-label', isOrbitWidget() ? 'Camera orbit progress' : 'Recorded playback progress');
+  ui.step.setAttribute('aria-valuetext', label);
+}
 function tourPose(az, shot = tour.shot) {
   const s = TOUR_SHOTS[shot];
   if (s.fixed) return s.fixed();
@@ -1867,6 +1940,7 @@ function startTour(shot = 'overview') {
   tour.t0 = performance.now();
   tour.dur = shot==='uavs'&&uavLayer?.flightSelection ? Infinity : TOUR_SHOTS[shot].dur;
   if (first) tour.az = THREE.MathUtils.degToRad(-150);
+  tour.elapsed = ((tour.az - THREE.MathUtils.degToRad(-150)) / orbitSpeed()) % (Math.PI * 2 / orbitSpeed());
   ui.stage.textContent = TOUR_SHOTS[shot].label();
   ui.info.textContent =
     shot === 'overview'
@@ -1910,8 +1984,10 @@ function startTour(shot = 'overview') {
 function updateTour(now, dt) {
   if(SCENE.id==='imperial_corridor_8km'&&(tour.shot==='birds'||tour.shot==='uavs'&&uavLayer?.flightSelection))return;
   if (!tour.active || flight) return;
-  if (!tour.paused && !TOUR_SHOTS[tour.shot].fixed)
-    tour.az += dt * (tour.shot === 'overview' ? 0.09 : 0.05);
+  if (!tour.paused && !TOUR_SHOTS[tour.shot].fixed) {
+    tour.elapsed = (tour.elapsed + dt) % (Math.PI * 2 / orbitSpeed());
+    tour.az = THREE.MathUtils.degToRad(-150) + tour.elapsed * orbitSpeed();
+  }
   const p = tourPose(tour.az);
   camera.position.copy(p.pos);
   controls.target.copy(p.target);
@@ -1941,7 +2017,7 @@ function setSectionUI() {
       section === 'campus' &&
         (replayLayer
           ? replayLayer.shot === b.dataset.shot
-          : tour.active && tour.shot === b.dataset.shot),
+          : tour.shot === b.dataset.shot),
     ),
   );
   fieldButtons.forEach((b) =>
@@ -1950,6 +2026,8 @@ function setSectionUI() {
       section === 'fields' && (seqMode() ? state.phase === b.dataset.field : true),
     ),
   );
+  for (const button of [...shotButtons, ...fieldButtons]) button.setAttribute('aria-pressed', String(button.classList.contains('active')));
+  syncPlaybackUI();
 }
 /** Site section: ground, trees and (South Kensington) the traffic / UAV replay visible; the physics fields hidden; the shot tour runs. */
 let savedLandscapeDisplay={ground:true,trees:true};
@@ -1960,11 +2038,12 @@ async function showCanopyBirds(){
   const birds=await canopyBirdsLoading;
   const selected=section==='campus'&&tour.shot==='birds';
   birds?.setActive(selected);
-  if(selected&&birds){birds.focus();ui.step.min=0;ui.step.max=birds.manifest.last_frame_t_s;ui.step.step=1.5;ui.step.disabled=false;ui.rate.replaceChildren(...[1,10,30,60].map(v=>new Option(v+'×',v)));ui.rate.value=birds.rate;ui.rate.disabled=false;}
+  if(selected&&birds){birds.focus();if(!birds.playing)birds.toggle();ui.step.min=0;ui.step.max=birds.manifest.last_frame_t_s;ui.step.step=1.5;ui.step.disabled=false;ui.rate.replaceChildren(...[1,10,30,60].map(v=>new Option(v+'×',v)));ui.rate.value=birds.rate;ui.rate.disabled=false;}
 }
 
 function runCampus(shot = 'overview') {
   viewIntent++;
+  corridorContext?.setPlaying(shot === 'traffic');
   window.canopyBirds?.setActive(shot==='birds');
   section = 'campus';
   placeSun();
@@ -1976,7 +2055,7 @@ function runCampus(shot = 'overview') {
   applyLayers();
   if (uavLayer) {
     uavLayer.setVisible(true);
-    uavLayer.playing = true;
+    uavLayer.playing = shot === 'uavs';
   }
   if (replayLayer) {
     replayLayer.setVisible(true);
@@ -2147,6 +2226,8 @@ async function runFields(phase = PHASE_ORDER[0]) {
   if(intent!==viewIntent)return;
   if(fieldInitializationError){ui.stage.textContent='Physics fields unavailable: '+fieldInitializationError.message;return;}
   window.canopyBirds?.setActive(false);
+  corridorContext?.setPlaying(false);
+  if (uavLayer) uavLayer.playing = false;
   if (section === 'fields' && state.introDone) {
     ui.mode.value = 'seq';
     setPhase(phase);
@@ -2323,7 +2404,7 @@ function animate(now) {
   if (!contextStarted && model.children.length && SCENE.corridor_context) {
     contextStarted = true;
     createCorridorContext({scene, config:SCENE.corridor_context, url:SCENE.url, onChange:invalidate})
-      .then(value => {corridorContext=value; window.corridorContext=value; invalidate();})
+      .then(value => {corridorContext=value; window.corridorContext=value; value.setPlaying(section === 'campus' && tour.shot === 'traffic' && qs0.get('play') !== '0'); invalidate();})
       .catch(error => {console.error(error); document.querySelector('#corridor-traffic-time').textContent = 'Context failed: ' + error.message;});
   }
   if (document.hidden) {
@@ -2386,6 +2467,7 @@ function animate(now) {
     uavLayer.setVisible(section !== 'fields' && !window.cityTools?.current && (!uavLayer.flightSelection||tour.shot==='uavs'));
     if (uavLayer.group.visible) { uavLayer.tick(elapsed / 1000); if(uavLayer.flightSelection){invalidate();ui.step.value=uavLayer.t;ui.step.max=uavLayer.duration;ui.timeLabel.textContent=`Flight ${uavLayer.t.toFixed(1)} / ${uavLayer.duration.toFixed(1)} s`;ui.stats.textContent=uavLayer.stats;ui.play.textContent=uavLayer.playing?'❚❚':'▶';} }
   }
+  syncPlaybackUI();
   updateFlight(now);
   if (controls.enabled) controls.update();
   const fading = updateFades(dt);
@@ -2407,6 +2489,7 @@ renderer.domElement.addEventListener('pointerdown', () => {
     replayLayer?.cancelCamera();
     if (tour.active) {
       tour.active = false;
+      tour.paused = true;
       controls.enabled = true;
       setSectionUI();
     }
@@ -2852,7 +2935,7 @@ async function boot() {
   // Let its city view open while independent field masks load in the background.
   if(qs0.get('shot')!=='uavs'||!HAS_UAV_LAYER||LITE){await dataReady;if(dataError)throw dataError;}
   ui.loading.classList.add('hide');
-  try { const saved = JSON.parse(sessionStorage.getItem('canopy-download-timing') || 'null'); if(saved && Date.now()-saved.finished<600000){ const seconds=Math.round((Date.now()-saved.started)/1000);const download=Math.round((saved.finished-saved.started)/1000);const note=document.createElement('div');note.textContent=`Ready in ${Math.floor(seconds/60)}m ${seconds%60}s · Download ${Math.floor(download/60)}m ${download%60}s`;note.style.cssText='position:fixed;bottom:90px;left:24px;padding:10px 14px;background:#142a32dd;color:#e4ebe4;font:12px system-ui;z-index:15;border-radius:6px';document.body.append(note);setTimeout(()=>note.remove(),15000);sessionStorage.removeItem('canopy-download-timing');} } catch {}
+  try { const saved = JSON.parse(sessionStorage.getItem('canopy-download-timing') || 'null'); if(saved && Date.now()-saved.finished<600000){ const seconds=Math.round((Date.now()-saved.started)/1000);const download=Math.round((saved.finished-saved.started)/1000);const note=document.createElement('div');note.textContent=`Ready in ${Math.floor(seconds/60)}m ${seconds%60}s · Download ${Math.floor(download/60)}m ${download%60}s`;note.style.cssText='position:fixed;bottom:90px;left:24px;padding:10px 14px;background:#142a32dd;color:#e4ebe4;font:12px system-ui;z-index:15;border-radius:6px';(document.getElementById('viewer-details') ?? document.body).append(note);setTimeout(()=>note.remove(),15000);sessionStorage.removeItem('canopy-download-timing');} } catch {}
 
   // ?pose=campus|overhead jumps straight to that view (no intro); ?step=N picks the time step
   const qs = new URLSearchParams(location.search),
@@ -2902,7 +2985,7 @@ async function boot() {
     }
     if (qs.has('shot')) {
       if (replayLayer) replayLayer.startShot(qs.get('shot'));
-      else if (TOUR_SHOTS[qs.get('shot')]) startTour(qs.get('shot'));
+      else if (TOUR_SHOTS[qs.get('shot')] || qs.get('shot') === 'birds') runCampus(qs.get('shot'));
     }
     if (qs.get('hold') === '1') {
       if (replayLayer) replayLayer.shotUntil = Infinity;

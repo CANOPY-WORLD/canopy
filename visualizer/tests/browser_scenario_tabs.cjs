@@ -80,8 +80,9 @@ const puppeteer = require(process.env.PUPPETEER_MODULE || 'puppeteer-core');
       await publicPage.goto(new URL('viewer/3d/?scene=imperial_corridor_8km',pages).href,{waitUntil:'networkidle0'});
       await publicPage.waitForSelector('#scenario-tabs a[aria-current=page]');
       assert.equal((await publicPage.$$('#scenario-tabs a')).length,1);
-      assert(await publicPage.$('#layers details #tabs'));
-      assert.equal(await publicPage.$('.top-tabs'),null);
+      assert(await publicPage.$('.top-tabs#tabs'));
+      assert(await publicPage.$eval('#viewer-details', el => el.hidden && el.inert));
+      assert.equal(await publicPage.$eval('#scenario-tabs', el => el.getBoundingClientRect().height), 0);
       assert(await publicPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
       const unknown = await publicPage.evaluate(async()=>{
         history.replaceState(null,'','?scene=not_a_registered_case');

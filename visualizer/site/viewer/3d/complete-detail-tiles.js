@@ -14,7 +14,7 @@ export function createDetailTiles({scene, coarse, indexUrl, priorityCentre = nul
   const badge = document.createElement('div');
   badge.id = 'complete-geometry-status';
   badge.style.cssText = 'position:fixed;bottom:12px;left:12px;z-index:30;background:#10202ee8;color:white;padding:8px 12px;border-radius:6px;font:13px sans-serif;pointer-events:none';
-  document.body.append(badge);
+  (document.getElementById('viewer-details') ?? document.body).append(badge);
   function status() {
     badge.textContent = progress.errors.length
       ? `Geometry incomplete · ${progress.loaded}/${progress.total} assets · ${progress.errors.length} failed (reload to retry)`
