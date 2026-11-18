@@ -2,7 +2,7 @@
 
 A framework for geometry, physics simulation and urban visualization. The included case is London’s 8 km × 8 km Imperial Corridor.
 
-**[Open Canopy](https://acse-yl222.github.io/canopy/)** · [Architecture and component guide](https://acse-yl222.github.io/canopy/guide/)
+**[Open Canopy](https://canopy-world.github.io/canopy/)** · [Architecture and component guide](https://canopy-world.github.io/canopy/guide/) · [CANOPY-WORLD organization](https://github.com/CANOPY-WORLD)
 
 ![Canopy architecture: Scenario selects shared Models, owns Geometry and Physics Assets, and configures a Visualizer that reads both asset types.](visualizer/diagrams/architecture.svg)
 
@@ -21,4 +21,4 @@ Each directory documents its internal structure and interfaces. Start with [Mode
 
 For extensions, start with the [contributor and agent standards](model/docs/framework/contributing.md), then follow the relevant component guide. Canopy maintains the shared website and Scenario configuration; each Scenario's public data is hosted independently and selected through a pinned publication reference. See the [publishing standard](visualizer/docs/publishing.md) and [data storage strategy](asset/docs/storage.md).
 
-London: **[Open the Scenario](https://acse-yl222.github.io/canopy/viewer/3d/?scene=imperial_corridor_8km)** · [Data repository](https://github.com/acse-yl222/canopy-scenario-imperial-corridor-8km) · [Data website](https://acse-yl222.github.io/canopy-scenario-imperial-corridor-8km/) · [Public Scenario index](https://acse-yl222.github.io/canopy/scenario-index.json)
+London: **[Open the Scenario](https://canopy-world.github.io/canopy/viewer/3d/?scene=imperial_corridor_8km)** · [Data repository](https://github.com/CANOPY-WORLD/canopy-scenario-imperial-corridor-8km) · [Data website](https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/) · [Public Scenario index](https://canopy-world.github.io/canopy/scenario-index.json)

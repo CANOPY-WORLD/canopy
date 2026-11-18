@@ -1,5 +1,13 @@
 # Verification record
 
+## CANOPY-WORLD organization hosting — 2026-11-18
+
+The existing Canopy and London data repositories were transferred into [CANOPY-WORLD](https://github.com/CANOPY-WORLD), retaining repository identities and Git history. Both use `main` as their formal source branch. The data site's shared Viewer links now point to `https://canopy-world.github.io/canopy/`, and Canopy pins data revision `196bbaca475148c968fe384a09b1c26507123191`. The snapshot name, locked manifest, original provenance and all 1,477 payloads are unchanged.
+
+Updated references cover repository homepages, documentation, the guide inventory, the public Scenario index, explicit remote resource roots and selected-Scenario download lists. Validation passed for 70 framework tests, 9 publication tests, 16 JavaScript checks, the V1 fixture, repository standards and the 558,073,283-byte local snapshot. The main website still bundles zero Scenario payload bytes. Deployment and browser evidence for this move is retained under `cache/organization-migration/`.
+
+The [publication standard](../../../visualizer/docs/publishing.md) lists the current URLs and ownership-transfer procedure. Earlier records below retain their original source revisions and locations as historical evidence.
+
 ## Independent Scenario data publication — 2026-11-18
 
 The London public snapshot moved byte-for-byte into [canopy-scenario-imperial-corridor-8km](https://github.com/acse-yl222/canopy-scenario-imperial-corridor-8km), source revision `d9c6fa4d35455a928afa0138222e92c29d082fdf`. Its independent Pages site serves `snapshots/london-public-20261118/`. The main Canopy checkout keeps the Scenario configuration, a pinned publication reference and the original locked file inventory. Previous commits retain their data history; no history was rewritten.

@@ -1,7 +1,7 @@
 {
   "document_type": "canopy-review-inventory",
   "version": 1,
-  "repository": "https://github.com/acse-yl222/canopy",
+  "repository": "https://github.com/CANOPY-WORLD/canopy",
   "scenario": {
     "id": "imperial_corridor_8km",
     "title": "London · Imperial Corridor",

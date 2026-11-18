@@ -1,7 +1,7 @@
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const repo = 'https://github.com/acse-yl222/canopy/blob/main/';
+const repo = 'https://github.com/CANOPY-WORLD/canopy/blob/main/';
 const link = (path) => repo + path.split('/').map(encodeURIComponent).join('/');
 const bytes = n => n >= 1024 ** 3 ? `${(n / 1024 ** 3).toFixed(2)} GiB` : `${(n / 1024 ** 2).toFixed(1)} MiB`;
 const names = {geometry:'Geometry', solar:'Solar', flood:'Flood', wind:'Wind', temperature:'Temperature', pollution:'Pollution'};

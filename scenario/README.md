@@ -47,7 +47,7 @@ scenario/
 ```
 
 
-Public presentation data lives in a dedicated Scenario repository. London's [data repository](https://github.com/acse-yl222/canopy-scenario-imperial-corridor-8km) publishes its own [data website](https://acse-yl222.github.io/canopy-scenario-imperial-corridor-8km/); the shared Canopy Viewer reads it through the pinned [publication reference](imperial_corridor_8km/publication.json). The [public Scenario index](https://acse-yl222.github.io/canopy/scenario-index.json) connects viewer, repository and data links. Future Scenarios follow the same ownership rule when explicitly added. See the [publication standard](../visualizer/docs/publishing.md).
+Public presentation data lives in a dedicated Scenario repository. London's [data repository](https://github.com/CANOPY-WORLD/canopy-scenario-imperial-corridor-8km) publishes its own [data website](https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/); the shared Canopy Viewer reads it through the pinned [publication reference](imperial_corridor_8km/publication.json). The [public Scenario index](https://canopy-world.github.io/canopy/scenario-index.json) connects viewer, repository and data links. Future Scenarios follow the same ownership rule when explicitly added. See the [publication standard](../visualizer/docs/publishing.md).
 
 Private retained computation bundles are stored separately under `<data_root>/project/<scenario>/assets/`. The default data root is `asset/data/`. Each Scenario owns its geometry and results; reusable Model implementations and the Visualizer template are shared. See [Asset storage](../asset/README.md#storage).
 

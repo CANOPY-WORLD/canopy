@@ -79,7 +79,7 @@ def inventory(catalog):
         models.append({'id': model['model_id'], 'methods': methods})
     return {
         'document_type': 'canopy-review-inventory', 'version': 1,
-        'repository': 'https://github.com/acse-yl222/canopy',
+        'repository': 'https://github.com/CANOPY-WORLD/canopy',
         'scenario': {
             'id': SCENARIO, 'title': 'London · Imperial Corridor', 'nominal_extent_m': [8000, 8000],
             'spatial': scenario['spatial'], 'task_count': len(scenario['tasks']),
