@@ -1,7 +1,7 @@
 {
-  "version": "89f07a4b2a0d2dc040a8",
+  "version": "2c0e25036f6f5902164d",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 562576349,
+  "bytes": 562579343,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -90,8 +90,8 @@
     },
     {
       "path": "asset-sources.json",
-      "bytes": 346658,
-      "sha256": "c140d762b1e9f39caf614c9ffd4bd597f6c711f8487bb66ae4b94bc158c4e3ff"
+      "bytes": 349614,
+      "sha256": "8d6af7359fff6dfd0badae8132a4dfdc06ca37ba0101cd93e8574ad6bd990545"
     },
     {
       "path": "assets/birds/README.txt",
@@ -185,8 +185,8 @@
     },
     {
       "path": "guide/app.js",
-      "bytes": 11237,
-      "sha256": "26d28c39c19164684ed09ee8c4baf616a35e86dc7ec27c4aadf509c87d99bb21"
+      "bytes": 11239,
+      "sha256": "0a9c34d17276099f3f9bf43451606f52ebb5b1631877d2854b4052655189a756"
     },
     {
       "path": "guide/architecture.svg",
@@ -195,13 +195,13 @@
     },
     {
       "path": "guide/index.html",
-      "bytes": 14569,
-      "sha256": "fb82f3262fa8245843780356486860af00d7177f9fec1e31757202e5adeb48b8"
+      "bytes": 14589,
+      "sha256": "ebaffe6ac3bfe7aa1b50124120acea26be1624fd27eb0b2d7417de9fe8b053de"
     },
     {
       "path": "guide/inventory.json",
-      "bytes": 36160,
-      "sha256": "61585c333885bf2afa292a26f08527c13a19a86bf02d8788cdce243f49e228ae"
+      "bytes": 36162,
+      "sha256": "39310a41ae601f278da08d9ee1d580368fc29d39ea1bf210f79f68bf95b99c7b"
     },
     {
       "path": "guide/style.css",
@@ -220,8 +220,8 @@
     },
     {
       "path": "scenario-index.json",
-      "bytes": 956,
-      "sha256": "90c7a8f66e7419744544cdf5b2a428734c2ab1834a959e5ac5984d7f90bbf833"
+      "bytes": 962,
+      "sha256": "a1fffcc3554b121da1939df25ec5951fac7be4daf851a60b07ea138f03e36f86"
     },
     {
       "path": "scenario/imperial_corridor_8km/data/manifest.json",
@@ -230,8 +230,8 @@
     },
     {
       "path": "scenario/imperial_corridor_8km/publication.json",
-      "bytes": 639,
-      "sha256": "5e79a8b44d966e9e21340f2a314d29488462bc2966222a6d5631755825e4cd24"
+      "bytes": 645,
+      "sha256": "954a9fdcca53b54bcd2b03d2db0cf8aeac4e98a391dfac057198679a082aa6af"
     },
     {
       "path": "scenes/imperial_corridor_8km/compact-provenance/fields-8m-report.json",
@@ -3295,8 +3295,8 @@
     },
     {
       "path": "src/visualization/public-scenes.json",
-      "bytes": 679,
-      "sha256": "ecaed0143aa28db82a33c7cf96b925e6ee40b4db611e4a23d48ffecbf51c0cb7"
+      "bytes": 681,
+      "sha256": "bcdeb555a8cad863f43d7e2154da1cad04f7e30c6308dc0e9354f2487b2847e8"
     },
     {
       "path": "tiles/detail_tiles_enu_20261030/index.json",
