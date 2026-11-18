@@ -1,4 +1,0 @@
-requests>=2.31,<3
-pyproj>=3.6,<4
-shapely>=2,<3
-trimesh>=4,<5
