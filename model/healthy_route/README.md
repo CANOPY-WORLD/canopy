@@ -30,3 +30,18 @@ Missing data or weights cause an error; there is no synthetic fallback. Inputs a
 Run `python -m unittest discover -s model/tests -v`, `python model/tools/check_contract.py model/tests/fixtures/contract-v1/manifest.json`, `python model/tools/check_repository.py`, and `node --test visualizer/tests/test_viewer.mjs`. Additional healthy-route tests use tiny synthetic networks and test temporal admission, waiting and bounded path search. The private example requires the retained input release and may spend minutes constructing occupancy for thousands of crossings; memory depends on decoded solar arrays and CVAE state. No GPU, distributed execution or resume is supported. Cancellation is checked between initialization, planning and export; it cannot interrupt an active inner search. Progress events report phases, not invented percentages.
 
 Acceptance checks enforce input hashes, coordinate identity, available physiological horizon and strictly increasing output samples. Numerical completion is not clinical or road-safety validation. The search is bounded, historical activity covariates are retained, and running physiology is uncalibrated. Repeated 600-second traffic/environment fields are conditional scenarios rather than extended measurements. Environmental gap filling and solar warming are illustrative; original source masks and bytes remain intact.
+
+## Full-suite test environment
+
+The full suite exercises real local HTTP sockets, hard links and symbolic-link escape rejection. Run it outside a restricted process sandbox. On Windows, symlink tests require Developer Mode or an appropriately privileged process; use Linux/WSL when those privileges are unavailable. Do not disable these tests to obtain a passing result.
+
+Use Python 3.12 and install both physics and healthy-route dependencies, including SciPy:
+
+```sh
+python3.12 -m venv .venv
+.venv/bin/python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+.venv/bin/python -m pip install -e '.[physics,healthy-route]'
+.venv/bin/python -m unittest discover -s model/tests -v
+```
+
+CPU PyTorch is sufficient. Local research data is not needed for the automated suite; the full mapped-crossing example separately requires the private bundle described above.

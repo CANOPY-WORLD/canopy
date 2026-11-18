@@ -9,7 +9,8 @@ Input release: private healthy-route `2026.11.16-v2`.
 - Private input preparation and a real mapped-crossing request completed through the standard runner, payload validator and retained Asset registration.
 - Successful run: `20261118T143330Z_88d376d88d`; separate private research workspace, no canonical London changes.
 - Healthy-route checks: 19 passed, including boundary-sample export, CPU enforcement, candidate budgets, time-dependent branching, vehicle sweeps, stationary vehicles, signal/gap conjunction, replay seams, waiting exposure and traffic-avoiding detours.
-- Full Python suite: 96 run, 87 passed, 9 errors. One requires unavailable SciPy; the other eight encounter Windows permissions for symlinks, local sockets or archive rename. No assertion failures remain. The complete suite is not green; rerun in the supported full dependency environment before merge.
+- Full Python suite: **96 passed, zero failures/errors/skips**, in 20.921 seconds on Ubuntu 22.04 (WSL), Python 3.12.16, CPU PyTorch 2.15.0+cpu, NumPy 2.5.5, SciPy 1.18.1, pandas 3.1.1 and Shapely 2.2.0. The tracked source tree was copied to Linux temporary storage for the run.
+- The initial Windows run had nine environment errors. Installing SciPy and running outside the restricted sandbox resolved five; four remaining tests required Windows symlink privileges. All four pass unchanged on Linux, including in the full suite. No tests were disabled or skipped, and no model-code change was needed to resolve these errors.
 - Existing scientific viewer tests: 5 passed.
 - V1 contract fixture, repository checker and diff whitespace checks passed.
 - Python compilation and all retained healthy-route JavaScript module syntax checks passed.
@@ -35,4 +36,4 @@ node --test visualizer/tests/test_viewer.mjs
 git diff --check
 ```
 
-See README.md for private-input setup and the complete execution command. Run in an environment with the documented optional dependencies and permission to create temporary symlinks and local test sockets.
+See README.md for private-input setup and the complete execution command. The full-suite Linux/WSL setup is documented in README.md. Install both physics and healthy-route dependencies and permit temporary symlinks, hard links and local test sockets. Running from native Linux storage avoids slow repeated source-snapshot operations on Windows-mounted drives.
