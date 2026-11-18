@@ -897,6 +897,98 @@
           "example": "model/tests/fixtures/canopy/pollution.json"
         }
       ]
+    },
+    {
+      "id": "healthy_route",
+      "methods": [
+        {
+          "model_id": "healthy_route",
+          "method_id": "wave_cvae",
+          "version": "1.0.0",
+          "title": "Research healthy-route wave/CVAE planner",
+          "description": "Explicit private-bundle execution; extended London replay is an opt-in experiment.",
+          "category": "physics",
+          "inputs": {
+            "bundle": {
+              "kind": "physics",
+              "required_layers": [
+                "time_series"
+              ],
+              "required_artifacts": [
+                "healthy_route_bundle"
+              ]
+            }
+          },
+          "outputs": [
+            "time_series"
+          ],
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "origin": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Exact input network origin node ID"
+              },
+              "goal": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Exact input network destination node ID"
+              },
+              "departure_s": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 46800,
+                "default": 0,
+                "description": "Seconds after the experiment clock origin (08:50)",
+                "x-unit": "s"
+              },
+              "max_minutes": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 780,
+                "default": 30,
+                "description": "Maximum journey duration including waiting",
+                "x-unit": "min"
+              },
+              "travel_mode": {
+                "type": "string",
+                "enum": [
+                  "walk",
+                  "run"
+                ],
+                "default": "walk",
+                "description": "Fixed 4.8 or 9 km/h scenario speed; no running physiology calibration"
+              },
+              "solar_day": {
+                "type": "string",
+                "enum": [
+                  "20260621",
+                  "20261221"
+                ],
+                "default": "20260621",
+                "description": "Clear-sky scenario day; not current weather"
+              }
+            },
+            "required": [
+              "origin",
+              "goal",
+              "departure_s",
+              "max_minutes",
+              "travel_mode",
+              "solar_day"
+            ]
+          },
+          "capabilities": {
+            "cancel": true,
+            "resume": false,
+            "progress": "steps"
+          },
+          "guide": "model/healthy_route/README.md",
+          "example": "model/tests/fixtures/canopy/healthy_route.json"
+        }
+      ]
     }
   ],
   "assets": [

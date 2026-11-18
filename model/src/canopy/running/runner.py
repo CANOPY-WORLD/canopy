@@ -79,7 +79,7 @@ def run(storage,request,*,retain=True):
         for name,media in [('source_snapshot.tar.gz','application/gzip'),('request.json','application/json'),('environment.json','application/json'),('diagnostics.json','application/json'),('events.jsonl','application/x-ndjson')]:
             target=payload/'provenance'/name;target.parent.mkdir(exist_ok=True)
             shutil.copy2(workspace/name,target)
-            manifest['artifacts'].append({'id':'source_snapshot' if name=='source_snapshot.tar.gz' else name.replace('.','_'),'asset':str(target.relative_to(payload)),'sha256':digest(target),'media_type':media})
+            manifest['artifacts'].append({'id':'source_snapshot' if name=='source_snapshot.tar.gz' else name.replace('.','_'),'asset':target.relative_to(payload).as_posix(),'sha256':digest(target),'media_type':media})
         write(payload/'manifest.json',manifest);validate_payload(payload/'manifest.json');context.checkpoint()
         if retain:state['assets']=import_run(storage,scenario['scenario_id'],payload,derived_from=request['inputs'].values(),expected_kind=spec['category'])
         state.update(status='complete',payload=str(payload),diagnostics=result['diagnostics']);emit('complete',assets=state['assets'])

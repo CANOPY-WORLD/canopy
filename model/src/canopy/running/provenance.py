@@ -8,7 +8,7 @@ import tarfile
 
 from canopy._io import digest
 
-PACKAGES=('canopy','common','urban_flow','urban_geometry','urban_planning','traffic','uav_routing','energy')
+PACKAGES=('healthy_route','canopy','common','urban_flow','urban_geometry','urban_planning','traffic','uav_routing','energy')
 SUFFIXES={'.py','.json','.js','.mjs','.cjs','.sh','.toml','.yaml','.yml','.md','.cu','.c','.cpp','.h','.hpp','.so'}
 
 
