@@ -121,14 +121,27 @@ Use a new output directory for each build. Open `/canopy/`, `/canopy/viewer/3d/?
 
 `build_pages.py` verifies the locked inventories without network access, rejects stale generated indexes unless `--refresh` is requested, and copies only selected frontend files and metadata. Remote bytes are reported separately and excluded from the artifact size. A metadata build does not claim to verify live payload availability; that is the remote check above.
 
-Commit the references, docs, code and generated indexes together, then publish:
+Commit the references, docs, code and generated indexes on a feature branch and open a pull request. `main` is protected, including administrators: PRs and resolved conversations are required; force pushes and deletion are disabled. There are currently no mandatory independent approvals or required CI contexts. Run the checks above and attach the actual results to the PR.
+
+For an organization maintainer, after committing on a feature branch:
 
 ```sh
-git push origin main
+git push -u origin HEAD
+# Write the problem, change and validation evidence into this file first:
+gh pr create --repo CANOPY-WORLD/canopy --base main --body-file cache/pr-description.md
+```
+
+Merge the reviewed, validated PR through GitHub. Then synchronize the formal source branch and publish:
+
+```sh
+git switch main
+git pull --ff-only origin main
 python visualizer/tools/publish_pages.py --push
 ```
 
 The publisher requires a clean `main` checkout matching remote main. It verifies deployed manifests, uses a separate Git index to create the shared artifact, and makes a normal fast-forward push to `gh-pages`. It never rewrites source history or alters the checkout. Without `--push`, it prepares an artifact without publishing.
+
+When changing Scenario navigation, run `browser_scenario_tabs.cjs` against the local scientific server. Supply the Pages preview URL as its second argument to also check the public header under a project subpath. That public-header check isolates navigation from heavy city loading; additionally smoke-test the real London presentation after moving its controls.
 
 Canopy Pages uses **Deploy from a branch → gh-pages → / (root)**. `main` remains the formal source branch; `gh-pages` contains generated website output. A source push alone does not deploy the shared website: run the publisher and verify the resulting Pages build. The current OAuth connection lacks `workflow` scope; built-in branch publication requires no custom Actions workflow or new credentials.
 

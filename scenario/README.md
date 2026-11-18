@@ -4,6 +4,8 @@
 
 Before adding a feature, read the [Scenario contribution standard](CONTRIBUTING.md). [All component standards](../model/docs/framework/contributing.md) provide the shared entrypoint.
 
+The separate [Scenario contributor guide](https://github.com/CANOPY-WORLD/canopy-scenario-guide) provides a runnable isolated example, data/publication instructions and the PR process for proposing a new curated Scenario. It does not add tutorial data to this repository.
+
 A Scenario is a declarative JSON description of a scene. It records spatial meaning, references its own Assets, pins computation recipes and configures the shared Visualizer. Loading a Scenario does not execute a Blender script, Three.js program or simulator.
 
 ## Internal structure

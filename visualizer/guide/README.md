@@ -2,6 +2,8 @@
 
 This buildless, English-language guide explains Canopy's architecture, current Model/Asset/Visualizer inventory, London case, storage choices and component contribution standards. It contains only documentation and safe summary metadata. The only curated Scenario is `imperial_corridor_8km`.
 
+The Visualizer review section distinguishes the two current rendering paths from the proposed shared runtime and links the [architecture review](../docs/architecture-review.md) and [upgrade plan](../docs/upgrade-plan.md). The contributor section links the separate [Scenario tutorial repository](https://github.com/CANOPY-WORLD/canopy-scenario-guide).
+
 Open the [public Canopy guide](https://canopy-world.github.io/canopy/guide/). The earlier [private review copy](https://canopy-architecture-guide.yueyan.chatgpt.site) retains its existing audience.
 
 ## Preview

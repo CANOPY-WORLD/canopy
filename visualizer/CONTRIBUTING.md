@@ -4,6 +4,10 @@
 
 The standard viewer is a read-only consumer of Geometry and Physics Assets. Extend its shared interfaces before introducing scenario-specific presentation. The curated Scenario is London's `imperial_corridor_8km`.
 
+Use one shared Viewer across Scenarios. A new Scenario must not copy the Viewer, start another renderer or add a Scenario-ID branch to shared rendering logic. Extend a shared layer, representation reader or small declarative preset. The [architecture review](docs/architecture-review.md) describes the two existing rendering paths; the [upgrade plan](docs/upgrade-plan.md) defines their consolidation. Proposed Source and registry APIs are not available until implemented and tested.
+
+Use the shared `shared/scenario-tabs.mjs` navigation component. Top-level tabs represent Scenarios and come from the catalog; field types, camera shots and presets belong to the view controls. Keep selected tabs, keyboard focus, direct URLs, browser history and unavailable-case errors consistent. Never create placeholder public Scenarios to fill the tab bar.
+
 ## Presentation boundary
 
 The shell owns the renderer, scene, camera, timeline, selected layers, legend and picking. Scenario configuration selects `template:standard`, a supported preset, Asset/layer references and optional camera. Widgets implement display behavior. A widget must not start a solver, mutate an Asset, write scenario configuration, infer a new physical result or fetch undeclared private filesystem paths.
