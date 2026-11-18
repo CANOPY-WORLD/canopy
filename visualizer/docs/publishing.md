@@ -121,7 +121,7 @@ Use a new output directory for each build. Open `/canopy/`, `/canopy/viewer/3d/?
 
 `build_pages.py` verifies the locked inventories without network access, rejects stale generated indexes unless `--refresh` is requested, and copies only selected frontend files and metadata. Remote bytes are reported separately and excluded from the artifact size. A metadata build does not claim to verify live payload availability; that is the remote check above.
 
-Commit the references, docs, code and generated indexes on a feature branch and open a pull request. `main` is protected, including administrators: PRs and resolved conversations are required; force pushes and deletion are disabled. There are currently no mandatory independent approvals or required CI contexts. Run the checks above and attach the actual results to the PR.
+Commit the references, docs, code and generated indexes on a feature branch and open a pull request. `main` is protected, including administrators: PRs and resolved conversations are required; force pushes and deletion are disabled. There are currently no mandatory independent approvals or required CI contexts. Run the checks above and attach the actual results to the PR. The [review and merge workflow](../../model/docs/framework/contributing.md#pull-request-review-and-merge) also requires reviewing the diff, reporting findings and validation limits, and obtaining the user's explicit confirmation before an agent merges. Passing checks or GitHub reporting a PR as mergeable does not grant that confirmation.
 
 For an organization maintainer, after committing on a feature branch:
 
@@ -131,7 +131,7 @@ git push -u origin HEAD
 gh pr create --repo CANOPY-WORLD/canopy --base main --body-file cache/pr-description.md
 ```
 
-Merge the reviewed, validated PR through GitHub. Then synchronize the formal source branch and publish:
+Leave the PR open until the user confirms the merge; do not enable auto-merge while waiting. After confirmation, merge the reviewed, validated PR through GitHub. Only when publication is also authorized for the task, synchronize the formal source branch and publish:
 
 ```sh
 git switch main
