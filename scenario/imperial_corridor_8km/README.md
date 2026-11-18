@@ -40,3 +40,7 @@ The original solver uses `gaussian_short`, a 0.1 s timestep, 4,000 steps, adapti
 Browser paths are simplified for display with a maximum 0.25 m deviation and independently rechecked against the obstacle columns every 0.5 m. Full-resolution paths, arrival fields, failed attempts, source snapshot and provenance are retained on `ese-yl222` in `uav_wavepde_4m_20261111`. See `assets/uav-wavepde-4m-20261111/evidence.json`. Earlier exports remain archived in their original directories.
 
 Website implementation: [visualizer/site](../../visualizer/site/README.md). Resource paths mentioned above are compatibility routes resolved by the publication manifest. Data remains owned by this Scenario, with storage in its dedicated repository; shared renderers remain in Visualizer. Follow the [publishing standard](../../visualizer/docs/publishing.md) when updating either side.
+
+## Optional research experiments
+
+[Healthy-route extended replay](experiments/healthy_route_extended_replay/README.md) is an opt-in private research profile. It does not change this Scenario's recorded timelines, default tasks or publication.

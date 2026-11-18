@@ -92,3 +92,7 @@ python -m pip wheel --no-deps . -w dist
 The wheel contains shared Python implementations, Method specifications and schemas. Use an explicit metadata checkout after installation: `canopy --root /path/to/canopy ...`. The checkout supplies Scenario configuration and browser resources. Package a Scenario and its retained Assets separately with `canopy pack`; see [Asset packaging](../asset/README.md#package-a-scenario).
 
 See the [verification record](docs/framework/verification.md) for checks and their limits.
+
+## Healthy-route research
+
+The [healthy-route model](healthy_route/README.md) executes a pinned private input bundle. Its extended London replay is an opt-in experiment, independent of the canonical public scene.

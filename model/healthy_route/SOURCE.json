@@ -1,0 +1,71 @@
+{
+  "release": "2026.11.16-v2",
+  "files": [
+    {
+      "source": "pedestrian/health_planning/corridor_breathing.py",
+      "sha256": "f1c94be44a2a19b3bdb8379464233545498966d22abe7350edec1469d16d4a16"
+    },
+    {
+      "source": "pedestrian/health_planning/corridor_scenario.py",
+      "sha256": "f34855c7ff209a912cb30c4b332f7776c5860c2bb6fb560ed5a641a596d1a788"
+    },
+    {
+      "source": "pedestrian/health_planning/crossing_boundary_wave.py",
+      "sha256": "06c95de4dfd906490202a15a37104283764c17683d0814b1a22382d6ed3a4cc1"
+    },
+    {
+      "source": "pedestrian/health_planning/destination_wave.py",
+      "sha256": "aa98a155c162e0c6e4ecb4dacad813551d26f221d429d93f822d48a5cb57e3c3"
+    },
+    {
+      "source": "pedestrian/health_planning/imperial_pedestrian.py",
+      "sha256": "c29a7e2563e265d5aa69a357fca52071217065d18beee19064a587ec582b1a0e"
+    },
+    {
+      "source": "pedestrian/health_planning/state_cvae_model.py",
+      "sha256": "e81ade169d5aaf56cfd8a4e54eee0e701835565b63d350d6e609b56c6617cd83"
+    },
+    {
+      "source": "pedestrian/health_planning/state_cvae_routing.py",
+      "sha256": "830bb22882d07ebc66e73f5fa80b9f6579de86d58a1f901491637cb0b6921b30"
+    },
+    {
+      "source": "pedestrian/health_planning/walking_cost_search.py",
+      "sha256": "f9c02a2d808a704bbcdaa3077972a7c5983fcad363c93637145a58cc33e87693"
+    },
+    {
+      "source": "pedestrian/health_planning/walk_signal_schedule.py",
+      "sha256": "6d52d4e13468f21ae1a889f1e76d0ede0ed8d57074ae54325f96038f2e3dc4f8"
+    },
+    {
+      "source": "pedestrian/health_planning/zero_speed_entrance_wave.py",
+      "sha256": "1b48620119a48cf9d6610dd9813b6bcf570a34242b19da7156056e83664e4095"
+    },
+    {
+      "source": "pedestrian/health_planning/zero_speed_history_wave.py",
+      "sha256": "32573feaef594cb2a1abe3912f0669536a1f438f26223c8c6e5a2928e024b9ba"
+    },
+    {
+      "source": "pedestrian/canopy_planner.py",
+      "sha256": "9a7dc5a8796814e647915099624f28bbabcabef9f515a7bbee8434ed0abf9e29"
+    },
+    {
+      "source": "pedestrian/environment.py",
+      "sha256": "0c1e6cae0014a13148a26d3322472d71a487cb60b9b8cab1d006df3cd5316dae"
+    },
+    {
+      "source": "pedestrian/traffic_gaps.py",
+      "sha256": "cda4ba86941769b5ddbdb6ecb77438038a7dcdd0819851e5e4a4a615acd17e9b"
+    },
+    {
+      "source": "pedestrian/build_network.py",
+      "sha256": "5d3d7b0665dce2d59a50c6e6de7f1bf5a5812d64c02933fdffb8a8480667cc08"
+    }
+  ],
+  "adaptations": [
+    "Package-relative imports",
+    "Explicit writable run cache",
+    "Thread ownership delegated to runner",
+    "Reject negative departure and non-positive duration"
+  ]
+}
