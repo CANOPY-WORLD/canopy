@@ -1,5 +1,25 @@
 # Verification record
 
+## Original NN4PDEs flood Method — 2026-11-18
+
+`flood/shallow_water@2.0.0` now calls the original AI4SWE Linear kernel from `Amin-Nadimy/Shallow_Water_Equations_NN4PDEs`, commit `be4ccdac6270fb0a27a11856d4fafe44cef2ed9e`. The vendored Python file and MIT license retain their upstream bytes and SHA-256 records. The adapter changes case setup, lifecycle and output conversion; it does not modify the numerical initialization or `AI4SWE` class. The [Method guide](../../flood/shallow_water/README.md) records the changed boundary assumptions, fixed Manning value and version-1 migration.
+
+| Check | Result and scope |
+| --- | --- |
+| Upstream parity | Dry terrain with a raised building and a wet asymmetric terrain case matched references from the original standalone time loop after 1, 7 and 20 steps; depth and both native velocity components checked on CPU |
+| Coordinates and isolation | Kernel ramp derivatives establish the ENU conversion `(-u, v, 0)`; separate solver instances have independent upstream globals |
+| Failure and compatibility | Modified source, nonfinite state, excessive surface correction, negative depth, old Method versions, `cg_max` and non-upstream Manning values are rejected; numerical failure registers no Asset |
+| Lifecycle | Exported arrays match the reference, exact geometry provenance is retained, source/license/commit are snapshotted, saved times are correct and retained results survive cache deletion |
+| Automated checks | 77 Model/data tests, 9 publication tests, 16 JavaScript tests and the V1 protocol fixture passed; repository/catalog/schema/documentation checks passed |
+| CPU example | The geometry → upstream flood example completed with 0.025 s steps and five samples over four seconds; both retained Assets validated |
+| Wheel | Built and installed into a separate target; with editable source hooks disabled, the installed package ran geometry and flood, validated retained results and preserved the original source/license hashes |
+| Viewer | Geometry, water depth and velocity loaded; first/final samples, play/pause, visibility and desktop/mobile layout passed without page/HTTP errors |
+| Review website | Updated inventory loaded all eight Methods and nine historical Assets; guide interactions and desktop/mobile checks passed |
+
+The default 1 m synthetic building example at 0.1 s triggered the negative-depth check. The fixed timestep default was reduced to 0.025 s, which passed without changing the kernel or the rejection threshold. The independently tested 2 m reference uses 0.1 s. These choices do not establish stability for other configurations.
+
+This integration does not retain the old C-grid solver's closed-basin conservation claim: sampled volume change minus rainfall is reported, with boundary exchange and numerical error unresolved. CPU reference parity does not establish physical accuracy. CUDA was unavailable and was not tested; the published Carlisle flood and full-domain London case were not rerun. Existing London Assets and public numerical payloads were not changed. Local evidence and disposable example workspaces are under `cache/nn4pdes/` and `cache/examples/`.
+
 ## CANOPY-WORLD organization hosting — 2026-11-18
 
 The existing Canopy and London data repositories were transferred into [CANOPY-WORLD](https://github.com/CANOPY-WORLD), retaining repository identities and Git history. Both use `main` as their formal source branch. The data site's shared Viewer links now point to `https://canopy-world.github.io/canopy/`, and Canopy pins data revision `196bbaca475148c968fe384a09b1c26507123191`. The snapshot name, locked manifest, original provenance and all 1,477 payloads are unchanged.

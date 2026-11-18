@@ -1,0 +1,3 @@
+# Keep pinned upstream files byte-identical, including their existing whitespace.
+model/src/canopy/models/vendor/nn4pdes/AI4SWE_Linear.py -text -whitespace
+model/src/canopy/models/vendor/nn4pdes/LICENSE -text

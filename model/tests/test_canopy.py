@@ -29,7 +29,7 @@ class CanopyTests(unittest.TestCase):
         create(self.storage,'alpha','Alpha',synthetic_spatial())
         create(self.storage,'beta','Beta',synthetic_spatial())
     def request(self,model='geometry',method='heightfield',inputs=None,parameters=None):
-        return dict(schema_version='2.0.0',scenario_id='alpha',model_id=model,method_id=method,method_version='1.0.0',inputs=inputs or {},parameters=parameters or {},execution={'device':'cpu','threads':1})
+        return dict(schema_version='2.0.0',scenario_id='alpha',model_id=model,method_id=method,method_version=describe(model,method)['version'],inputs=inputs or {},parameters=parameters or {},execution={'device':'cpu','threads':1})
     def geometry(self):return run(self.storage,self.request())['assets'][0]
     def test_registry_every_method_has_schema_guide_example(self):
         for spec in catalog():
@@ -85,12 +85,56 @@ class CanopyTests(unittest.TestCase):
         with self.assertRaises(ValueError):prepare_request(self.storage,self.request(parameters={'cell_m':float('nan')}))
     def test_wrong_input_kind(self):
         with self.assertRaises(ValueError):prepare_request(self.storage,self.request(inputs={'unexpected':'x'}))
-    def test_flood_conserves_closed_basin_rain_volume(self):
-        ref=run(self.storage,self.request(parameters={'obstacle_height_m':0}))['assets'][0]
-        result=run(self.storage,self.request('flood','shallow_water',{'geometry':ref},{'frames':2,'frame_seconds':1}))
+    def test_flood_exports_upstream_result_and_identity(self):
+        import tarfile
+        from canopy.models.nn4pdes import UPSTREAM_REVISION,UPSTREAM_SHA256
+        ref=run(self.storage,self.request(parameters={'obstacle_height_m':6,'cell_m':2}))['assets'][0]
+        result=run(self.storage,self.request('flood','shallow_water',{'geometry':ref},{'frames':2,'frame_seconds':1,'dt_max_s':.1}))
         a,m,path=asset_load(self.storage,'alpha',result['assets'][0]);depth=np.load(path.parent/'water_depth.npy')
-        np.testing.assert_allclose(depth[-1],20/1000/3600*2,rtol=1e-4,atol=1e-8)
-        self.assertEqual(a['derived_from'],[ref]);self.assertLess(abs(result['diagnostics']['mass_error_m3']),1e-5)
+        velocity=np.load(path.parent/'velocity.npy')
+        with np.load(ROOT/'model/tests/fixtures/nn4pdes/dry_buildings.npz') as reference:
+            np.testing.assert_allclose(depth[-1],reference['depth_20'],rtol=2e-6,atol=2e-8)
+            np.testing.assert_allclose(velocity[-1,0],-reference['native_u_20'],rtol=2e-6,atol=2e-8)
+            np.testing.assert_allclose(velocity[-1,1],reference['native_v_20'],rtol=2e-6,atol=2e-8)
+        self.assertEqual(a['derived_from'],[ref]);self.assertEqual(m['time']['samples'],[0,1,2])
+        self.assertEqual(m['provenance']['parameters']['method_version'],'2.0.0')
+        self.assertEqual(result['diagnostics']['upstream']['revision'],UPSTREAM_REVISION)
+        self.assertEqual(result['diagnostics']['manning'],.055)
+        self.assertNotIn('mass_balance_passed',result['diagnostics']['quality'])
+        self.assertAlmostEqual(result['diagnostics']['samples'][-1]['volume_m3'],depth[-1].astype('float64').sum()*4)
+        with tarfile.open(path.parent/'provenance/source_snapshot.tar.gz') as archive:
+            base='src/canopy/models/vendor/nn4pdes/'
+            source=archive.extractfile(base+'AI4SWE_Linear.py').read()
+            import hashlib
+            self.assertEqual(hashlib.sha256(source).hexdigest(),UPSTREAM_SHA256)
+            self.assertIn(base+'LICENSE',archive.getnames())
+            self.assertEqual(json.load(archive.extractfile(base+'SOURCE.json'))['revision'],UPSTREAM_REVISION)
+        shutil.rmtree(self.storage.cache_root)
+        asset_load(self.storage,'alpha',result['assets'][0])
+    def test_flood_rejects_old_version_and_incompatible_parameters(self):
+        ref=self.geometry()
+        request=self.request('flood','shallow_water',{'geometry':ref})
+        request['method_version']='1.0.0'
+        with self.assertRaises(ValueError):prepare_request(self.storage,request)
+        for parameters in ({'manning':.03},{'cg_max':400}):
+            with self.subTest(parameters=parameters):
+                with self.assertRaises(ValidationError):
+                    prepare_request(self.storage,self.request('flood','shallow_water',{'geometry':ref},parameters))
+    def test_flood_frame_clock_and_failed_numeric_state(self):
+        from canopy.models.nn4pdes import UpstreamLinear
+        ref=self.geometry()
+        result=run(self.storage,self.request('flood','shallow_water',{'geometry':ref},{'frames':2,'frame_seconds':.35,'dt_max_s':.1}))
+        self.assertEqual(result['diagnostics']['steps'],8)
+        self.assertAlmostEqual(result['diagnostics']['dt_s'],.0875)
+        self.assertEqual([s['time_s'] for s in result['diagnostics']['samples']],[0,.35,.7])
+        before=scenario_load(self.storage,'alpha')['assets'].copy()
+        def invalid_step(solver):solver.state['values_h'].fill_(-1)
+        with patch.object(UpstreamLinear,'step',invalid_step):
+            with self.assertRaisesRegex(ValueError,'negative water depth'):
+                run(self.storage,self.request('flood','shallow_water',{'geometry':ref}))
+        self.assertEqual(scenario_load(self.storage,'alpha')['assets'],before)
+        states=[read(p) for p in self.storage.cache_root.rglob('run.json')]
+        self.assertTrue(any(s['status']=='failed' and 'negative water depth' in s['error'] for s in states))
     def test_solar_and_wind_standard_outputs(self):
         ref=self.geometry()
         for model,method in [('solar','shadow'),('wind','mac')]:

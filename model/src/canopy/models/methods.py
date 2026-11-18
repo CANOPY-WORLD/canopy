@@ -125,31 +125,6 @@ class Solar(Fields):
             raise ValueError('Solar samples require one altitude per strictly increasing time')
 
 
-class Flood(Fields):
-    def execute(self,prepared,context):
-        import torch
-        from urban_flow.physics.flood.model import ShallowWater
-        grid,height,solid,p,device=prepared
-        solver=ShallowWater(height,solid,grid['spacing_m'],np.full(height.shape,p['manning']),device,cg_max=p['cg_max'])
-        solver.h.fill_(p['initial_depth_m']);solver.h[solver.solid]=0
-        source=torch.full_like(solver.h,p['rain_mm_h']/1000/3600);source[solver.solid]=0
-        initial=solver.volume();added=0.;clamped=0.;time=0.;depths=[solver.h.cpu().numpy().copy()];vectors=[np.zeros((3,*height.shape),np.float32)];times=[0.];max_cg=0
-        for frame in range(1,p['frames']+1):
-            target=frame*p['frame_seconds']
-            while time<target-1e-10:
-                context.checkpoint();dt=min(solver.stable_dt(p['dt_max_s']),target-time)
-                diagnostics=solver.step(dt,source=source);time+=dt
-                added+=diagnostics['source'];clamped+=diagnostics['neg_clamped'];max_cg=max(max_cg,diagnostics['cg_iters'])
-                if not torch.isfinite(solver.h).all():raise ValueError('Nonfinite flood state')
-            _,u,v=solver.cell_speed();depths.append(solver.h.cpu().numpy().copy());vectors.append(np.stack([u.cpu().numpy(),v.cpu().numpy(),np.zeros(height.shape)]));times.append(target)
-            context.emit('progress',completed=frame,total=p['frames'])
-        error=solver.volume()-initial-added-clamped
-        if clamped>max(1e-6,1e-3*(initial+added)): raise ValueError('Excessive negative-depth correction; reduce timestep')
-        if max_cg>=p['cg_max']: raise ValueError('Flood CG iteration limit reached; result not accepted')
-        if abs(error)>max(1e-5,1e-3*(initial+added)):raise ValueError(f'Flood mass balance failed: {error} m3')
-        return {'grid':grid,'height':height,'invalid':solid,'times':times,'fields':{'water_depth':(depths,'m',False),'velocity':(vectors,'m/s',True)},'diagnostics':{'quality':'mass_balance_passed','mass_error_m3':error,'max_cg_iterations':max_cg,'negative_depth_correction_m3':clamped,'assumptions':'closed boundary; rain on non-solid cells only; no roof redistribution'}}
-
-
 class Wind(Fields):
     def validate(self,request,context):
         super().validate(request,context);grid,height,_=geometry_grid(context);p=request['parameters']

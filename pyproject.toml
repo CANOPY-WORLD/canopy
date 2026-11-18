@@ -27,3 +27,4 @@ include = ["canopy*", "common*", "urban_flow*", "urban_geometry*", "urban_planni
 "*" = ["LICENSE*", "NOTICE*", "COPYING*"]
 "canopy" = ["schemas/*.json"]
 "canopy.models" = ["specs/*/*.json"]
+"canopy.models.vendor.nn4pdes" = ["SOURCE.json", "README.md"]
