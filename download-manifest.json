@@ -1,7 +1,7 @@
 {
-  "version": "2c0e25036f6f5902164d",
+  "version": "f47327e2099e0b509ffc",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 562579343,
+  "bytes": 562585554,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -195,8 +195,8 @@
     },
     {
       "path": "guide/index.html",
-      "bytes": 14589,
-      "sha256": "ebaffe6ac3bfe7aa1b50124120acea26be1624fd27eb0b2d7417de9fe8b053de"
+      "bytes": 16912,
+      "sha256": "ff1d2f01f488805cd6f90ac326f936b9410d4314ff6b2f97515eed98b19862b3"
     },
     {
       "path": "guide/inventory.json",
@@ -3297,6 +3297,16 @@
       "path": "src/visualization/public-scenes.json",
       "bytes": 681,
       "sha256": "bcdeb555a8cad863f43d7e2154da1cad04f7e30c6308dc0e9354f2487b2847e8"
+    },
+    {
+      "path": "src/visualization/shared/scenario-tabs.css",
+      "bytes": 728,
+      "sha256": "38b946757ca0f7d71e75ca1bdca62eef4b04f8c9d784b174a6a372b302ea9019"
+    },
+    {
+      "path": "src/visualization/shared/scenario-tabs.mjs",
+      "bytes": 1509,
+      "sha256": "34a331422d75f5167b2cae35a3d3f1e98184c8859c8dfcb81440bb3467a7ee2a"
     },
     {
       "path": "tiles/detail_tiles_enu_20261030/index.json",
@@ -7675,8 +7685,8 @@
     },
     {
       "path": "viewer/3d/index.html",
-      "bytes": 14444,
-      "sha256": "1533d59003fc0064fd6e905b58a298272618d6d8cddda14f25536dbd28ec5ca7"
+      "bytes": 14550,
+      "sha256": "8af892a87529010fba5570305e20fe6f028da8352a776220f6ba89d2dfb6e168"
     },
     {
       "path": "viewer/3d/main.js",
@@ -7720,8 +7730,8 @@
     },
     {
       "path": "viewer/3d/style.css",
-      "bytes": 13481,
-      "sha256": "6ae3189ee7c63d3be2097918cfd4bce78adbbc7d7f254d320b5af51c812238e6"
+      "bytes": 14869,
+      "sha256": "30499dc356dffb691ab89a6b8d0202f8da7125e3f52937035184f2c62f435760"
     },
     {
       "path": "viewer/3d/tile.js",
@@ -7810,8 +7820,8 @@
     },
     {
       "path": "viewer/scene-navigation.js",
-      "bytes": 1943,
-      "sha256": "15f1cf878b9e6e072655521ecd1a605d2282c8e14b749476aa0a36ba87c8a79b"
+      "bytes": 2104,
+      "sha256": "defd32b3452347e8dae55448037e667241b1e438dd305c1eeef732375f72d161"
     },
     {
       "path": "viewer/scene-public.js",
@@ -7825,8 +7835,8 @@
     },
     {
       "path": "viewer/scene.js",
-      "bytes": 2080,
-      "sha256": "23a38a4bf886ff6c13b1d99b088fdc289b9e0d358cb5b0c0665bdcf3fdd99b11"
+      "bytes": 2076,
+      "sha256": "c0228fa95aae9a072cc829f9d471422d87ce382d89f393b4b3b3bef2ede7dc79"
     }
   ]
 }

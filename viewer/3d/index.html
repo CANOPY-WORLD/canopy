@@ -18,19 +18,17 @@
 <body>
 <canvas id="gl"></canvas>
 
+<header class="scenario-bar"><a id="scene-home" class="viewer-brand" href="../../">Canopy</a><nav id="scenario-tabs" class="scenario-tabs" aria-label="Scenarios"><span>Loading scenarios…</span></nav></header>
 <div class="hud top-left">
-  <div class="title-row"><a id="scene-home" class="scene-select" href="../../">Home</a> <select id="scene-select" class="scene-select" title="Scene" aria-label="Scene" disabled><option>Loading scenes…</option></select></div>
   <div class="title" id="title">Urban World Model</div>
   <div class="sub" id="stage">Loading the 3D model…</div>
   <div class="sub info" id="info"></div>
 </div>
 
 <button id="panel-toggle" class="hud btn" title="Layers and settings" aria-expanded="false" aria-controls="layers">Layers</button>
-<nav class="hud top-tabs" id="tabs">
-  <label class="tab auto" title="Play the views one after another and loop"><input type="checkbox" id="auto" checked> Auto loop</label>
-</nav>
 
 <div class="hud top-right panel" id="layers">
+  <details class="view-shortcuts"><summary>Views and playback</summary><div id="tabs" class="view-actions" role="group" aria-label="Views and playback"><label class="tab auto" title="Play the views one after another and loop"><input type="checkbox" id="auto" checked> Auto loop</label></div></details>
   <div class="row head">
     <span>View settings</span>
     <button id="replay" class="btn" title="Restart from the overview">Restart</button>
