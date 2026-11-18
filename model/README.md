@@ -42,13 +42,15 @@ Python import names stay stable (`canopy`, `common`, `urban_flow`, `urban_geomet
 | Geometry | [heightfield](geometry/heightfield/README.md) | Synthetic domain parameters | GLB, heightfield and solid mask |
 | Geometry | [rasterize_glb](geometry/rasterize_glb/README.md) | Geometry Asset containing a GLB | Original GLB, sampled heightfield and coverage mask |
 | Solar | [shadow](solar/shadow/README.md) | Geometry with a heightfield | Irradiance and shadow |
-| Flood | [shallow_water](flood/shallow_water/README.md) | Geometry with height and solid grids | Water depth and velocity |
+| Flood | [shallow_water](flood/shallow_water/README.md), NN4PDEs Linear | Geometry with height and solid grids | Water depth and ENU velocity from the pinned upstream solver |
 | Wind | [mac](wind/mac/README.md) | Geometry with a heightfield | Velocity slices, full volume and native MAC faces |
 | Temperature | [finite_difference_numpy](temperature/README.md) | Geometry + wind derived from that geometry | Temperature slice and full volume |
 | Temperature | [finite_difference_torch](temperature/README.md) | The same geometry + wind contract | Temperature slice and full volume |
 | Pollution | [steady_tracer](pollution/steady_tracer/README.md) | Geometry + native MAC wind faces | Steady tracer concentration |
 
 `canopy models` lists the current registered interfaces. Additional imported research code is described in the [compatibility inventory](docs/framework/migration-status.md); it is not automatically a registered Method.
+
+`flood/shallow_water@2.0.0` runs the original NN4PDEs AI4SWE Linear numerical kernel through a Canopy adapter. Its [upstream source record](src/canopy/models/vendor/nn4pdes/SOURCE.json) pins the authors' commit and file hashes. Version 1 used the separate Physics4D C-grid implementation; historical Assets retain that provenance and are not recomputed by this change.
 
 ## Run the small example
 

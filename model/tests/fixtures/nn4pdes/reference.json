@@ -1,0 +1,38 @@
+{
+  "upstream_revision": "be4ccdac6270fb0a27a11856d4fafe44cef2ed9e",
+  "upstream_sha256": "cb57dd5b9ab69a7c401a1596546699340e67b32fcc2322f58fb1682e5682cf82",
+  "generator": "generate_reference.py",
+  "torch": "2.15.0+cpu",
+  "numpy": "2.5.5",
+  "device": "cpu",
+  "cases": [
+    {
+      "name": "dry_buildings",
+      "spacing": 2.0,
+      "dt": 0.1,
+      "initial_depth": 0.0,
+      "rain_mm_h": 20.0,
+      "file": "dry_buildings.npz",
+      "steps": [
+        1,
+        7,
+        20
+      ],
+      "sha256": "4477e6377d227a16b5e283221585633bef663c82c773c27bef1c17fbc3a73b02"
+    },
+    {
+      "name": "wet_slope",
+      "spacing": 3.0,
+      "dt": 0.05,
+      "initial_depth": 0.1,
+      "rain_mm_h": 35.0,
+      "file": "wet_slope.npz",
+      "steps": [
+        1,
+        7,
+        20
+      ],
+      "sha256": "b571172a76b73be88cadec25d0f2070d4c1717b7f41d50920b544e12810abbaa"
+    }
+  ]
+}

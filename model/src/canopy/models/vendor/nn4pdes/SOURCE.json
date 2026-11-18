@@ -1,0 +1,16 @@
+{
+  "repository": "https://github.com/Amin-Nadimy/Shallow_Water_Equations_NN4PDEs",
+  "revision": "be4ccdac6270fb0a27a11856d4fafe44cef2ed9e",
+  "variant": "Linear",
+  "license": "MIT",
+  "files": {
+    "AI4SWE_Linear.py": {
+      "upstream_path": "Source_code/Linear/AI4SWE_Linear.py",
+      "sha256": "cb57dd5b9ab69a7c401a1596546699340e67b32fcc2322f58fb1682e5682cf82"
+    },
+    "LICENSE": {
+      "upstream_path": "LICENSE",
+      "sha256": "ed1dc2787ce9ca0d86bde3fd1bd86c8622bda19f2dd85c7e7367ad52a39a2a7d"
+    }
+  }
+}

@@ -9,6 +9,7 @@ These are small protocol examples and request templates, not curated Scenario en
 | [canopy/](canopy/) | V2 request templates for all eight registered Methods and a synthetic Scenario example |
 | [contract-v1/](contract-v1/) | Small JSON mesh, scalar/vector, trajectory and time-series payloads |
 | [contract-v1.1/](contract-v1.1/) | Small binary frame arrays, height grid, mask and sparse trajectories |
+| [nn4pdes/](nn4pdes/) | Synthetic upstream-driver numerical reference arrays and their reproducible generator |
 
 ```sh
 python model/tools/check_contract.py model/tests/fixtures/contract-v1/manifest.json

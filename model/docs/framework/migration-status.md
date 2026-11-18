@@ -9,7 +9,7 @@ Canopy provides Scenario / Asset / Model / Running / Visualization interfaces, s
 | geometry | heightfield | Small synthetic heightfield and GLB for interface examples |
 | geometry | rasterize_glb | Imported GLB reader and rasterizer, accumulated node transforms, explicit clipping and ground assumptions |
 | solar | shadow | Physics4D ShadowNet / HorizonNet / ground_irradiance; heightfield |
-| flood | shallow_water | Physics4D ShallowWater; heightfield / solid |
+| flood | shallow_water@2.0.0 | Original NN4PDEs AI4SWE Linear at pinned upstream revision; Canopy heightfield/rainfall driver |
 | wind | mac | Physics4D MAC; heightfield, retaining display slices, the full volume and native faces |
 | temperature | finite_difference_numpy | Extracted Physics4D NumPy thermal-transport kernels; exact-version geometry + wind |
 | temperature | finite_difference_torch | The same thermal-transport contract, implemented in PyTorch for CPU/CUDA |
@@ -24,7 +24,8 @@ The Visualizer uses a fixed standard template. The engineering/city/laboratory p
 - Only Imperial Corridor is shipped as a curated Scenario. Earlier separate city and synthetic workspaces were archived outside the checkout; reusable source implementations and original provenance remain.
 - Imperial Corridor: retained local_viewer_20261102 physics geometry, wind, temperature, summer/winter solar and shadow, pollution and flood were imported as 7 private assets / 9 display layers. Large NPY arrays were split into individual frames without changing samples. All original float16 values, times, units and masks are preserved, with no further spatial aggregation.
 - A separate real Imperial Corridor GLB computation completed a 128 m crop → 32×32 heightfield → solar chain. A ground value of 0 m for uncovered cells is an explicitly recorded assumption in the terrain-normalized frame, not a claim of GLB coverage at those samples.
-- Small reference tests check flood mass conservation, MAC pressure projection, NumPy/PyTorch temperature agreement, steady-pollution residuals and mass conservation, GLB parent transforms and rejection of uncovered samples. These do not establish long-term city calibration or experimental accuracy.
+- Flood version 2 replaces the registered Physics4D C-grid Method with the original NN4PDEs Linear kernel. The old implementation remains in `urban_flow.physics.flood.model` for historical scripts. Version 1 requests must not be silently rerun as version 2; recorded London Assets remain unchanged. The [Method guide](../../flood/shallow_water/README.md) documents fixed upstream parameters, boundary behavior and acceptance checks.
+- Small reference tests check NN4PDEs upstream numerical parity, velocity-coordinate conversion, MAC pressure projection, NumPy/PyTorch temperature agreement, steady-pollution residuals and mass conservation, GLB parent transforms and rejection of uncovered samples. These do not establish long-term city calibration or experimental accuracy, and NN4PDEs parity is not a closed-basin mass-conservation claim.
 - The three real scenarios and the coupled example use the same viewer. Checks cover every selected layer, final recorded frames, cameras and mobile layout. See verification.md for evidence.
 
 ### London 8 km × 8 km case
