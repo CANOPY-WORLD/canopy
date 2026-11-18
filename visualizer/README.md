@@ -4,7 +4,11 @@
 
 Before adding a feature, read the [Visualizer contribution standard](CONTRIBUTING.md). [All component standards](../model/docs/framework/contributing.md) provide the shared entrypoint.
 
-The Visualizer reads Geometry and Physics Assets through a single presentation framework. Scenarios choose a preset and default view; they share loaders, coordinate transforms, widgets and interaction controls. Opening a view performs no simulation.
+The Visualizer reads Geometry and Physics Assets. Its target is one presentation framework: Scenarios choose a preset and default view while sharing loaders, coordinate transforms, widgets and interaction controls. Opening a view performs no simulation.
+
+The standard scientific Viewer and the detailed public London presentation currently have separate rendering paths. Review the [current architecture](docs/architecture-review.md) and [unified upgrade plan](docs/upgrade-plan.md) for their interfaces, the proposed common UI and performance work. Runtime consolidation is planned, not yet implemented.
+
+Both paths share catalog-driven Scenario tabs at the top. A tab opens that Scenario's view; the current public catalog shows London only. Public camera/field shortcuts are grouped in the side panel under **Views and playback**, leaving the top row for Scenario selection.
 
 ## Internal structure
 
@@ -47,6 +51,8 @@ canopy --root . serve --port 8769
 node --test visualizer/tests/test_viewer.mjs
 # In a second terminal; requires puppeteer-core and a local Chrome executable:
 node visualizer/tests/browser_canopy_scenarios.cjs http://127.0.0.1:8769
+# Uses isolated API fixtures; no retained London data required:
+node visualizer/tests/browser_scenario_tabs.cjs http://127.0.0.1:8769
 ```
 
 Set `PUPPETEER_MODULE` and `CHROME_PATH` when those tools are outside the test defaults. The browser scenario check requires the retained London payloads and checks that London is the sole catalog entry. Synthetic browser checks can use the separate workspace printed by `model/tools/run_example.py`.

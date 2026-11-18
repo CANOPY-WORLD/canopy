@@ -8,6 +8,8 @@ The only curated Scenario is `imperial_corridor_8km`, the London 8 km case. Othe
 
 Start at `model/docs/framework/contributing.md` and read the affected component's `CONTRIBUTING.md`. Scoped `AGENTS.md` files reinforce the same standards.
 
+The remote `main` branch is protected, including administrators: use a feature branch and pull request. Force pushes and deletion are disabled, and review conversations must be resolved. There are currently no required CI contexts and no mandatory independent approval because the repository has one maintainer; run the documented checks and include their evidence in the PR. Do not bypass or weaken protection to publish. After merging, publish from clean, synchronized `main` as described in `visualizer/docs/publishing.md`.
+
 Read `model/docs/framework/protocol-v2.md` and `model/docs/framework/method-guide.md` before adding a Method, Asset or Scenario.
 
 - Shared Python implementations and the SDK: `model/src/`; keep package import names stable.

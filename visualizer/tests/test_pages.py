@@ -87,6 +87,10 @@ class PublicationTests(unittest.TestCase):
         path = self.root / 'visualizer/src/visualization/public-scenes.json'
         path.parent.mkdir(parents=True)
         path.write_text('{}')
+        for name in ('scenario-tabs.mjs', 'scenario-tabs.css'):
+            path = self.root / 'visualizer/src/visualization/shared' / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text('fixture')
         for name in ('index.html', 'style.css', 'app.js', 'inventory.json', 'architecture.svg'):
             path = self.root / 'visualizer/guide' / name
             path.parent.mkdir(parents=True, exist_ok=True)

@@ -15,10 +15,9 @@ export async function loadScene() {
 
   const index = await (await fetch(ROOT + 'scenes/index.json', { cache: 'no-cache' })).json();
   const qs = new URLSearchParams(location.search);
-  let id = qs.get('scene') || index.default;
+  const id = qs.get('scene') || index.default;
   if (!index.scenes.some((s) => s.id === id)) {
-    console.warn('unknown scene', id, '- using', index.default);
-    id = index.default;
+    throw new Error(`Unknown Scenario: ${id}. Choose an available Scenario tab.`);
   }
   const entry = index.scenes.find((scene) => scene.id === id);
   const base = entry.base_url ? new URL(entry.base_url, ROOT).href : ROOT + 'scenes/' + id + '/';

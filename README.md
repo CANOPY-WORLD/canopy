@@ -21,4 +21,6 @@ Each directory documents its internal structure and interfaces. Start with [Mode
 
 For extensions, start with the [contributor and agent standards](model/docs/framework/contributing.md), then follow the relevant component guide. Canopy maintains the shared website and Scenario configuration; each Scenario's public data is hosted independently and selected through a pinned publication reference. See the [publishing standard](visualizer/docs/publishing.md) and [data storage strategy](asset/docs/storage.md).
 
+To build and propose a new Scenario, follow the [Scenario contributor guide](https://github.com/CANOPY-WORLD/canopy-scenario-guide). To review visualization, see the [current structure](visualizer/docs/architecture-review.md) and [unified upgrade plan](visualizer/docs/upgrade-plan.md).
+
 London: **[Open the Scenario](https://canopy-world.github.io/canopy/viewer/3d/?scene=imperial_corridor_8km)** · [Data repository](https://github.com/CANOPY-WORLD/canopy-scenario-imperial-corridor-8km) · [Data website](https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/) · [Public Scenario index](https://canopy-world.github.io/canopy/scenario-index.json)

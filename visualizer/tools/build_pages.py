@@ -133,6 +133,9 @@ def frontend(root):
     for name in ('index.html', 'preload.js', 'asset-router.js', 'scenes/index.json'):
         files[name] = (site / name).read_bytes()
     files['src/visualization/public-scenes.json'] = (root / 'visualizer/src/visualization/public-scenes.json').read_bytes()
+    for name in ('scenario-tabs.mjs', 'scenario-tabs.css'):
+        route = 'src/visualization/shared/' + name
+        files[route] = (root / 'visualizer' / route).read_bytes()
     for name in ('index.html', 'style.css', 'app.js', 'inventory.json', 'architecture.svg'):
         files['guide/' + name] = (root / 'visualizer/guide' / name).read_bytes()
     return files

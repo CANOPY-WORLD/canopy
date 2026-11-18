@@ -4,6 +4,7 @@ import { registry } from '../widgets/index.mjs';
 import { createWidget } from '../widgets/binary.mjs';
 import { enuToWorld } from '../shared/time.mjs';
 import { nearPlaneForSceneBounds } from '../shared/camera-depth.mjs';
+import { renderScenarioTabs } from '../shared/scenario-tabs.mjs';
 
 const $=id=>document.getElementById(id),viewport=$('viewport');
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x111923);
@@ -43,13 +44,14 @@ async function load(){
   const params=new URLSearchParams(location.search),requested=params.get('manifest');
   const catalogURL=new URL('../../../project/index.json',location.href);
   let catalog={scenes:[]};if(!params.has('scenario')){try{catalog=await json(catalogURL);}catch{}}
-  for(const item of catalog.scenes){const option=document.createElement('option');option.value=item.scene_id;option.textContent=item.title;$('scene').append(option);}
+  const sceneURL=id=>{const url=new URL(location.href);url.search='';url.hash='';url.searchParams.set('scene',id);return url.href;};
+  const navigation=catalog.scenes.map(item=>({id:item.scene_id,title:item.title,href:sceneURL(item.scene_id)}));
   const siteRoot=new URL('../../../',location.href);
-  try{if(params.has('scenario'))throw new Error('Use scenario catalog');const published=await json(new URL('src/visualization/public-scenes.json',siteRoot));const group=document.createElement('optgroup');group.label='City and published viewers';
-    for(const item of published.scenes){const option=document.createElement('option');option.value='published:'+item.scene_id;option.textContent=item.title;option.dataset.viewer=new URL(item.viewer_url,siteRoot).href;group.append(option);}$('scene').append(group);
+  try{if(params.has('scenario'))throw new Error('Use scenario catalog');const published=await json(new URL('src/visualization/public-scenes.json',siteRoot));
+    for(const item of published.scenes)if(!navigation.some(entry=>entry.id===item.scene_id))navigation.push({id:item.scene_id,title:item.title,href:new URL(item.viewer_url,siteRoot).href});
   }catch{}
   let chosen=params.get('scene')||(!requested?catalog.default:'');
-  $('scene').value=chosen||'';
+  if(!params.has('scenario'))renderScenarioTabs($('scenario-tabs'),{items:navigation,current:chosen});
   if(chosen){
     try{
       const cityCatalog=await json(new URL('src/visualization/legacy/scenes/index.json',siteRoot));
@@ -61,17 +63,15 @@ async function load(){
       }
     }catch{}
   }
-  $('scene').addEventListener('change',()=>{const published=$('scene').selectedOptions[0]?.dataset.viewer;if(published){location.href=published;return;}const next=new URL(location.href);next.search='';if($('scene').value)next.searchParams.set('scene',$('scene').value);else next.searchParams.set('manifest','../../../examples/contract-v1/manifest.json');location.href=next;});
   const runs=[];let selections=null,metadata=null,timeMode='relative',viewCamera=null;
   if(params.has('scenario')){
     const id=params.get('scenario');if(!/^[a-z][a-z0-9_]*$/.test(id))throw new Error('Invalid scenario ID');
+    const scenarios=await json(new URL('/api/canopy/scenarios',location.href));
+    renderScenarioTabs($('scenario-tabs'),{current:id,items:scenarios.map(entry=>({id:entry.scenario_id,title:entry.title,available:entry.available,href:`?scenario=${encodeURIComponent(entry.scenario_id)}`}))});
     const view=await json(new URL(`/api/canopy/scenarios/${id}/visualization`,location.href));
     metadata=view;selections=view.layers;timeMode=view.profile.time_alignment;viewCamera=view.profile.camera;
     document.body.dataset.preset=view.profile.preset;
-    $('scene').replaceChildren();
-    const scenarios=await json(new URL('/api/canopy/scenarios',location.href));
-    for(const entry of scenarios){const option=document.createElement('option');option.value='scenario:'+entry.scenario_id;option.textContent=entry.title;option.dataset.viewer=`?scenario=${entry.scenario_id}`;option.disabled=entry.available===false;$('scene').append(option);}
-    $('scene').value='scenario:'+id;$('view').hidden=true;
+    $('view').hidden=true;
     for(const item of view.runs){const url=new URL(item.url,location.href);const data=await json(url);validateManifest(data);if(data.scene_id!==id)throw new Error('Asset from another scenario');runs.push({manifest:data,url});}
   }else if(chosen){
     if(!/^[a-z][a-z0-9_]*$/.test(chosen))throw new Error('Invalid scene ID');
@@ -83,6 +83,7 @@ async function load(){
     timeMode=view.time_alignment;if(!['relative','absolute'].includes(timeMode))throw new Error('Unknown time alignment');
     selections=view.layers;
     const available=catalog.scenes.find(s=>s.scene_id===chosen)?.views||[viewID];
+    $('view').hidden=available.length<2;
     for(const id of available){const option=document.createElement('option');option.value=id;option.textContent=id;$('view').append(option);}$('view').value=viewID;
     $('view').addEventListener('change',()=>{const next=new URL(location.href);next.searchParams.set('view',$('view').value);location.href=next;});
     for(const id of view.runs){if(!/^[A-Za-z0-9][A-Za-z0-9_-]*$/.test(id))throw new Error('Invalid run ID');const url=new URL(`runs/${id}/manifest.json`,projectBase);const data=await json(url);validateManifest(data);if(data.scene_id!==chosen||JSON.stringify(data.spatial.origin)!==JSON.stringify(project.spatial.origin))throw new Error('Run coordinates do not match the selected scene');runs.push({manifest:data,url});}
@@ -90,6 +91,7 @@ async function load(){
     $('view').hidden=true;
     const url=new URL(requested||'../../../examples/contract-v1/manifest.json',location.href);if(url.origin!==location.origin)throw new Error('Choose a same-origin run.');
     const data=await json(url);validateManifest(data);runs.push({manifest:data,url});
+    renderScenarioTabs($('scenario-tabs'),{current:data.scene_id,items:[{id:data.scene_id,title:data.scene_id,href:location.href},...navigation.filter(item=>item.id!==data.scene_id)]});
   }
   if(!runs.length)throw new Error('No runs in this view');
   const epochs=runs.filter(r=>r.manifest.time.samples.length).map(r=>Date.parse(r.manifest.time.epoch));
@@ -149,4 +151,6 @@ function animate(now){
 document.addEventListener('visibilitychange',()=>{if(animationId)cancelAnimationFrame(animationId);animationId=0;previous=0;if(!document.hidden)invalidate();});
 function dispose(){if(disposed)return;disposed=true;if(animationId)cancelAnimationFrame(animationId);renderer.domElement.removeEventListener('webglcontextrestored',invalidate);abort.abort();widgets.forEach(w=>w.dispose());controls.dispose();resize.disconnect();renderer.dispose();}
 window.addEventListener('pagehide',dispose,{once:true});
+// Back/forward cache can restore a page whose WebGL resources were disposed.
+window.addEventListener('pageshow',event=>{if(event.persisted)location.reload();});
 load().catch(error=>{$('error').hidden=false;$('error').textContent=error.message;$('status').textContent='Unable to load this run';});invalidate();
