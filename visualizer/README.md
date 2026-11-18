@@ -27,6 +27,7 @@ flowchart LR
 | Read-only API | [canopy.visualization](../model/src/canopy/visualization/) resolves selected Scenario Assets |
 | Compatibility website | [site/](site/README.md) preserves the detailed London presentation and resource paths |
 | Overview diagram | [diagrams/architecture.svg](diagrams/architecture.svg) is editable SVG with accessible text |
+| Static publication | [tools/build_pages.py](tools/build_pages.py) combines the shared website, guide and Scenario-owned public data |
 
 ## Fixed template, Scenario-specific defaults
 
@@ -52,3 +53,5 @@ Set `PUPPETEER_MODULE` and `CHROME_PATH` when those tools are outside the test d
 The local server explicitly maps existing `/src/visualization/`, `/project/`, `/examples/` and `/schemas/` URL prefixes to their current repository or data locations. The detailed website's `/viewer/`, `/scenes/`, `/assets/` and related paths map to `visualizer/site/`. These are public resource routes, independent of the source directory names. Source code, private configuration and arbitrary filesystem paths are not served.
 
 The [interactive architecture guide](guide/README.md) lists the current Model, Asset and Visualizer contents and links to their extension standards. Open `/guide/` on the local server.
+
+The committed `main` source is built into [Canopy Pages](https://acse-yl222.github.io/canopy/) and its [guide](https://acse-yl222.github.io/canopy/guide/) together. Public files live under `scenario/<id>/data/`; follow the [publishing standard](docs/publishing.md) for their checksummed mapping, local preview and deployment.

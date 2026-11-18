@@ -21,9 +21,9 @@ The generated [Asset review catalog](asset-catalog.json) lists every registered 
 
 Physics Urban World — Imperial Corridor, London.
 
-GitHub Pages serves the viewer and local vector assets. Original and compact physical data are stored in the upstream GitHub Release. A service worker routes large-asset requests through the existing CANOPY read-only data gateway for CORS compatibility. No full-dataset download or installation is required before entering Overview.
+[Open Canopy on GitHub Pages](https://acse-yl222.github.io/canopy/). This repository publishes the shared viewer and this Scenario’s [public data manifest](data/manifest.json) together. The 1,477 declared resources occupy 558,073,283 bytes and live under `data/`. Existing presentation paths resolve to these same-origin files. The opening page downloads and verifies the complete presentation for browser caching; a [direct viewer link](https://acse-yl222.github.io/canopy/viewer/3d/?scene=imperial_corridor_8km) loads resources on demand.
 
-Open via HTTPS or a localhost server. Full building geometry is retained. Compact fields retain original sampled timestamps; spatial averaging smooths local extrema. Source provenance is included under scenes/imperial_corridor_8km/compact-provenance/.
+Open via HTTPS or a localhost server. Full building geometry is retained. Compact fields retain original sampled timestamps; spatial averaging smooths local extrema. Existing provenance remains in exported scene metadata and context source files. The publication manifest records the source commit and upstream Releases; relocation preserves every payload byte and checksum.
 
 The loading illustration is a stylized pixel-art campus, not a measured building model.
 
@@ -37,4 +37,4 @@ The original solver uses `gaussian_short`, a 0.1 s timestep, 4,000 steps, adapti
 
 Browser paths are simplified for display with a maximum 0.25 m deviation and independently rechecked against the obstacle columns every 0.5 m. Full-resolution paths, arrival fields, failed attempts, source snapshot and provenance are retained on `ese-yl222` in `uav_wavepde_4m_20261111`. See `assets/uav-wavepde-4m-20261111/evidence.json`. Earlier exports remain archived in their original directories.
 
-Website files: [visualizer/site](../../visualizer/site/README.md). Resource paths mentioned above are relative to that website root.
+Website implementation: [visualizer/site](../../visualizer/site/README.md). Resource paths mentioned above are compatibility routes resolved by the publication manifest. Data is owned here; shared renderers remain in Visualizer. Follow the [publishing standard](../../visualizer/docs/publishing.md) when updating either side.

@@ -12,6 +12,7 @@ Read `model/docs/framework/protocol-v2.md` and `model/docs/framework/method-guid
 
 - Shared Python implementations and the SDK: `model/src/`; keep package import names stable.
 - Scenario metadata: `scenario/<scenario>/scenario.json`.
+- Public website data: `scenario/<scenario>/data/`, declared by its checksummed publication manifest. Build the single GitHub Pages site with `visualizer/tools/build_pages.py`.
 - Asset schemas: `asset/schemas/`, mirrored in `model/src/canopy/schemas/` for wheel installation.
 - Private retained Assets: `<data_root>/project/<scenario>/assets/`; default data root `asset/data/` is ignored by Git.
 - Browser implementation: `visualizer/src/visualization/`. The preserved static website lives in `visualizer/site/`.
@@ -25,4 +26,4 @@ Do not upload private datasets or remove original histories. Preserve source not
 
 Run `python -m unittest discover -s model/tests -v`, `node --test visualizer/tests/test_viewer.mjs`, and `python model/tools/check_contract.py model/tests/fixtures/contract-v1/manifest.json` after installation. Check viewer behavior when changing routes, loading or widgets.
 
-Run `python model/tools/check_repository.py` to check the one-case catalog, Method references, documentation links and generated inventory. Keep the private explanation Site source under `visualizer/guide/`; never include raw payloads in that site.
+Run `python model/tools/check_repository.py` to check the one-case catalog, Method references, documentation links and generated inventory. Follow `visualizer/docs/publishing.md` after public data or website changes. Explanation-page source under `visualizer/guide/` contains summary metadata only. The Pages build includes this guide; preserve the existing private review Site’s audience when maintaining that separate deployment.

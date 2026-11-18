@@ -73,6 +73,8 @@ class ViewerHandler(BaseHTTPRequestHandler):
                 path=within(self.storage.assets('south_ken','geometry')/'legacy_visualizer',*parts[4:])
             elif parts[:6]==legacy+('agents','demo_rev02','data'):
                 path=within(self.storage.run('south_ken','legacy_agents')/'data',*parts[6:])
+            elif parts==('src','visualization','public-scenes.json') and (self.storage.root/'scenario').is_dir():
+                path=visualization_root(self.storage.root)/'public-scenes.json'
             elif parts==('src','visualization','public-scenes.json'):
                 catalog=json.loads((visualization_root(self.storage.root)/'public-scenes.json').read_text())
                 for item in catalog['scenes']:
@@ -84,7 +86,11 @@ class ViewerHandler(BaseHTTPRequestHandler):
                         'description':'Locally retained geometry and simulation results; see the viewer for provenance and limitations.',
                         'viewer_url':f'src/visualization/legacy/viewer/3d/?scene={entry["id"]}', 'resource_ids':[]})
                 return self.json_response(catalog,head)
-            elif parts[0] in ('viewer','vendor','scenes','assets','agents','tiles') or parts in (('asset-router.js',),('asset-routes.json',),('preload.js',),('download-manifest.json',)):
+            elif parts[0]=='scenario' and len(parts)>=4 and parts[2]=='data':
+                scene=scene_id(parts[1])
+                if scene!=parts[1]:raise ValueError('Use canonical scene ID')
+                path=within(metadata_root(self.storage.root)/scene/'data',*parts[3:])
+            elif parts[0] in ('viewer','vendor','scenes','assets','agents','tiles') or parts in (('asset-router.js',),('asset-sources.json',),('preload.js',),('download-manifest.json',)):
                 path=within(site_root(self.storage.root),*parts)
             elif parts==('index.html',):
                 path=site_root(self.storage.root)/'index.html'

@@ -70,3 +70,5 @@ The archive contains the complete Scenario index, registered Assets and provenan
 Archives keep the portable `project/<scenario>/...` member layout. On restoration, place `scenario.json` under the checkout's `scenario/<scenario>/` directory and the retained data under `<data_root>/project/<scenario>/`. Exact references and payload paths remain unchanged.
 
 For local retention, remote distribution and future large-array formats, see the [storage strategy](docs/storage.md). The [London Asset catalog](../scenario/imperial_corridor_8km/asset-catalog.json) lists the current retained bundle metadata.
+
+Approved website exports are tracked under `scenario/<id>/data/` and published with Canopy Pages. Their [distribution manifest](../scenario/imperial_corridor_8km/data/manifest.json) preserves hashes and presentation routes without changing scientific Asset semantics. See the [publication standard](../visualizer/docs/publishing.md).

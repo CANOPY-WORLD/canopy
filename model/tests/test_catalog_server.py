@@ -79,4 +79,20 @@ class RegistryServerTests(unittest.TestCase):
         self.assertEqual(result['traffic']['dir'],'/project/south_ken/runs/new/replay/')
         self.assertNotIn('traffic',json.loads(original.read_text()))
 
+    def test_public_scenario_mount_is_bounded(self):
+        data=self.root/'project/south_ken/data';data.mkdir()
+        (data/'sample.bin').write_bytes(b'public')
+        secret=self.root/'storage.local.json';secret.write_text('private')
+        (data/'escape').symlink_to(secret)
+        server=ThreadingHTTPServer(('127.0.0.1',0),functools.partial(ViewerHandler,storage=self.storage))
+        threading.Thread(target=server.serve_forever,daemon=True).start()
+        self.addCleanup(server.server_close);self.addCleanup(server.shutdown)
+        base=f'http://127.0.0.1:{server.server_port}'
+        with urllib.request.urlopen(base+'/scenario/south_ken/data/sample.bin') as response:
+            self.assertEqual(response.read(),b'public')
+        for path in ('/scenario/south_ken/data/escape','/scenario/south_ken/data/%2e%2e/project.json',
+                     '/scenario/south_ken/project.json','/storage.local.json'):
+            with self.subTest(path=path), self.assertRaises(urllib.error.HTTPError):
+                urllib.request.urlopen(base+path)
+
 if __name__=='__main__':unittest.main()

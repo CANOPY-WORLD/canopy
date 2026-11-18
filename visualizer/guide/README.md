@@ -2,7 +2,7 @@
 
 This buildless, English-language guide explains Canopy's architecture, current Model/Asset/Visualizer inventory, London case, storage choices and component contribution standards. It contains only documentation and safe summary metadata. The only curated Scenario is `imperial_corridor_8km`.
 
-Open the [private hosted guide](https://canopy-architecture-guide.yueyan.chatgpt.site).
+Open the [public Canopy guide](https://acse-yl222.github.io/canopy/guide/). The earlier [private review copy](https://canopy-architecture-guide.yueyan.chatgpt.site) retains its existing audience.
 
 ## Preview
 
@@ -39,4 +39,4 @@ The private review Site uses project ID `appgprj_6afca7a8e7c88191884ff2849100b45
 
 Use the Sites source workflow in a separate ignored checkout under `cache/sites/`, copying this directory's source and identity. Serve `index.html`, `style.css`, `app.js`, `inventory.json` and `architecture.svg` from `dist/`. The source helper commits, pushes and packages the exact source before private deployment. Credentials belong only in the helper's hidden stdin, never in Git or build output.
 
-This Site does not change the repository's existing GitHub Pages deployment.
+The [Pages publisher](../tools/publish_pages.py) independently includes the five public guide files in the unified Canopy website. It excludes `.openai/hosting.json`. Follow the [Pages standard](../docs/publishing.md) for the public deployment; the Sites workflow above applies only to the separate private review copy.

@@ -20,6 +20,10 @@ Preserve the source origin, vertical datum and actual bounds. The 8 km case is a
 
 Historical full-domain London recipes are not yet migrated; `tasks` remains empty. The separately verified GLB crop → heightfield → solar chain does not establish full-domain rerun coverage.
 
+## Public data
+
+Keep a Scenario’s approved website data under its own `data/` directory. Its `manifest.json` declares every payload path, presentation route, byte size and SHA-256. This distribution manifest is separate from the V2 Asset registry and V1.1 scientific payload contract. Follow the [publication standard](../visualizer/docs/publishing.md). Canopy builds one Pages site containing the shared viewer, guide and declared Scenario data.
+
 ## Validate
 
 ```sh

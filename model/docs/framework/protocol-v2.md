@@ -20,6 +20,7 @@ visualizer/site/      # Preserved detailed website; public URLs remain stable
 asset/schemas/       # Versioned JSON interfaces, mirrored inside the wheel
 asset/data/          # Default private data root; ignored by Git
 scenario/<scenario>/scenario.json
+scenario/<scenario>/data/   # Approved public presentation exports and publication manifest
 <data_root>/project/<scenario>/assets/bundles/<run_id>/
   manifest.json      # v1.1 binary payload description
   geometry.asset.json / physics.asset.json
@@ -65,6 +66,8 @@ States are preparing/running/exporting/complete/failed/cancelled. Numerical qual
 Original Physics4D exports still use v1.1 and can be imported with `canopy import-run SCENARIO DIRECTORY`. The legacy protocol validator rejects v2 manifests; the V2 reader accepts only 2.0.0. The original Canopy root website and large resources retain their URLs as a static compatibility deployment. They are excluded from the Python package and are not automatically converted into validated physics assets.
 
 `storage.local.json` configures absolute data_root/cache_root paths. Metadata lives in the checkout's `scenario/` directory; data lives in `<data_root>/project/`, with `asset/data/` as the default data root. The storage adapter still accepts original Physics4D checkouts with `project/` metadata. The server maps public resource URLs explicitly, independently of source paths, without exposing private configuration or historical recovery records. Portable scenario archives retain their `project/<scenario>/...` member layout.
+
+Approved browser distribution resources are a separate scope under `scenario/<scenario>/data/`. Their versioned publication manifest records exact bytes, source identity and bounded routes. One Pages build publishes these resources with the shared website. This transport inventory does not replace scientific Asset descriptors or add supported numerical representations. See the [publication standard](../../../visualizer/docs/publishing.md).
 
 ## Supported computational representations and coupling
 

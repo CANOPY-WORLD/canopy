@@ -1,5 +1,23 @@
 # Verification record
 
+## Scenario data and unified Pages publication — 2026-11-18
+
+The Canopy repository now owns its public London resources under `scenario/imperial_corridor_8km/data/`. The 1,477 files total 558,073,283 bytes; every file matches the prior public source inventory or an already tracked source file. Previously gateway-only resources were recovered from checksum-matching published Release copies. No numerical payload was resampled or re-encoded.
+
+| Check | Result and scope |
+| --- | --- |
+| Publication integrity | All 1,477 data checksums verified; no missing, duplicate or unlisted resources |
+| Static artifact | 562,791,027 bytes; includes viewer, guide and Scenario data; excludes private retained bundles, cache, credentials and hosting identities |
+| Python | 70 framework tests and 4 publication boundary tests passed |
+| JavaScript | 5 viewer tests and 5 service-worker routing tests passed |
+| Static browser | Full GLB geometry loaded from `/canopy/`; first and final samples decoded for all 18 declared field resources |
+| Complete browser cache | All 1,563 download entries verified and cached; offline reload succeeded; no page/HTTP errors or external data-origin requests |
+| Local scientific viewer | London remains the sole catalog entry, all 9 selected layers load and final dynamic samples remain available; no errors |
+| Architecture guide | Desktop/mobile interaction and layout checks passed, including all 8 Methods and 9 Assets |
+| Documentation | English documents, component links, schema mirrors and review inventory passed the repository checker |
+
+The Pages publisher builds from committed `main` and pushes the static artifact to `gh-pages`. The available GitHub OAuth connection lacks `workflow` scope, so publication uses built-in branch hosting instead of a custom Actions workflow. Source, public-data ownership and publication instructions are documented in [the publication standard](../../../visualizer/docs/publishing.md). Browser evidence is under `cache/qa/pages/` and execution logs under `cache/github-pages-migration/`. This change publishes the existing detailed presentation; the unified V2 scientific viewer continues to use its local read-only API. Historical simulations were not rerun.
+
 ## London-only catalog and contributor guide — 2026-11-17
 
 The curated catalog now contains only `imperial_corridor_8km`. Other local Scenario datasets and the unrelated windfarm presentation were moved to a local archive outside the checkout, preserving the data. Synthetic contract examples now live under `model/tests/fixtures/`; `model/tools/run_example.py` creates separate disposable metadata workspaces.

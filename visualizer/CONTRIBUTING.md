@@ -28,7 +28,7 @@ The implementations in `src/visualization/widgets/index.mjs`, `binary.mjs` and `
 5. Keep preset differences declarative and small. New presets require coordinated schema, API and viewer changes, including packaged schema mirrors.
 6. Keep keyboard interaction, visible focus, responsive layout and readable loading/error states. Avoid continuous rendering when nothing changes.
 
-The detailed London website under `site/` is a compatibility presentation with its own static data index. If a listed website file changes, update its `download-manifest.json` checksum and size. Retain remote London entries routed through `asset-routes.json`; local absence alone does not mean they can be deleted.
+The detailed London website under `site/` is a compatibility presentation. Public data belongs under `scenario/<id>/data/`, with a publication manifest. After changing website code or an approved public export, run `python visualizer/tools/build_pages.py --refresh`; it verifies payload hashes and regenerates routing and download indexes. Follow the [publishing standard](docs/publishing.md). Keep resource addresses in the generated mapping, preserve recorded encodings, and test from a project subpath. There is no external data-gateway fallback.
 
 ## Verify the change
 
@@ -45,4 +45,4 @@ Check all nine selected London layers, the final recorded samples, visibility, c
 
 ## Maintain the explanation website
 
-`guide/` is a small buildless website with an inventory generated from current specs and London metadata. Update it when a component or interface changes; link to the canonical component guides rather than duplicating parameter manuals. Run `python model/tools/build_review_inventory.py`, then `node visualizer/tests/browser_guide.cjs http://127.0.0.1:8769/guide/`. The hosted review is a private Site containing documentation and summary metadata, not raw simulation data.
+`guide/` is a small buildless website with an inventory generated from current specs and London metadata. Update it when a component or interface changes; link to the canonical component guides rather than duplicating parameter manuals. Run `python model/tools/build_review_inventory.py`, then `node visualizer/tests/browser_guide.cjs http://127.0.0.1:8769/guide/`. The Pages build includes the guide at `/guide/`, with documentation and summary metadata. The existing private review Site remains a separate deployment with its existing access settings.

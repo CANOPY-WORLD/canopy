@@ -2,6 +2,8 @@
 
 A framework for geometry, physics simulation and urban visualization. The included case is London’s 8 km × 8 km Imperial Corridor.
 
+**[Open Canopy](https://acse-yl222.github.io/canopy/)** · [Architecture and component guide](https://acse-yl222.github.io/canopy/guide/)
+
 ![Canopy architecture: Scenario selects shared Models, owns Geometry and Physics Assets, and configures a Visualizer that reads both asset types.](visualizer/diagrams/architecture.svg)
 
 **Scenario, Model and Asset are the three core concepts.** A Scenario defines a scene, selects shared Models and owns its Assets. Geometry tools produce Geometry; physics simulators consume Geometry and, when needed, previous results to produce Physics Assets. Each Scenario keeps its own geometry and results.
@@ -17,4 +19,4 @@ A framework for geometry, physics simulation and urban visualization. The includ
 
 Each directory documents its internal structure and interfaces. Start with [Model setup](model/README.md#run-the-small-example) to run an example, or review the [London case](scenario/imperial_corridor_8km/README.md).
 
-For extensions, start with the [contributor and agent standards](model/docs/framework/contributing.md), then follow the relevant component guide. Explore the [interactive architecture guide](https://canopy-architecture-guide.yueyan.chatgpt.site) (private review; [source and local preview](visualizer/guide/README.md)) or read the [data storage strategy](asset/docs/storage.md).
+For extensions, start with the [contributor and agent standards](model/docs/framework/contributing.md), then follow the relevant component guide. Each Scenario owns its public data under `scenario/<id>/data/`; Canopy publishes the viewer, guide and declared data together to GitHub Pages. See the [publishing standard](visualizer/docs/publishing.md) and [data storage strategy](asset/docs/storage.md).

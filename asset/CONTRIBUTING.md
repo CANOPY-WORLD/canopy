@@ -24,7 +24,7 @@ A grid index is not a mesh vertex index. Validate grid alignment before coupling
 
 Write computations in cache through a Method. The runner validates the complete export before retention. For recorded data, use the import adapter and `canopy import-run` after checking owner, coordinates and source provenance. Never overwrite an existing Asset or change hashes to hide a modified payload. Scenario archives preserve exact references and include all registered data and provenance.
 
-The repository ships one London Scenario. Large private payloads live under the configured `data_root`, outside Git; local defaults are ignored. Credentials and machine paths belong in private configuration. Publishing a code change does not publish a dataset. Existing London website resources and gateways retain their compatibility roles until a deliberate data migration is validated.
+The repository ships one London Scenario. Large private payloads live under the configured `data_root`, outside Git; local defaults are ignored. Credentials and machine paths belong in private configuration. Publishing a code change does not publish a dataset. Approved public presentation exports live under `scenario/<id>/data/` and are checked and published by the [Pages publisher](../visualizer/docs/publishing.md). Their distribution manifests do not register scientific Assets or publish the private retained bundles.
 
 ## Change a representation
 

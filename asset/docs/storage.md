@@ -2,7 +2,7 @@
 
 [Asset](../README.md) · [Asset contribution standard](../CONTRIBUTING.md)
 
-**Recommendation: keep code and small metadata in Git, retain immutable computation bundles in a dedicated local data directory, and use S3-compatible object storage for remote distribution and a separate backup.** Keep the current GLB + JSON + per-frame NPY format initially. This separates where data lives from how a reader decodes it.
+**Current choice: one Canopy GitHub repository, with approved public data under `scenario/<id>/data/` and one GitHub Pages deployment from `main`.** The London presentation contains 1,477 files and 558,073,283 bytes. Its checked distribution manifest preserves existing encodings and routes; see the [publishing standard](../../visualizer/docs/publishing.md). Complete private computation bundles remain in a dedicated local data directory. Object storage is an option if future public datasets outgrow Pages.
 
 The current repository ships one Scenario: `imperial_corridor_8km`. Its [Asset catalog](../../scenario/imperial_corridor_8km/asset-catalog.json) records the nine registered Assets, their actual layer encodings, byte counts and manifest hashes. These counts cover the unified retained bundles, not all upstream research output or the detailed website's separate terrain, traffic and UAV resources.
 
@@ -11,10 +11,11 @@ The current repository ships one Scenario: `imperial_corridor_8km`. Its [Asset c
 | Content | Recommended location | Current Canopy support |
 | --- | --- | --- |
 | Code, specs, schemas, guides, Scenario configuration and small review indexes | Git | Implemented |
+| Approved public Scenario display resources | `scenario/<id>/data/` in the same GitHub repository | Implemented; checksums and one Pages artifact |
 | Retained Geometry and Physics bundles | Dedicated SSD/NAS/server directory selected by `data_root` | Implemented; defaults to ignored `asset/data/` |
 | Temporary solver state | `cache_root`, separated from retained data | Implemented |
 | Remote immutable bundles | S3-compatible bucket with versioned object keys and an integrity index | Recommended; no new generic remote resolver is implemented |
-| Browser distribution | Read-only HTTP delivery with CORS, range requests and immutable caching | Existing detailed London website uses a Release/data-gateway route; the unified viewer currently uses the local read-only server |
+| Browser distribution | Same-origin files in the Canopy Pages deployment | Detailed London website and guide are static; the unified scientific viewer uses the local read-only server |
 | Disaster recovery | Independently retained bundle copy or scenario archive, with tested restoration | `canopy pack` is implemented; remote backup automation is not |
 
 For the immediate single-case workflow, an external SSD or research-server directory is sufficient. Configure its absolute path in the ignored `storage.local.json`; use `canopy validate imperial_corridor_8km` after copying or restoring data. A synchronized directory is not an independent backup if deletion propagates to every copy.
@@ -27,7 +28,7 @@ For the immediate single-case workflow, an external SSD or research-server direc
 | Amazon S3 | Research retention with native object versioning and lifecycle management | Native versioning can recover overwritten/deleted objects; retained versions incur storage costs. A strong candidate when these retention features matter. |
 | GitHub Releases | A small number of named downloadable snapshots | Useful for distribution and the existing compatibility site; individual release assets have plan-dependent size limits. It is not the proposed working store for growing frame sequences. |
 | Git LFS | Selected large authoring files that should version alongside code | Stores pointers in Git and external content in LFS. Useful for a few `.blend`/GLB sources; whole-file versioning is a poor match for constantly growing simulation outputs. |
-| Ordinary Git | Small JSON and source files | Keep bulk result files out: GitHub blocks ordinary Git files larger than 100 MiB, and binary history grows with updates. |
+| Ordinary Git | Source, small metadata and the bounded current public London snapshot | Current public files fit the limits. Large evolving research outputs remain external; binary history grows with updates. |
 
 These are Canopy-specific recommendations based on access patterns. Provider facts were checked against [R2 API documentation](https://developers.cloudflare.com/r2/get-started/s3/), [R2 pricing](https://developers.cloudflare.com/r2/pricing/), [S3 Versioning](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Versioning.html), [GitHub large-file guidance](https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-large-files-on-github), and [Git LFS](https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-git-large-file-storage) on 2026-11-17. No bucket, credentials or paid service is provisioned by this change.
 
