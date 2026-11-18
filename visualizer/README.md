@@ -10,6 +10,8 @@ The standard scientific Viewer and the detailed public London presentation curre
 
 The public presentation uses a minimal widget player: the original Overview / Traffic / Birds / UAV / field buttons above a full-page 3D view, with only play/pause and a progress slider below. Titles, Scenario navigation, side panels, legends, metrics and hover readouts are hidden. The local scientific Viewer retains its Scenario tabs and inspection controls; the two runtimes are still separate. Choose a public Scenario through its catalog link or direct URL.
 
+Both the homepage download flow and the direct Viewer show a simple loading page: the Canopy wordmark, the selected Scenario title and short description, and a progress bar. Read the introduction from the public catalog. Show measured geometry-transfer progress when available and an indeterminate bar during preparation. The page uses no preview renderer and disappears when initialization completes.
+
 ## Internal structure
 
 ```mermaid
