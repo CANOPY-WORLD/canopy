@@ -6,7 +6,9 @@ The standard viewer is a read-only consumer of Geometry and Physics Assets. Exte
 
 Use one shared Viewer across Scenarios. A new Scenario must not copy the Viewer, start another renderer or add a Scenario-ID branch to shared rendering logic. Extend a shared layer, representation reader or small declarative preset. The [architecture review](docs/architecture-review.md) describes the two existing rendering paths; the [upgrade plan](docs/upgrade-plan.md) defines their consolidation. Proposed Source and registry APIs are not available until implemented and tested.
 
-Use the shared `shared/scenario-tabs.mjs` navigation component. Top-level tabs represent Scenarios and come from the catalog; field types, camera shots and presets belong to the view controls. Keep selected tabs, keyboard focus, direct URLs, browser history and unavailable-case errors consistent. Never create placeholder public Scenarios to fill the tab bar.
+The public presentation has a fixed minimal layout: widget buttons at the top, a full-page canvas, and play/pause plus a progress slider at the bottom. Do not add visible titles, Scenario headers, side panels, legends, counters or hover readouts. Put existing compatibility state and dynamically created detail panels inside the hidden `#viewer-details` host. Preserve loading feedback and actionable errors. The local scientific Viewer retains its inspection UI and catalog navigation using `shared/scenario-tabs.mjs`. Public Scenarios remain selectable through catalog links and direct URLs; never create placeholder public cases.
+
+The bottom controls must follow the selected widget's actual clock and bounds. Pause and seek must affect that widget, and reaching the last field sample must keep the current selection. Playing again restarts from its first sample. Camera orbit progress is presentation time, not a physical result; static camera views and single snapshots have disabled playback. Inactive replay clocks must not keep advancing, and asynchronous loaders must not steal a newer selection. Preserve keyboard operation, visible focus and horizontally scrollable widget buttons on small screens.
 
 ## Presentation boundary
 

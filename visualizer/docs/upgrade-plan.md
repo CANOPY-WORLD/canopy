@@ -62,31 +62,27 @@ visualizer/src/visualization/
 
 New Source/registry/context APIs require implementation and tests before external plugins can depend on them. Keep the existing widget interface stable or supply a documented adapter. Widgets must request redraw through the runtime; they must not introduce their own perpetual animation loops.
 
-## Simple interface: Scenario tabs above one view
+## Simple interface: widget buttons and playback
 
-The primary navigation is a horizontal row of Scenario tabs generated from the catalog. The current catalog shows only London; do not add placeholder cases. Clicking another tab selects that case's data, layers and camera defaults in the same presentation structure. Keep deep links, browser history and open-in-new-tab behavior.
-
-The current navigation component is shared by both existing Viewer paths. Switching currently navigates to the selected URL and releases the outgoing page; seamless in-page loading belongs to the later runtime consolidation. The public city's camera/field shortcuts are grouped under **Views and playback** in the side panel.
-
-Keep the interface small:
+The public presentation contains only a horizontal widget button row, a full-page 3D view and a bottom play/pause button with progress slider. The buttons select Overview, available camera views, Traffic, Birds, UAVs and physics fields. Scenario selection belongs to the catalog and direct URLs, not another visible header over the canvas. Do not add placeholder Scenarios.
 
 ```text
 +--------------------------------------------------------------------+
-| Canopy     [ London ]  [ other admitted Scenarios, when available ] |
-+------------------------------------------------+-------------------+
-|                                                | Layers / settings |
-|                     3D view                    | Views & playback  |
-|                                                | Selection details |
-+------------------------------------------------+-------------------+
-| Play / pause     Recorded time     Scrubber     Availability        |
+|      [ Overview ] [ Traffic ] [ Birds ] [ UAVs ] [ Wind ] ...       |
+|                                                                    |
+|                            3D view                                 |
+|                                                                    |
+|                  Play / pause  ───────●──────────                   |
 +--------------------------------------------------------------------+
 ```
 
-Presets remain internal configuration defaults. They do not need another top-level switcher or separate application. Engineering, city and laboratory may choose initial layers or styles; every Scenario retains the same frame. Show inspection details when an object or value is selected instead of adding a permanently open inspector by default.
+This layout is implemented in the public city presentation. The local scientific Viewer still exposes Scenario tabs, layer controls and inspection tools; merging those runtimes remains future work. Existing city adapters retain their detailed controls in a hidden state host. New shared interfaces should remove that dependency gradually without introducing another visible panel.
 
-Layer states should distinguish loading, ready, unavailable at this time, unsupported format and failed resource. Partial failure leaves usable layers available. The inspector should expose scientific meaning without requiring users to read internal paths. Empty time intervals must remain visible as unavailable, rather than being filled with invented samples.
+A selected widget owns the progress bar. Use its actual recorded samples and bounds, stop field playback at the final sample and restart when Play is pressed again. Switching widgets must not advance an inactive replay or let a delayed loader replace the new selection. An overview orbit uses camera-animation time, clearly identified through accessible labels. Static views and single snapshots have disabled playback; no physical frames are invented.
 
-On narrow screens, Scenario tabs scroll horizontally and the side panel folds behind a Layers button while the timeline remains reachable. Support keyboard selection, visible focus, readable units, reduced motion and non-color-only status. Preserve selected Scenario, snapshot and supported view settings in shareable URLs without credentials or private filesystem paths.
+Presets remain internal defaults. Keep titles, readouts, legends, counters and settings out of the public canvas. Scientific units, provenance and limitations remain in the Asset metadata, component documentation and separate scientific inspection UI. Loading feedback and actionable errors remain available when required.
+
+On narrow screens, widget buttons scroll horizontally and the bottom controls remain reachable. Preserve keyboard operation, focus indicators, direct URLs, browser history and explicit unknown-Scenario errors. Keep Scenario data and snapshots independent of this presentation choice.
 
 ## Performance with explicit fidelity
 

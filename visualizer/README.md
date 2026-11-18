@@ -8,7 +8,7 @@ The Visualizer reads Geometry and Physics Assets. Its target is one presentation
 
 The standard scientific Viewer and the detailed public London presentation currently have separate rendering paths. Review the [current architecture](docs/architecture-review.md) and [unified upgrade plan](docs/upgrade-plan.md) for their interfaces, the proposed common UI and performance work. Runtime consolidation is planned, not yet implemented.
 
-Both paths share catalog-driven Scenario tabs at the top. A tab opens that Scenario's view; the current public catalog shows London only. Public camera/field shortcuts are grouped in the side panel under **Views and playback**, leaving the top row for Scenario selection.
+The public presentation uses a minimal widget player: the original Overview / Traffic / Birds / UAV / field buttons above a full-page 3D view, with only play/pause and a progress slider below. Titles, Scenario navigation, side panels, legends, metrics and hover readouts are hidden. The local scientific Viewer retains its Scenario tabs and inspection controls; the two runtimes are still separate. Choose a public Scenario through its catalog link or direct URL.
 
 ## Internal structure
 

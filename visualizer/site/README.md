@@ -4,6 +4,8 @@
 
 This directory contains the shared implementation of the detailed Imperial Corridor presentation. The [publication reference](../../scenario/imperial_corridor_8km/publication.json) selects the independent London data website; [data/manifest.json](../../scenario/imperial_corridor_8km/data/manifest.json) is its locked file inventory. The Pages builder packages the Viewer and metadata without the remote payloads.
 
+The Viewer displays only widget buttons above the full-page canvas and play/pause with a progress slider below. Detailed adapter controls live in the hidden `#viewer-details` host. New widgets must use the shared playback controls and keep the public canvas free of extra panels; see the [Visualizer standard](../CONTRIBUTING.md).
+
 | Part | Role |
 | --- | --- |
 | `index.html`, `viewer/` | Entry page and detailed viewer |

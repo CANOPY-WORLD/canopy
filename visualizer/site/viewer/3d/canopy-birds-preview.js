@@ -3,7 +3,7 @@ export async function installBirdPreview(viewer,invalidate) {
  const panel=document.createElement('section');
  panel.style.cssText='position:fixed;z-index:1000;left:18px;top:180px;width:310px;padding:18px;background:#102832ed;color:white;border:1px solid #7ba99c;border-radius:14px;font:13px system-ui;box-shadow:0 8px 30px #0006';
  panel.innerHTML='<b>CANOPY · Bird simulation</b><p data-status>Loading local simulation results…</p>';
- document.body.append(panel);
+ (document.getElementById('viewer-details') ?? document.body).append(panel);
  try {
  const base=new URL('../../assets/birds/',import.meta.url).href;
  const fetchOK=async p=>{const r=await fetch(base+p);if(!r.ok)throw Error(`${p}: HTTP ${r.status}`);return r;};

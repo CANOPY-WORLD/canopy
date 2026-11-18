@@ -1,7 +1,7 @@
 {
-  "version": "f47327e2099e0b509ffc",
+  "version": "8b55e0993c5ee2d61127",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 562585554,
+  "bytes": 562588000,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -195,8 +195,8 @@
     },
     {
       "path": "guide/index.html",
-      "bytes": 16912,
-      "sha256": "ff1d2f01f488805cd6f90ac326f936b9410d4314ff6b2f97515eed98b19862b3"
+      "bytes": 16962,
+      "sha256": "97455076ecd0d8ee1b190859aac2680dd60f55ed5acc9d37bbec7ae24724dde9"
     },
     {
       "path": "guide/inventory.json",
@@ -7610,8 +7610,8 @@
     },
     {
       "path": "viewer/3d/canopy-birds-preview.js",
-      "bytes": 6303,
-      "sha256": "daac19a7658708bb3462fd5bc13afd058bfed05d2f7ba76e71beefdc66006a6f"
+      "bytes": 6350,
+      "sha256": "ee0fffa70d9195814df5b10406356690295df414d391d0768bf283d997fbb3b8"
     },
     {
       "path": "viewer/3d/canopy-pigeon.glb.gz",
@@ -7625,8 +7625,8 @@
     },
     {
       "path": "viewer/3d/complete-detail-tiles.js",
-      "bytes": 3783,
-      "sha256": "38a9461bf88736c740c745f9793e488a1ccba01a00b34f8925defca7116559db"
+      "bytes": 3830,
+      "sha256": "d13b4d981b0b0958dfe32839651b42e5a58e0919ad854da1b078379a9bd34083"
     },
     {
       "path": "viewer/3d/corridor-context.js",
@@ -7685,13 +7685,13 @@
     },
     {
       "path": "viewer/3d/index.html",
-      "bytes": 14550,
-      "sha256": "8af892a87529010fba5570305e20fe6f028da8352a776220f6ba89d2dfb6e168"
+      "bytes": 12363,
+      "sha256": "d5af4a483a6ab06e47278b564277b7409ca6e7526321e0ab96db42e8eecc256d"
     },
     {
       "path": "viewer/3d/main.js",
-      "bytes": 121003,
-      "sha256": "70fe5bdd7f4431c10dd8da1650492efc46d55b55d72e141388aac4bd90151b93"
+      "bytes": 125013,
+      "sha256": "52280ba8fb7e1f84728df0751c8c9f94c6a42b323b4787b20e33095671295440"
     },
     {
       "path": "viewer/3d/opening.css",
@@ -7730,8 +7730,8 @@
     },
     {
       "path": "viewer/3d/style.css",
-      "bytes": 14869,
-      "sha256": "30499dc356dffb691ab89a6b8d0202f8da7125e3f52937035184f2c62f435760"
+      "bytes": 15175,
+      "sha256": "541590f6218c9f786e837581ba92ed542b60ad15e2749c180873f4eceb3fa743"
     },
     {
       "path": "viewer/3d/tile.js",
@@ -7765,8 +7765,8 @@
     },
     {
       "path": "viewer/3d/wind-uav-layer.js",
-      "bytes": 13085,
-      "sha256": "ce83c3af2a91111719a962ed41041c615bedbeda2ae2c3029c90f7a0c36d1320"
+      "bytes": 13132,
+      "sha256": "ee238b3aa7b4bd375c299eea9f828236451011a2a2a04f5c18784b35f767bfb6"
     },
     {
       "path": "viewer/3d/wind-uav-route.mjs",
@@ -7810,8 +7810,8 @@
     },
     {
       "path": "viewer/pages-bootstrap.js",
-      "bytes": 1517,
-      "sha256": "7db72a31ae139d9b187085384e0d4c1233df3ed9a2bf0784bbbab8f51d4c2a01"
+      "bytes": 1622,
+      "sha256": "bc642f5f96fb69f84e8f9b541b1800e2d3f47268afe8b7c434781e4d7748c61a"
     },
     {
       "path": "viewer/recorded-clock.mjs",
@@ -7835,8 +7835,8 @@
     },
     {
       "path": "viewer/scene.js",
-      "bytes": 2076,
-      "sha256": "c0228fa95aae9a072cc829f9d471422d87ce382d89f393b4b3b3bef2ede7dc79"
+      "bytes": 2097,
+      "sha256": "1a631437129bb98ec575cd8aea79d67a8f101111b12c7eace00d0eb59aaf519d"
     }
   ]
 }
