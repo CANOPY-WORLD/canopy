@@ -69,7 +69,7 @@ The public Viewer loads a static scene catalog, then its scene configuration and
 
 The city entry module mixes renderer setup, camera tours, layer controls, field playback, prefetching and Scenario-specific decisions. Several modules communicate through window globals. City modules do not all implement the scientific widget lifecycle.
 
-For example, [complete-detail-tiles.js](../site/viewer/3d/complete-detail-tiles.js) exposes `ready`, `group`, `progress`, `hasPoints`, `update` and `setEnabled`, rather than the standard widget contract. It uses three concurrent loading workers and retains the complete source meshes and transforms. It has no public `dispose()` or runtime tile eviction. The full-detail path must remain available during migration.
+For example, [complete-detail-tiles.js](../site/viewer/3d/complete-detail-tiles.js) exposes `ready`, `group`, `progress`, `hasPoints`, `update` and `setEnabled`, rather than the standard widget contract. It uses three concurrent loading workers and retains the complete source meshes and transforms. It has no public `dispose()` or runtime tile eviction. This path is available explicitly through `?quality=full&lite=0`; balanced mode uses overview geometry. See the [performance review](performance-review.md) for current loading budgets and separate derived display exports.
 
 There are already performance measures worth retaining: bounded detail loading, static matrices, field prefetch, compressed payloads and conditional drawing. The city loop schedules animation frames continuously, but calls the renderer only when its dirty/motion conditions require it. Describing this as unconditional rendering would be inaccurate.
 
@@ -79,7 +79,7 @@ The static scene resolver now rejects an unknown `scene` with an explicit error 
 
 The London snapshot contains **1,477 payloads / 558,073,283 stored bytes**. The shared website remains about 5 MB. These are stored sizes, not decoded RAM or GPU estimates.
 
-The opening page verifies and caches the selected Scenario's full download list before entering the Viewer. The direct Viewer URL loads requested resources without this mandatory complete download, although its complete-geometry mode still requests the full geometry set. Offline download should become an explicit action in the unified UI.
+The opening page and direct Viewer load requested resources on demand. The explicit `?download=all` homepage mode verifies and caches the selected Scenario's full download list before entering the Viewer. Complete-detail inspection still requests the full geometry set; balanced entry avoids that cost. These changes do not yet provide automatic spatial tile streaming or a shared runtime memory budget.
 
 The service worker already restricts remote reads to declared HTTPS roots, omits credentials, preserves Range requests and uses bounded transient retries. These protections and snapshot/hash identities should be retained beneath the shared Source interface. See [publication and caching](publishing.md).
 

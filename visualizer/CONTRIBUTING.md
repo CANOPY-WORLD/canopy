@@ -12,6 +12,8 @@ The bottom controls must follow the selected widget's actual clock and bounds. P
 
 The minimal layout applies after loading. The separate loading page contains only the Canopy wordmark, a Scenario introduction from the public catalog, and a progress bar with its current loading status. Do not add a preview renderer, animated city or decorative content. Use actual transfer progress when known and an indeterminate bar otherwise; never invent an overall completion percentage. Hide playback controls until initialization completes, honor reduced motion and keep a readable retry path if loading fails.
 
+Stream the selected view on normal entry; reserve full offline download for `?download=all`. Keep balanced geometry and complete detail (`?quality=full&lite=0`) explicit. Physics widgets request the current sample and a small look-ahead window, with byte-bounded caches; never decode an entire sequence just to switch widgets. New display derivatives must preserve originals and record transformation parameters, precision, source hashes and output hashes. Follow the [performance review and export guide](docs/performance-review.md), including request-budget and playback checks. A cache limit is not a claim about total browser or GPU memory.
+
 ## Presentation boundary
 
 The shell owns the renderer, scene, camera, timeline, selected layers, legend and picking. Scenario configuration selects `template:standard`, a supported preset, Asset/layer references and optional camera. Widgets implement display behavior. A widget must not start a solver, mutate an Asset, write scenario configuration, infer a new physical result or fetch undeclared private filesystem paths.

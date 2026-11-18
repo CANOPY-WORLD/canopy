@@ -38,7 +38,7 @@ export async function installBirdPreview(viewer,invalidate) {
  el('play').onclick=()=>{playing=!playing;el('play').textContent=playing?'Pause':'Play';};
  el('time').oninput=()=>seek(el('time').value);el('focus').onclick=focus;
  el('visible').onchange=()=>{layer.setVisible(el('visible').checked);invalidate();};el('markers').onchange=()=>{layer.setMarkers(el('markers').checked);invalidate();};
- function tick(now){layer.setVisible(active && el('visible').checked && window.corridorTerrain?.enabled!==false);const dt=Math.min(.1,(now-old)/1000);old=now;if(active&&playing&&!document.hidden)seek((t+dt*Number(el('rate').value))%manifest.last_frame_t_s);else if(layer.group.visible){layer.update(t);invalidate();}requestAnimationFrame(tick);}requestAnimationFrame(tick);
+ function tick(now){layer.setVisible(active && el('visible').checked && window.corridorTerrain?.enabled!==false);const dt=Math.min(.1,(now-old)/1000);old=now;if(active&&playing&&!document.hidden)seek((t+dt*Number(el('rate').value))%manifest.last_frame_t_s);requestAnimationFrame(tick);}requestAnimationFrame(tick);
  window.canopyBirds={manifest,layer,seek,focus,setActive(v){active=v;panel.hidden=!v;layer.setVisible(v&&el('visible').checked);invalidate();},toggle(){el('play').click();},setRate(v){el('rate').value=v;},get rate(){return Number(el('rate').value)},get time(){return t},get playing(){return playing}};
  moments();const moment=manifest.flocks[0].moments.find(m=>m.label==='Murmuration') ?? manifest.flocks[0].moments.find(m=>m.label==='Leaving the roost');seek(moment?.mid_s??0);return window.canopyBirds;
  }catch(err){panel.querySelector('[data-status]')?.replaceChildren(document.createTextNode('Bird replay failed: '+err.message));console.error(err);}

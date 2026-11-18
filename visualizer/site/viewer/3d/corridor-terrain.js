@@ -36,20 +36,23 @@ export async function loadCorridorTerrain(url){
  terrain.stats.min=dem.h.reduce((a,b)=>Math.min(a,b),Infinity);terrain.stats.max=dem.h.reduce((a,b)=>Math.max(a,b),-Infinity);window.corridorTerrain=terrain;return terrain;
 }
 export function currentTerrain(){return terrain}
-function patch(material){if(patched.has(material))return;patched.add(material);const old=material.onBeforeCompile;
- material.onBeforeCompile=(shader,renderer)=>{old?.call(material,shader,renderer);shader.uniforms.canopyTerrainEnabled=enabled;shader.vertexShader='attribute float canopyHeight;\nuniform float canopyTerrainEnabled;\n'+shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\ntransformed.y += canopyHeight * canopyTerrainEnabled;')};
- const key=material.customProgramCacheKey.bind(material);material.customProgramCacheKey=()=>key()+'|canopy-terrain-v1';material.needsUpdate=true;
+function patch(material,baseElevation=0){if(patched.has(material))return;patched.add(material);const old=material.onBeforeCompile;
+ material.onBeforeCompile=(shader,renderer)=>{old?.call(material,shader,renderer);shader.uniforms.canopyTerrainEnabled=enabled;shader.vertexShader='attribute float canopyHeight;\nuniform float canopyTerrainEnabled;\n'+shader.vertexShader.replace('#include <begin_vertex>',`#include <begin_vertex>\ntransformed.y += canopyHeight * (canopyTerrainEnabled - ${baseElevation.toFixed(1)});`)};
+ const key=material.customProgramCacheKey.bind(material);material.customProgramCacheKey=()=>key()+'|canopy-terrain-v2-'+baseElevation;material.needsUpdate=true;
 }
-export function drapeBuildings(root){if(!terrain)return;root.updateWorldMatrix(true,true);const p=new THREE.Vector3();root.traverse(mesh=>{
+export function drapeBuildings(root){if(!terrain)return;root.updateWorldMatrix(true,true);const p=new THREE.Vector3();root.traverseVisible(mesh=>{
  if(!mesh.isMesh||mesh.isInstancedMesh||!mesh.geometry.attributes.position)return;
  const g=mesh.geometry,pos=g.attributes.position,h=new Float32Array(pos.count),sy=mesh.matrixWorld.elements[5];
  if(Math.abs(mesh.matrixWorld.elements[4])+Math.abs(mesh.matrixWorld.elements[6])>1e-5)throw Error('Unsupported tilted source building transform');
  for(let i=0;i<pos.count;i++){p.fromBufferAttribute(pos,i).applyMatrix4(mesh.matrixWorld);h[i]=terrain.sample(p.x,p.z)/sy}
- g.setAttribute('canopyHeight',new THREE.BufferAttribute(h,1));(Array.isArray(mesh.material)?mesh.material:[mesh.material]).forEach(patch);
+ g.setAttribute('canopyHeight',new THREE.BufferAttribute(h,1));(Array.isArray(mesh.material)?mesh.material:[mesh.material]).forEach(material=>patch(material));
  g.computeBoundingBox();g.boundingBox.min.y-=5/Math.abs(sy);g.boundingBox.max.y+=75/Math.abs(sy);g.computeBoundingSphere();g.boundingSphere.radius+=75/Math.abs(sy);
  });}
 function terrainNormals(g){const original=g.attributes.position,temporary=new Float32Array(original.count*3),h=g.attributes.canopyHeight;for(let i=0;i<original.count;i++){temporary[i*3]=original.getX(i);temporary[i*3+1]=original.getY(i)+h.getX(i);temporary[i*3+2]=original.getZ(i)}g.setAttribute('position',new THREE.BufferAttribute(temporary,3));g.computeVertexNormals();g.setAttribute('position',original);}
 export function addHeightAttribute(mesh,sampler){const pos=mesh.geometry.attributes.position,h=new Float32Array(pos.count);for(let i=0;i<pos.count;i++)h[i]=sampler(pos.getX(i),pos.getZ(i),i);mesh.geometry.setAttribute('canopyHeight',new THREE.BufferAttribute(h,1));patch(mesh.material);terrainNormals(mesh.geometry);mesh.frustumCulled=false;}
+// Derived display GLBs contain terrain normals and centimetre display offsets.
+// Keep one geometry for the flat/raised views; the shared uniform selects height.
+export function prepareDisplaySurface(mesh){const g=mesh.geometry,h=g.getAttribute('_canopy_height'),unit=mesh.userData.canopy_height_scale_m;if(!h||h.count!==g.getAttribute('position')?.count||unit!==.01||mesh.userData.canopy_base_elevation!==1)throw Error('Display ground is missing terrain offsets or their metre scale');const sy=mesh.matrixWorld.elements[5];if(!Number.isFinite(sy)||sy<=0||Math.abs(mesh.matrixWorld.elements[4])+Math.abs(mesh.matrixWorld.elements[6])>1e-5)throw Error('Unsupported display ground transform');const local=new Float32Array(h.count);for(let i=0;i<h.count;i++)local[i]=h.getX(i)*unit/sy;g.setAttribute('canopyHeight',new THREE.BufferAttribute(local,1));g.deleteAttribute('_canopy_height');patch(mesh.material,1);mesh.frustumCulled=false;mesh.userData.terrainGeometry=g;mesh.userData.flatGeometry=g;}
 // Split existing vector triangles; source boundary coordinates and holes remain intact.
 export function terrainSurfaceGeometry(array,base=false){
  const out=[];function emit(a,b,c){const ab=(a[0]-b[0])**2+(a[2]-b[2])**2,bc=(b[0]-c[0])**2+(b[2]-c[2])**2,ca=(c[0]-a[0])**2+(c[2]-a[2])**2;

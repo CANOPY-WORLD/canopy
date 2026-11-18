@@ -6,6 +6,8 @@ const puppeteer = require(process.env.PUPPETEER_MODULE || 'puppeteer-core');
 (async () => {
   const base = new URL(process.argv[2] || 'http://127.0.0.1:8784/canopy/');
   const pauseRender = process.env.CANOPY_QA_PAUSE_RENDER === '1';
+  const lite = process.env.CANOPY_QA_LITE ?? '1';
+  assert(['0','1'].includes(lite), 'CANOPY_QA_LITE must be 0 or 1');
   const browser = await puppeteer.launch({executablePath:process.env.CHROME_PATH || '/opt/google/chrome/chrome',
     headless:true, args:['--no-sandbox','--enable-unsafe-swiftshader']});
   const errors = [], checks = [];
@@ -16,10 +18,11 @@ const puppeteer = require(process.env.PUPPETEER_MODULE || 'puppeteer-core');
     page.on('console', m => { if(m.type() === 'error') errors.push(m.text()); });
     page.on('response', r => { if(r.status() >= 400 && !r.url().endsWith('/favicon.ico')) errors.push(`${r.status()} ${r.url()}`); });
     await page.setViewport({width:1440,height:1000});
-    await page.goto(new URL('viewer/3d/?scene=imperial_corridor_8km&lite=1',base).href,{waitUntil:'domcontentloaded'});
+    await page.goto(new URL(`viewer/3d/?scene=imperial_corridor_8km&lite=${lite}`,base).href,{waitUntil:'domcontentloaded'});
     await page.waitForFunction(() => !!window.viewer,{timeout:120000});
     if(pauseRender) await page.evaluate(() => { window.qaRender=viewer.renderer.render; viewer.renderer.render=()=>{}; });
     await page.waitForFunction(() => viewer.model.children.length && document.querySelector('#loading').classList.contains('hide'),{timeout:120000});
+    assert(await page.evaluate(() => viewer.model.visible), 'The selected overview geometry must remain visible');
     const ready = () => page.waitForFunction(() => !document.querySelector('#play').disabled);
     const clickWidget = async selector => {
       await page.$eval(selector, el => el.scrollIntoView({block:'nearest',inline:'nearest'}));
@@ -135,7 +138,7 @@ const puppeteer = require(process.env.PUPPETEER_MODULE || 'puppeteer-core');
     assert((await page.evaluate(orbit))>before);
     await minimal();
     assert.deepEqual(errors,[]);
-    const result={passed:true,checks,geometry:'existing lightweight London mode',continuousRenderingPaused:pauseRender,viewports:[1440,390],errors};
+    const result={passed:true,checks,geometry:await page.evaluate(()=>viewer.geometryQuality),continuousRenderingPaused:pauseRender,viewports:[1440,390],errors};
     fs.writeFileSync('cache/qa/widget-player/results.json',JSON.stringify(result,null,2)+'\n');
     console.log(JSON.stringify(result,null,2));
   } finally { await browser.close(); }
