@@ -1,6 +1,7 @@
 {
-  "version": "31a13ccf3c9591de1fe9",
-  "bytes": 562477044,
+  "version": "89f07a4b2a0d2dc040a8",
+  "scenario_id": "imperial_corridor_8km",
+  "bytes": 562576349,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -84,13 +85,13 @@
     },
     {
       "path": "asset-router.js",
-      "bytes": 4896,
-      "sha256": "6be5aa6c58025c5472f012c81b02cfb40863adba14f5bdc8224fec7b43dd18a3"
+      "bytes": 6195,
+      "sha256": "0e04b7b7485004788ac6afe7455ac926c31d7ad731f9d3f9ee37ae711b3ad2c3"
     },
     {
       "path": "asset-sources.json",
-      "bytes": 251998,
-      "sha256": "54fbcb68afbdece55854cbd29aadb27af1b857ba7df123234ec4d90e797aef1b"
+      "bytes": 346658,
+      "sha256": "c140d762b1e9f39caf614c9ffd4bd597f6c711f8487bb66ae4b94bc158c4e3ff"
     },
     {
       "path": "assets/birds/README.txt",
@@ -184,8 +185,8 @@
     },
     {
       "path": "guide/app.js",
-      "bytes": 11197,
-      "sha256": "964f28468e0587193b83af8b3390b5416e7b591c800bee7bd211f6c4d9a7b327"
+      "bytes": 11237,
+      "sha256": "26d28c39c19164684ed09ee8c4baf616a35e86dc7ec27c4aadf509c87d99bb21"
     },
     {
       "path": "guide/architecture.svg",
@@ -194,8 +195,8 @@
     },
     {
       "path": "guide/index.html",
-      "bytes": 14107,
-      "sha256": "1c63d973fa5f7975c4de1b74892d21c078577ded003c3a55b52e823ca07dd0e2"
+      "bytes": 14569,
+      "sha256": "fb82f3262fa8245843780356486860af00d7177f9fec1e31757202e5adeb48b8"
     },
     {
       "path": "guide/inventory.json",
@@ -214,13 +215,23 @@
     },
     {
       "path": "preload.js",
-      "bytes": 6369,
-      "sha256": "b7f16f4a358b29c1fedc2c66d7e8c49f01a1a3fd530f426f203cba6f29b74853"
+      "bytes": 7050,
+      "sha256": "bacd0ec9243385bb0dfc94bc611e7d027bbec45e2a3abaf014af07ad5f96450c"
+    },
+    {
+      "path": "scenario-index.json",
+      "bytes": 956,
+      "sha256": "90c7a8f66e7419744544cdf5b2a428734c2ab1834a959e5ac5984d7f90bbf833"
     },
     {
       "path": "scenario/imperial_corridor_8km/data/manifest.json",
       "bytes": 419996,
       "sha256": "77320e4684ce7a63c0a9a8a45b99329e085ea7dfa45991cc32b345d112d3f97c"
+    },
+    {
+      "path": "scenario/imperial_corridor_8km/publication.json",
+      "bytes": 639,
+      "sha256": "5e79a8b44d966e9e21340f2a314d29488462bc2966222a6d5631755825e4cd24"
     },
     {
       "path": "scenes/imperial_corridor_8km/compact-provenance/fields-8m-report.json",
@@ -7789,8 +7800,8 @@
     },
     {
       "path": "viewer/pages-bootstrap.js",
-      "bytes": 949,
-      "sha256": "90cc7b7109a5284d5968913ee27ddaa2fe69e749e520a95f4a577a3283890ea3"
+      "bytes": 1517,
+      "sha256": "7db72a31ae139d9b187085384e0d4c1233df3ed9a2bf0784bbbab8f51d4c2a01"
     },
     {
       "path": "viewer/recorded-clock.mjs",

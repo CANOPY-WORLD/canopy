@@ -1,4 +1,4 @@
-/* Scenario-owned data; all URLs are relative to this Canopy Pages deployment. */
+/* Shared Viewer routes resolve through pinned, explicitly declared data hosts. */
 const base = new URL('./', self.location.href);
 const CONTROL = 'canopy-cache-control';
 const activeKey = new URL('__active', base).href;
@@ -35,6 +35,17 @@ function resourceURL(path) {
   return url;
 }
 
+function remoteURL(value) {
+  if (typeof value !== 'string' || /[\\%?#\s]/.test(value) ||
+      value.replace(/^https:\/\//, '').split('/').some(part => part === '.' || part === '..')) {
+    throw Error('Invalid remote data URL');
+  }
+  const url = new URL(value);
+  if (url.protocol !== 'https:' || url.username || url.password || url.search || url.hash ||
+      url.href !== value || url.pathname.includes('//')) throw Error('Invalid remote data URL');
+  return url;
+}
+
 async function activeCache() {
   const selected = await (await caches.open(CONTROL)).match(activeKey);
   return selected ? caches.open(await selected.text()) : null;
@@ -51,12 +62,22 @@ async function readSources() {
     if (!response) throw error;
   }
   const data = await response.json();
-  if (data.schema_version !== '1.0.0' || !data.resources || typeof data.resources !== 'object')
+  if (!['1.0.0', '2.0.0'].includes(data.schema_version) || !data.resources || typeof data.resources !== 'object')
     throw Error('Unsupported public resource index');
+  const roots = data.schema_version === '2.0.0' ? data.remote_bases : [];
+  if (!Array.isArray(roots)) throw Error('Missing remote data roots');
+  for (const root of roots) {
+    remoteURL(root);
+    if (!root.endsWith('/')) throw Error('Remote data root must end with a slash');
+  }
   const map = new Map();
   for (const [path, target] of Object.entries(data.resources)) {
     resourceURL(path);
-    map.set(path, resourceURL(target));
+    if (typeof target === 'string' && target.startsWith('https://')) {
+      const remote = remoteURL(target);
+      if (!roots.some(root => remote.href.startsWith(root))) throw Error('Undeclared remote data target');
+      map.set(path, remote);
+    } else map.set(path, resourceURL(target));
   }
   return map;
 }
@@ -88,8 +109,13 @@ self.addEventListener('fetch', event => {
     const network = async () => {
       const target = map.get(resourcePath);
       if (!target) return fetchResource(event.request);
-      return fetchResource(target, { headers: geometry ? undefined : event.request.headers,
-        cache: event.request.cache, credentials: 'same-origin', signal: event.request.signal });
+      // Data hosts receive no application credentials or arbitrary request headers.
+      const headers = new Headers();
+      if (!geometry) for (const name of ['Accept', 'Range']) {
+        if (event.request.headers.has(name)) headers.set(name, event.request.headers.get(name));
+      }
+      return fetchResource(target, { headers, mode: 'cors', redirect: 'error',
+        cache: event.request.cache, credentials: 'omit', signal: event.request.signal });
     };
     if (event.request.cache === 'no-store' && !geometry) return network();
     const cache = await activeCache();
