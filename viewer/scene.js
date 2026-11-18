@@ -17,7 +17,7 @@ export async function loadScene() {
   const qs = new URLSearchParams(location.search);
   const id = qs.get('scene') || index.default;
   if (!index.scenes.some((s) => s.id === id)) {
-    throw new Error(`Unknown Scenario: ${id}. Choose an available Scenario tab.`);
+    throw new Error(`Unknown Scenario: ${id}. Open the Scenario catalog to choose an available case.`);
   }
   const entry = index.scenes.find((scene) => scene.id === id);
   const base = entry.base_url ? new URL(entry.base_url, ROOT).href : ROOT + 'scenes/' + id + '/';
