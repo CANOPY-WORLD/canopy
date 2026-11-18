@@ -142,13 +142,10 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 }
 .widget-player .timebar .btn { width: 40px; min-height: 40px; flex: 0 0 auto; }
 .widget-player .timebar input { width: 100%; min-width: 0; min-height: 40px; margin: 0; }
-.widget-player #loading { background: #0f1216; z-index: 12; transition: opacity .3s; }
-.widget-player #loading .box { position: absolute; bottom: 90px; width: min(320px, calc(100% - 64px)); }
-.widget-player #loading .track { height: 3px; overflow: hidden; border-radius: 3px; background: #ffffff20; }
-.widget-player #bar { width: 0; height: 100%; background: #7ac9b2; transition: width .2s; }
-.widget-player #loading.failed .box { bottom: 110px; width: min(520px, calc(100% - 48px)); }
-.widget-player #loading.failed #loading-title, .widget-player #loading.failed #pct { display: block !important; margin: 10px 0; }
-.widget-player #loading.failed a { color: #a0e5d0; }
+/* Loading is a separate full-page state; the minimal controls appear when ready. */
+.widget-player #loading { z-index: 18; }
+.widget-player #loading.hide { display: none; }
+.widget-player:has(#loading:not(.hide)) :is(.top-tabs, .timebar) { visibility: hidden; }
 @media (max-width: 820px) {
   .widget-player .top-tabs .tab { padding: 8px 11px; font-size: 12px; }
 }

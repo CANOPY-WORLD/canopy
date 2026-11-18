@@ -189,6 +189,24 @@ const ui = {
   lTile: $('l-tile'),
   lBirds: $('l-birds'),
 };
+// Transfer percentages apply only to the measured download, not total startup work.
+function setLoadingStatus(message, percent = null) {
+  ui.pct.textContent = message;
+  const track = ui.loading.querySelector('.track');
+  const percentage = $('percentage');
+  percentage.hidden = !Number.isFinite(percent);
+  if (Number.isFinite(percent)) {
+    const value = Math.max(0, Math.min(100, percent));
+    track.setAttribute('aria-label', 'City geometry download');
+    track.setAttribute('aria-valuenow', String(Math.round(value)));
+    percentage.textContent = `${Math.round(value)}%`;
+    ui.bar.style.width = `${value}%`;
+  } else {
+    track.setAttribute('aria-label', 'Preparing the scene');
+    track.removeAttribute('aria-valuenow');
+    ui.bar.style.width = '';
+  }
+}
 // scene-driven page chrome: title, scene switcher, tabs, layer rows and legends
 function setupSceneUI() {
   if (SCENE.protocol_display && SCENE.presentation?.wind_particles) {
@@ -2677,14 +2695,17 @@ async function boot() {
     resolve(gltf);
   };
   const onCityProgress = (ev) => {
-    const total = ev.total || MODEL.bytes || 1,
-      pct = Math.min(100, (ev.loaded / total) * 100);
-    ui.bar.style.width = pct.toFixed(1) + '%';
-    ui.pct.textContent = `${(ev.loaded / 1048576).toFixed(0)} / ${(total / 1048576).toFixed(0)} MB · ${pct.toFixed(0)} %${tileMB}`;
+    const total = ev.total || MODEL.bytes;
+    if (!Number.isFinite(total) || total <= 0) {
+      setLoadingStatus(`${(ev.loaded / 1048576).toFixed(0)} MB downloaded`);
+      return;
+    }
+    const pct = Math.min(100, (ev.loaded / total) * 100);
+    setLoadingStatus(`${(ev.loaded / 1048576).toFixed(0)} / ${(total / 1048576).toFixed(0)} MB${tileMB}`, pct);
   };
   if (LITE) {
     // proxy city from the masks (already needed for the fields), then the replay layers
-    ui.pct.textContent = 'Lite mode · building the voxel city…';
+    setLoadingStatus('Lite mode · building the voxel city…');
     await dataReady;
     if (dataError) throw dataError;
     const lite = SCENE.lite,
@@ -2698,7 +2719,7 @@ async function boot() {
     $('lite-hint').style.display = '';
     $('supplement-ctl').style.display = 'none';
     if (HAS_REPLAY) {
-      ui.pct.textContent = 'Traffic and UAV replay…';
+      setLoadingStatus('Traffic and UAV replay…');
       replayLayer = await createReplay({
         scene,
         camera,
@@ -2707,7 +2728,7 @@ async function boot() {
         campusPose: campusPoseDeg,
         flyTo,
         onProgress: (t) => {
-          ui.pct.textContent = t;
+          setLoadingStatus(t);
         },
       }).catch((e) => {
         console.error('replay unavailable', e);
@@ -2733,11 +2754,11 @@ async function boot() {
       .then(async (gltf) => {
         // demo_rev02's display filter (hide the GLB's own animated traffic / birds; parked-car filter), then merge the
         // static buildings into a few draw calls. Ground and trees stay separate meshes so their toggles keep working.
-        ui.pct.textContent = 'Merging static buildings…';
+        setLoadingStatus('Merging static buildings…');
         if (MODEL.demo_filter) await applyCityFilter(gltf.scene);
         if (MODEL.expansion)
           for (const [index, batch] of EXPANSION_BATCHES.entries()) {
-            ui.pct.textContent = `Building refinements · ${index + 1} / ${EXPANSION_BATCHES.length}`;
+            setLoadingStatus(`Building refinements · ${index + 1} / ${EXPANSION_BATCHES.length}`);
             try {
               const refined = await loader.loadAsync(batch.url);
               const expansion = await installExpansion(
@@ -2783,14 +2804,14 @@ async function boot() {
           );
         }
         for (const m of [...groundMeshes, ...treeMeshes]) m.visible = false;
-        ui.pct.textContent = 'Optimizing scene geometry…';
+        setLoadingStatus('Optimizing scene geometry…');
         const batches = await batchStaticCity(gltf.scene);
         model.add(batches.object);
         for (const m of [...groundMeshes, ...treeMeshes]) if (!tileHidden.has(m)) m.visible = true;
         mainScene = gltf.scene;
         mainBatches = batches.object;
         console.log('city batches:', batches.stats);
-        if (tile) ui.pct.textContent = 'South Kensington detail tile…';
+        if (tile) setLoadingStatus('South Kensington detail tile…');
         $('tile-ctl').style.display = tile ? 'contents' : 'none';
         if (tile) {
           const tGround = [],
@@ -2842,7 +2863,7 @@ async function boot() {
             );
         }
         if (MODEL.supplement) {
-          ui.pct.textContent = 'Supplementary buildings…';
+          setLoadingStatus('Supplementary buildings…');
           const supplement = await loader.loadAsync(SCENE.url(MODEL.supplement.url));
           supplement.scene.updateMatrixWorld(true);
           if (tileGroup)
@@ -2857,7 +2878,7 @@ async function boot() {
         applyTile();
         applyLayers();
         if (HAS_REPLAY) {
-          ui.pct.textContent = 'Traffic and UAV replay…';
+          setLoadingStatus('Traffic and UAV replay…');
           replayLayer = await createReplay({
             scene,
             camera,
@@ -2866,7 +2887,7 @@ async function boot() {
             campusPose: campusPoseDeg,
             flyTo,
             onProgress: (t) => {
-              ui.pct.textContent = t;
+              setLoadingStatus(t);
             },
           });
           applyReplayLayers();
@@ -2874,14 +2895,14 @@ async function boot() {
         }
       })
       .catch((e) => {
-        ui.pct.textContent = 'Loading failed: ' + (e.message || e);
+        setLoadingStatus('Loading failed: ' + (e.message || e));
         console.error(e);
         throw e;
       });
     releaseBatchedGeometry();
   }
   if (HAS_UAV_LAYER) {
-    ui.pct.textContent = `${SCENE.title} UAV routes…`;
+    setLoadingStatus(`${SCENE.title} UAV routes…`);
     uavLayer = await createUavLayer({
       scene,
       camera,
@@ -2923,7 +2944,7 @@ async function boot() {
       scene,
       url: SCENE.url(SCENE.transport.file),
       onProgress: (t) => {
-        ui.pct.textContent = t;
+        setLoadingStatus(t);
       },
     }).catch((e) => {
       console.error('transport layer unavailable', e);

@@ -1,7 +1,7 @@
 {
-  "version": "8b55e0993c5ee2d61127",
+  "version": "59b2d589684b8b447272",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 562588000,
+  "bytes": 562585956,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -210,13 +210,13 @@
     },
     {
       "path": "index.html",
-      "bytes": 2908,
-      "sha256": "08de11fc96267ecf1a6afa7648942a6602dbc8641491f87a682fb088464ec706"
+      "bytes": 1076,
+      "sha256": "07ca4a95549ca0a8042bce03b6b1f4b2bbc8403125aa1f95ddb280888f09ec11"
     },
     {
       "path": "preload.js",
-      "bytes": 7050,
-      "sha256": "bacd0ec9243385bb0dfc94bc611e7d027bbec45e2a3abaf014af07ad5f96450c"
+      "bytes": 7071,
+      "sha256": "24dbd1de3fea3badc4d3e285dce2312b078912ff548455d57748e9e40832d279"
     },
     {
       "path": "scenario-index.json",
@@ -3295,8 +3295,8 @@
     },
     {
       "path": "src/visualization/public-scenes.json",
-      "bytes": 681,
-      "sha256": "bcdeb555a8cad863f43d7e2154da1cad04f7e30c6308dc0e9354f2487b2847e8"
+      "bytes": 581,
+      "sha256": "4dd0f6c3d46c3535a8fc383afd70068145c36b3e5c97cf6e757b52ce71dd18aa"
     },
     {
       "path": "src/visualization/shared/scenario-tabs.css",
@@ -7685,18 +7685,18 @@
     },
     {
       "path": "viewer/3d/index.html",
-      "bytes": 12363,
-      "sha256": "d5af4a483a6ab06e47278b564277b7409ca6e7526321e0ab96db42e8eecc256d"
+      "bytes": 12738,
+      "sha256": "b5d7d4d7f0a2753dda07c6907731569d492a678800b951c0faec51852dde450a"
     },
     {
       "path": "viewer/3d/main.js",
-      "bytes": 125013,
-      "sha256": "52280ba8fb7e1f84728df0751c8c9f94c6a42b323b4787b20e33095671295440"
+      "bytes": 125824,
+      "sha256": "63868342010de0108776c88f4b55b54e2aacb50e171e742890b6bb80dee2f049"
     },
     {
       "path": "viewer/3d/opening.css",
-      "bytes": 3954,
-      "sha256": "9e68589bfcc4d3d1d018757556e20fd2d003d91543e2a8b2c6d438a6e458e1f2"
+      "bytes": 2653,
+      "sha256": "e0a5a3b5cb973218dfeef8764738489e821c859f705c03baffff01e55e37883c"
     },
     {
       "path": "viewer/3d/opening.js",
@@ -7730,8 +7730,8 @@
     },
     {
       "path": "viewer/3d/style.css",
-      "bytes": 15175,
-      "sha256": "541590f6218c9f786e837581ba92ed542b60ad15e2749c180873f4eceb3fa743"
+      "bytes": 14769,
+      "sha256": "63d5b8006818d66f32856ef836a4376ae0ede516ccad5d025f5309db12d2d2db"
     },
     {
       "path": "viewer/3d/tile.js",
@@ -7775,8 +7775,8 @@
     },
     {
       "path": "viewer/bootstrap.js",
-      "bytes": 2583,
-      "sha256": "97bcb3f3c410e2ea1557fe8f74b6102ea95d318e6bcd6dd28f49be186a8a2d75"
+      "bytes": 2644,
+      "sha256": "4d6d719412d7b842cf41653e1890818f2b59fd961caefa4167ba2ac66409c715"
     },
     {
       "path": "viewer/compressed-assets.js",
@@ -7810,8 +7810,8 @@
     },
     {
       "path": "viewer/pages-bootstrap.js",
-      "bytes": 1622,
-      "sha256": "bc642f5f96fb69f84e8f9b541b1800e2d3f47268afe8b7c434781e4d7748c61a"
+      "bytes": 1539,
+      "sha256": "1dc89599c19a9d25b32b697425789248b8eb37e00a5c256d75addd505155ae0e"
     },
     {
       "path": "viewer/recorded-clock.mjs",
@@ -7820,8 +7820,8 @@
     },
     {
       "path": "viewer/scene-navigation.js",
-      "bytes": 2104,
-      "sha256": "defd32b3452347e8dae55448037e667241b1e438dd305c1eeef732375f72d161"
+      "bytes": 2514,
+      "sha256": "1df0df5c1337fd9fccbb913d50e2fb17a1ff9ca319bf97a448e279caa43f9f35"
     },
     {
       "path": "viewer/scene-public.js",

@@ -10,6 +10,8 @@ The public presentation has a fixed minimal layout: widget buttons at the top, a
 
 The bottom controls must follow the selected widget's actual clock and bounds. Pause and seek must affect that widget, and reaching the last field sample must keep the current selection. Playing again restarts from its first sample. Camera orbit progress is presentation time, not a physical result; static camera views and single snapshots have disabled playback. Inactive replay clocks must not keep advancing, and asynchronous loaders must not steal a newer selection. Preserve keyboard operation, visible focus and horizontally scrollable widget buttons on small screens.
 
+The minimal layout applies after loading. The separate loading page contains only the Canopy wordmark, a Scenario introduction from the public catalog, and a progress bar with its current loading status. Do not add a preview renderer, animated city or decorative content. Use actual transfer progress when known and an indeterminate bar otherwise; never invent an overall completion percentage. Hide playback controls until initialization completes, honor reduced motion and keep a readable retry path if loading fails.
+
 ## Presentation boundary
 
 The shell owns the renderer, scene, camera, timeline, selected layers, legend and picking. Scenario configuration selects `template:standard`, a supported preset, Asset/layer references and optional camera. Widgets implement display behavior. A widget must not start a solver, mutate an Asset, write scenario configuration, infer a new physical result or fetch undeclared private filesystem paths.
