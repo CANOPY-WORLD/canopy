@@ -1,5 +1,28 @@
 # Verification record
 
+## Independent Scenario data publication — 2026-11-18
+
+The London public snapshot moved byte-for-byte into [canopy-scenario-imperial-corridor-8km](https://github.com/acse-yl222/canopy-scenario-imperial-corridor-8km), source revision `d9c6fa4d35455a928afa0138222e92c29d082fdf`. Its independent Pages site serves `snapshots/london-public-20261118/`. The main Canopy checkout keeps the Scenario configuration, a pinned publication reference and the original locked file inventory. Previous commits retain their data history; no history was rewritten.
+
+The shared website contains 91 files and approximately 5.13 MB, with zero bundled Scenario payload bytes. Its generated public Scenario index links the Viewer, data repository, data website and snapshot manifest. Selected-Scenario download lists keep other Scenarios' payloads out of an offline download. The approximately 563 MB London browser download is unchanged in substance; changing hosts does not reduce the dataset's transfer size.
+
+| Check | Result |
+| --- | --- |
+| Local relocation | All 1,477 payloads retain their original SHA-256 and sizes; 558,073,283 bytes |
+| Remote data | Every deployed payload streamed and hashed successfully; live manifest and pinned Git revision match the locked manifest |
+| Python | 70 framework tests and 9 publication boundary tests passed |
+| JavaScript | 5 scientific Viewer tests and 11 service-worker routing tests passed |
+| Contracts and documentation | V1 fixture validation, generated inventory, schema mirrors and English documentation links passed |
+| Browser resource loading | 331/331 detailed geometry payloads and first/final samples for 18 field resources decoded from the independent host |
+| Complete cache and offline | 1,565/1,565 files verified; Viewer reloaded with both page and service-worker networks disabled, and a forced network read failed as expected |
+| Worker upgrade | A browser controlled by the previous version 1 local router upgraded to version 2 remote routing and opened London without HTTP/page errors |
+| Scientific Viewer | The local API still exposes one Scenario, nine selected layers and all eight dynamic final samples, without errors |
+| Guide and data landing page | Desktop and 390 px mobile checks passed; public links resolve to the shared Viewer and dedicated data repository |
+
+The geometry check pauses continuous software rendering during transport verification and explicitly renders one complete frame afterward; it is not a frame-rate benchmark. Evidence is retained under `cache/scenario-data-migration/` and `cache/qa/pages/`; complete remote checks are in `cache/scenario-remote-check.json`. The [publication standard](../../../visualizer/docs/publishing.md) documents data-first deployment, immutable snapshots, CORS, checksum checks and the main website's separate publisher.
+
+The earlier single-repository publication record below describes the preceding deployment and is retained as migration history.
+
 ## Scenario data and unified Pages publication — 2026-11-18
 
 The Canopy repository now owns its public London resources under `scenario/imperial_corridor_8km/data/`. The 1,477 files total 558,073,283 bytes; every file matches the prior public source inventory or an already tracked source file. Previously gateway-only resources were recovered from checksum-matching published Release copies. No numerical payload was resampled or re-encoded.

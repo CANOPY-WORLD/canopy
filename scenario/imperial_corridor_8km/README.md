@@ -21,7 +21,9 @@ The generated [Asset review catalog](asset-catalog.json) lists every registered 
 
 Physics Urban World — Imperial Corridor, London.
 
-[Open Canopy on GitHub Pages](https://acse-yl222.github.io/canopy/). This repository publishes the shared viewer and this Scenario’s [public data manifest](data/manifest.json) together. The 1,477 declared resources occupy 558,073,283 bytes and live under `data/`. Existing presentation paths resolve to these same-origin files. The opening page downloads and verifies the complete presentation for browser caching; a [direct viewer link](https://acse-yl222.github.io/canopy/viewer/3d/?scene=imperial_corridor_8km) loads resources on demand.
+[Open Canopy on GitHub Pages](https://acse-yl222.github.io/canopy/). Canopy publishes the shared viewer; this Scenario's 1,477 public resources (558,073,283 bytes) live in the independent [London data repository](https://github.com/acse-yl222/canopy-scenario-imperial-corridor-8km) and [data website](https://acse-yl222.github.io/canopy-scenario-imperial-corridor-8km/). The [publication reference](publication.json) pins its source revision and immutable snapshot URL; [data/manifest.json](data/manifest.json) is a locked inventory only. Existing presentation paths resolve to the independent data host without copying payloads into Canopy's Pages artifact.
+
+The opening page downloads and verifies this selected Scenario's complete presentation for browser caching; a [direct viewer link](https://acse-yl222.github.io/canopy/viewer/3d/?scene=imperial_corridor_8km) loads resources on demand. The data website links back to the same Viewer. Both GitHub Pages sites currently share the `acse-yl222.github.io` origin, at different repository paths.
 
 Open via HTTPS or a localhost server. Full building geometry is retained. Compact fields retain original sampled timestamps; spatial averaging smooths local extrema. Existing provenance remains in exported scene metadata and context source files. The publication manifest records the source commit and upstream Releases; relocation preserves every payload byte and checksum.
 
@@ -37,4 +39,4 @@ The original solver uses `gaussian_short`, a 0.1 s timestep, 4,000 steps, adapti
 
 Browser paths are simplified for display with a maximum 0.25 m deviation and independently rechecked against the obstacle columns every 0.5 m. Full-resolution paths, arrival fields, failed attempts, source snapshot and provenance are retained on `ese-yl222` in `uav_wavepde_4m_20261111`. See `assets/uav-wavepde-4m-20261111/evidence.json`. Earlier exports remain archived in their original directories.
 
-Website implementation: [visualizer/site](../../visualizer/site/README.md). Resource paths mentioned above are compatibility routes resolved by the publication manifest. Data is owned here; shared renderers remain in Visualizer. Follow the [publishing standard](../../visualizer/docs/publishing.md) when updating either side.
+Website implementation: [visualizer/site](../../visualizer/site/README.md). Resource paths mentioned above are compatibility routes resolved by the publication manifest. Data remains owned by this Scenario, with storage in its dedicated repository; shared renderers remain in Visualizer. Follow the [publishing standard](../../visualizer/docs/publishing.md) when updating either side.

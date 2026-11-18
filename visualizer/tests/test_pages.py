@@ -66,6 +66,92 @@ class PublicationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Invalid public Scenario'):
             pages.publications(self.root)
 
+    def remote(self):
+        self.manifest['snapshot'] = 'test-v1'
+        self.save()
+        (self.data / 'sample.bin').unlink()
+        reference = {'schema_version': '1.0.0', 'kind': 'canopy.publication-reference',
+            'scenario_id': 'test', 'snapshot': 'test-v1', 'revision': 'a' * 40,
+            'repository': 'https://github.com/example/canopy-test',
+            'website': 'https://example.github.io/canopy-test/',
+            'base_url': 'https://example.github.io/canopy-test/snapshots/test-v1/',
+            'manifest': {'path': 'data/manifest.json', 'sha256': pages.checksum(self.data / 'manifest.json')}}
+        (self.data.parent / 'publication.json').write_text(json.dumps(reference))
+        return reference
+
+    def frontend(self):
+        for name in ('index.html', 'preload.js', 'asset-router.js', 'scenes/index.json'):
+            path = self.root / 'visualizer/site' / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(json.dumps({'default': 'test'}) if name.endswith('.json') else 'fixture')
+        path = self.root / 'visualizer/src/visualization/public-scenes.json'
+        path.parent.mkdir(parents=True)
+        path.write_text('{}')
+        for name in ('index.html', 'style.css', 'app.js', 'inventory.json', 'architecture.svg'):
+            path = self.root / 'visualizer/guide' / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text('{}')
+
+    def test_remote_payloads_are_referenced_but_never_packaged(self):
+        reference = self.remote()
+        self.frontend()
+        output = self.root / 'output'
+        report = pages.build(self.root, output, refresh=True)
+        self.assertEqual(report['bundled_data_bytes'], 0)
+        self.assertEqual(report['remote_data_bytes'], 6)
+        self.assertFalse((output / 'scenario/test/data/sample.bin').exists())
+        routes = json.loads((output / 'asset-sources.json').read_bytes())
+        self.assertEqual(routes['remote_bases'], [reference['base_url']])
+        self.assertEqual(routes['resources']['scenes/test/sample.bin'], reference['base_url'] + 'sample.bin')
+        index = json.loads((output / 'scenario-index.json').read_bytes())
+        self.assertEqual(index['scenarios'][0]['repository'], reference['repository'])
+        self.assertEqual(report['bytes'], sum(p.stat().st_size for p in output.rglob('*') if p.is_file()))
+
+    def test_remote_reference_is_locked_to_the_manifest(self):
+        self.remote()
+        self.manifest['files'][0]['sha256'] = 'b' * 64
+        self.save()
+        with self.assertRaisesRegex(ValueError, 'manifest checksum'):
+            pages.publications(self.root)
+
+    def test_remote_reference_rejects_credentials_traversal_and_unpinned_versions(self):
+        reference = self.remote()
+        for url in ('http://data.test/snapshots/test-v1/', 'https://user:password@data.test/snapshots/test-v1/',
+                    'https://data.test/../snapshots/test-v1/', 'https://data.test/%2e%2e/snapshots/test-v1/',
+                    'https://data.test/snapshots/test-v1/?token=secret', 'https://data.test/latest/'):
+            with self.subTest(url=url):
+                reference['base_url'] = url
+                (self.data.parent / 'publication.json').write_text(json.dumps(reference))
+                with self.assertRaises(ValueError):
+                    pages.publications(self.root)
+
+    def test_remote_scenario_does_not_allow_a_shadow_payload(self):
+        self.remote()
+        (self.data / 'sample.bin').write_bytes(b'public')
+        with self.assertRaisesRegex(ValueError, 'Unlisted'):
+            pages.publications(self.root)
+
+    def test_downloads_are_scoped_to_the_selected_scenario(self):
+        reference = self.remote()
+        self.frontend()
+        other = self.root / 'scenario/another/data'
+        other.mkdir(parents=True)
+        (other.parent / 'scenario.json').write_text('{}')
+        second = json.loads(json.dumps(self.manifest))
+        second['scenario_id'] = 'another'
+        second['files'][0]['viewer_path'] = 'scenes/another/sample.bin'
+        (other / 'manifest.json').write_text(json.dumps(second))
+        reference.update(scenario_id='another', base_url='https://example.github.io/another/snapshots/test-v1/')
+        reference['manifest']['sha256'] = pages.checksum(other / 'manifest.json')
+        (other.parent / 'publication.json').write_text(json.dumps(reference))
+        output = self.root / 'output'
+        pages.build(self.root, output, refresh=True)
+        for owner, excluded in [('test', 'another'), ('another', 'test')]:
+            download = json.loads((output / f'download-manifests/{owner}.json').read_bytes())
+            names = {f['path'] for f in download['files']}
+            self.assertIn(f'scenes/{owner}/sample.bin', names)
+            self.assertNotIn(f'scenes/{excluded}/sample.bin', names)
+
 
 if __name__ == '__main__':
     unittest.main()

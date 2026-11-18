@@ -19,4 +19,6 @@ A framework for geometry, physics simulation and urban visualization. The includ
 
 Each directory documents its internal structure and interfaces. Start with [Model setup](model/README.md#run-the-small-example) to run an example, or review the [London case](scenario/imperial_corridor_8km/README.md).
 
-For extensions, start with the [contributor and agent standards](model/docs/framework/contributing.md), then follow the relevant component guide. Each Scenario owns its public data under `scenario/<id>/data/`; Canopy publishes the viewer, guide and declared data together to GitHub Pages. See the [publishing standard](visualizer/docs/publishing.md) and [data storage strategy](asset/docs/storage.md).
+For extensions, start with the [contributor and agent standards](model/docs/framework/contributing.md), then follow the relevant component guide. Canopy maintains the shared website and Scenario configuration; each Scenario's public data is hosted independently and selected through a pinned publication reference. See the [publishing standard](visualizer/docs/publishing.md) and [data storage strategy](asset/docs/storage.md).
+
+London: **[Open the Scenario](https://acse-yl222.github.io/canopy/viewer/3d/?scene=imperial_corridor_8km)** · [Data repository](https://github.com/acse-yl222/canopy-scenario-imperial-corridor-8km) · [Data website](https://acse-yl222.github.io/canopy-scenario-imperial-corridor-8km/) · [Public Scenario index](https://acse-yl222.github.io/canopy/scenario-index.json)

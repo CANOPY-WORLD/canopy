@@ -90,7 +90,7 @@ const changes={
     'Keep imperial_corridor_8km as the sole curated case. Use a disposable workspace for synthetic Method development.',
     'Retain validated same-Scenario assets first, then register their exact references. Preserve original bounds and the vertical datum.',
     'Record a task recipe only when the Method, version, inputs and parameters are known. Select explicit Asset/layer pairs for the view.',
-    'Validate the London data, refresh the review catalog, and check the repository links and one-case catalog.'
+    'Verify the independently published data snapshot, pin its repository revision and manifest hash, then refresh the review catalog and public links.'
   ],command:'canopy --root . validate imperial_corridor_8km'}
 };
 function renderContribution() {

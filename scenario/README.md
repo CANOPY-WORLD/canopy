@@ -40,19 +40,14 @@ scenario/
     scenario.json             # The only curated Scenario
     migration.json            # Import provenance
     asset-catalog.json        # Generated review metadata, no raw payloads
-    data/                     # This Scenario’s public website resources
-      manifest.json           # Paths, sizes, SHA-256 and source identity
-      models/                 # Display geometry
-      physics/                # Recorded browser fields and masks
-      context/                # Terrain, landscape, roads and traffic
-      tiles/                  # Detailed geometry and textures
-      assets/                 # Bird replay and UAV route exports
-      actors/                 # Display models and geometry QA
+    publication.json          # Data repository, pinned revision and snapshot URL
+    data/
+      manifest.json           # Locked public file inventory; no payloads here
     README.md
 ```
 
 
-Public presentation data lives in the owning Scenario’s `data/` directory and is published with the shared website from `main`. The [publication standard](../visualizer/docs/publishing.md) defines its manifest and verification. Future Scenarios follow the same ownership rule when explicitly added.
+Public presentation data lives in a dedicated Scenario repository. London's [data repository](https://github.com/acse-yl222/canopy-scenario-imperial-corridor-8km) publishes its own [data website](https://acse-yl222.github.io/canopy-scenario-imperial-corridor-8km/); the shared Canopy Viewer reads it through the pinned [publication reference](imperial_corridor_8km/publication.json). The [public Scenario index](https://acse-yl222.github.io/canopy/scenario-index.json) connects viewer, repository and data links. Future Scenarios follow the same ownership rule when explicitly added. See the [publication standard](../visualizer/docs/publishing.md).
 
 Private retained computation bundles are stored separately under `<data_root>/project/<scenario>/assets/`. The default data root is `asset/data/`. Each Scenario owns its geometry and results; reusable Model implementations and the Visualizer template are shared. See [Asset storage](../asset/README.md#storage).
 

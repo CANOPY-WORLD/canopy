@@ -22,7 +22,9 @@ Historical full-domain London recipes are not yet migrated; `tasks` remains empt
 
 ## Public data
 
-Keep a Scenario’s approved website data under its own `data/` directory. Its `manifest.json` declares every payload path, presentation route, byte size and SHA-256. This distribution manifest is separate from the V2 Asset registry and V1.1 scientific payload contract. Follow the [publication standard](../visualizer/docs/publishing.md). Canopy builds one Pages site containing the shared viewer, guide and declared Scenario data.
+Host approved website data in a dedicated Scenario repository, under `snapshots/<snapshot_id>/`. In Canopy, `publication.json` records the repository, pinned revision, data website, exact snapshot base URL and manifest SHA-256. Keep an unchanged copy of that manifest at `data/manifest.json`; this directory contains no remote payloads. Publish and verify the data first, then update Canopy's reference. Never overwrite a published snapshot.
+
+The distribution manifest declares every payload path, presentation route, byte size and SHA-256. It is separate from the V2 Asset registry and V1.1 scientific payload contract. Follow the [publication standard](../visualizer/docs/publishing.md). Canopy publishes the shared viewer, guide and public Scenario index; the viewer reads the selected Scenario's independently hosted data. Downloads must remain scoped to the selected Scenario. New routes use `scenes/<scenario_id>/`; only London's historical aliases remain for compatibility.
 
 ## Validate
 

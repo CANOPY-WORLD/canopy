@@ -12,7 +12,7 @@ Read `model/docs/framework/protocol-v2.md` and `model/docs/framework/method-guid
 
 - Shared Python implementations and the SDK: `model/src/`; keep package import names stable.
 - Scenario metadata: `scenario/<scenario>/scenario.json`.
-- Public website data: `scenario/<scenario>/data/`, declared by its checksummed publication manifest. Build the single GitHub Pages site with `visualizer/tools/build_pages.py`.
+- Public website data: independent Scenario data repositories. `scenario/<scenario>/publication.json` pins the repository revision, immutable HTTPS snapshot and locked `data/manifest.json`; only metadata stays here. Build the shared website with `visualizer/tools/build_pages.py`. Never copy remote payloads into the main Pages artifact.
 - Asset schemas: `asset/schemas/`, mirrored in `model/src/canopy/schemas/` for wheel installation.
 - Private retained Assets: `<data_root>/project/<scenario>/assets/`; default data root `asset/data/` is ignored by Git.
 - Browser implementation: `visualizer/src/visualization/`. The preserved static website lives in `visualizer/site/`.

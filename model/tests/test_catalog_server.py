@@ -82,6 +82,7 @@ class RegistryServerTests(unittest.TestCase):
     def test_public_scenario_mount_is_bounded(self):
         data=self.root/'project/south_ken/data';data.mkdir()
         (data/'sample.bin').write_bytes(b'public')
+        (data.parent/'publication.json').write_text('{"kind":"canopy.publication-reference"}')
         secret=self.root/'storage.local.json';secret.write_text('private')
         (data/'escape').symlink_to(secret)
         server=ThreadingHTTPServer(('127.0.0.1',0),functools.partial(ViewerHandler,storage=self.storage))
@@ -90,6 +91,8 @@ class RegistryServerTests(unittest.TestCase):
         base=f'http://127.0.0.1:{server.server_port}'
         with urllib.request.urlopen(base+'/scenario/south_ken/data/sample.bin') as response:
             self.assertEqual(response.read(),b'public')
+        with urllib.request.urlopen(base+'/scenario/south_ken/publication.json') as response:
+            self.assertEqual(json.load(response)['kind'],'canopy.publication-reference')
         for path in ('/scenario/south_ken/data/escape','/scenario/south_ken/data/%2e%2e/project.json',
                      '/scenario/south_ken/project.json','/storage.local.json'):
             with self.subTest(path=path), self.assertRaises(urllib.error.HTTPError):

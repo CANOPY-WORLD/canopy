@@ -28,7 +28,9 @@ The implementations in `src/visualization/widgets/index.mjs`, `binary.mjs` and `
 5. Keep preset differences declarative and small. New presets require coordinated schema, API and viewer changes, including packaged schema mirrors.
 6. Keep keyboard interaction, visible focus, responsive layout and readable loading/error states. Avoid continuous rendering when nothing changes.
 
-The detailed London website under `site/` is a compatibility presentation. Public data belongs under `scenario/<id>/data/`, with a publication manifest. After changing website code or an approved public export, run `python visualizer/tools/build_pages.py --refresh`; it verifies payload hashes and regenerates routing and download indexes. Follow the [publishing standard](docs/publishing.md). Keep resource addresses in the generated mapping, preserve recorded encodings, and test from a project subpath. There is no external data-gateway fallback.
+The detailed London website under `site/` is a compatibility presentation. Approved public data belongs in an independent Scenario data repository, selected by `scenario/<id>/publication.json` and a locked `data/manifest.json`. After changing website code or a publication reference, run `python visualizer/tools/build_pages.py --refresh`; it verifies locked inventories and regenerates routing, Scenario links and per-Scenario download indexes. Remote payloads must not enter the main Pages artifact. Follow the [publishing standard](docs/publishing.md).
+
+Keep resource addresses in the generated mapping, preserve recorded encodings, and test from a project subpath. Only explicitly declared HTTPS snapshot roots may serve remote resources; cross-origin hosts must permit CORS. Do not forward credentials to data hosts. Preserve Range, cancellation, bounded retries and offline caching. A selected Scenario download must never include another Scenario's data. Verify deployed manifest hashes before updating public references; there is no silent fallback to another dataset.
 
 ## Verify the change
 

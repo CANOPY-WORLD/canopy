@@ -27,7 +27,8 @@ flowchart LR
 | Read-only API | [canopy.visualization](../model/src/canopy/visualization/) resolves selected Scenario Assets |
 | Compatibility website | [site/](site/README.md) preserves the detailed London presentation and resource paths |
 | Overview diagram | [diagrams/architecture.svg](diagrams/architecture.svg) is editable SVG with accessible text |
-| Static publication | [tools/build_pages.py](tools/build_pages.py) combines the shared website, guide and Scenario-owned public data |
+| Static publication | [tools/build_pages.py](tools/build_pages.py) packages the shared website, guide and pinned Scenario data references |
+| Remote verification | [tools/check_publications.py](tools/check_publications.py) verifies deployed manifests and, optionally, every remote payload |
 
 ## Fixed template, Scenario-specific defaults
 
@@ -54,4 +55,4 @@ The local server explicitly maps existing `/src/visualization/`, `/project/`, `/
 
 The [interactive architecture guide](guide/README.md) lists the current Model, Asset and Visualizer contents and links to their extension standards. Open `/guide/` on the local server.
 
-The committed `main` source is built into [Canopy Pages](https://acse-yl222.github.io/canopy/) and its [guide](https://acse-yl222.github.io/canopy/guide/) together. Public files live under `scenario/<id>/data/`; follow the [publishing standard](docs/publishing.md) for their checksummed mapping, local preview and deployment.
+The committed `main` source is built into [Canopy Pages](https://acse-yl222.github.io/canopy/) and its [guide](https://acse-yl222.github.io/canopy/guide/) together. Public payloads live in independent Scenario repositories; Canopy publishes a [Scenario link index](https://acse-yl222.github.io/canopy/scenario-index.json), pinned references and the shared Viewer. Follow the [publishing standard](docs/publishing.md) for remote checksums, selected-Scenario caching, local preview and deployment.

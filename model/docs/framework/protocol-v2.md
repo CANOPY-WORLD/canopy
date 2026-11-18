@@ -20,7 +20,8 @@ visualizer/site/      # Preserved detailed website; public URLs remain stable
 asset/schemas/       # Versioned JSON interfaces, mirrored inside the wheel
 asset/data/          # Default private data root; ignored by Git
 scenario/<scenario>/scenario.json
-scenario/<scenario>/data/   # Approved public presentation exports and publication manifest
+scenario/<scenario>/publication.json  # Pinned public data repository and HTTPS snapshot
+scenario/<scenario>/data/manifest.json # Locked remote inventory; no public payloads here
 <data_root>/project/<scenario>/assets/bundles/<run_id>/
   manifest.json      # v1.1 binary payload description
   geometry.asset.json / physics.asset.json
@@ -67,7 +68,7 @@ Original Physics4D exports still use v1.1 and can be imported with `canopy impor
 
 `storage.local.json` configures absolute data_root/cache_root paths. Metadata lives in the checkout's `scenario/` directory; data lives in `<data_root>/project/`, with `asset/data/` as the default data root. The storage adapter still accepts original Physics4D checkouts with `project/` metadata. The server maps public resource URLs explicitly, independently of source paths, without exposing private configuration or historical recovery records. Portable scenario archives retain their `project/<scenario>/...` member layout.
 
-Approved browser distribution resources are a separate scope under `scenario/<scenario>/data/`. Their versioned publication manifest records exact bytes, source identity and bounded routes. One Pages build publishes these resources with the shared website. This transport inventory does not replace scientific Asset descriptors or add supported numerical representations. See the [publication standard](../../../visualizer/docs/publishing.md).
+Approved browser distribution resources are a separate scope in independent Scenario data repositories. `scenario/<scenario>/publication.json` pins the repository revision, immutable HTTPS snapshot and SHA-256 of the locally locked `data/manifest.json`. The shared Pages build publishes links and metadata; the Viewer reads the remote payloads. This transport inventory does not replace scientific Asset descriptors, relax their bounded relative paths or add supported numerical representations. See the [publication standard](../../../visualizer/docs/publishing.md).
 
 ## Supported computational representations and coupling
 

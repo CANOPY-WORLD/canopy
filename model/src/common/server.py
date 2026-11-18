@@ -90,7 +90,11 @@ class ViewerHandler(BaseHTTPRequestHandler):
                 scene=scene_id(parts[1])
                 if scene!=parts[1]:raise ValueError('Use canonical scene ID')
                 path=within(metadata_root(self.storage.root)/scene/'data',*parts[3:])
-            elif parts[0] in ('viewer','vendor','scenes','assets','agents','tiles') or parts in (('asset-router.js',),('asset-sources.json',),('preload.js',),('download-manifest.json',)):
+            elif parts[0]=='scenario' and len(parts)==3 and parts[2]=='publication.json':
+                scene=scene_id(parts[1])
+                if scene!=parts[1]:raise ValueError('Use canonical scene ID')
+                path=within(metadata_root(self.storage.root)/scene,'publication.json')
+            elif parts[0] in ('viewer','vendor','scenes','assets','agents','tiles','download-manifests') or parts in (('asset-router.js',),('asset-sources.json',),('preload.js',),('download-manifest.json',),('scenario-index.json',)):
                 path=within(site_root(self.storage.root),*parts)
             elif parts==('index.html',):
                 path=site_root(self.storage.root)/'index.html'

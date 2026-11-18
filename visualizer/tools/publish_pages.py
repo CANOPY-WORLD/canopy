@@ -8,6 +8,7 @@ import subprocess
 import tempfile
 
 from build_pages import ROOT, build
+from check_publications import check
 
 
 def git(*args, cwd=ROOT, env=None, input=None):
@@ -26,6 +27,8 @@ def publish(push=False):
     workspace = Path(tempfile.mkdtemp(prefix='pages-release-', dir=cache))
     output = workspace / 'site'
     report = build(ROOT, output)
+    # Link only to already deployed data. Large bytes never enter this artifact.
+    report['remote_verification'] = check(ROOT)
     previous = git('ls-remote', 'origin', 'refs/heads/gh-pages')
     if previous:
         git('fetch', '--no-tags', 'origin', 'refs/heads/gh-pages')
@@ -40,7 +43,7 @@ def publish(push=False):
     git(*prefix, 'add', '--all', '--force', '.', cwd=output, env=env)
     tree = git(*prefix, 'write-tree', cwd=output, env=env)
     commit = git('commit-tree', tree, '-p', parent,
-                 input=f'Deploy Canopy from main {source}\n\nVerified public Scenario data and shared website.\n')
+                 input=f'Deploy Canopy from main {source}\n\nShared website and verified Scenario data references.\n')
     report.update(source_commit=source, pages_commit=commit, artifact=str(output), pushed=False)
     if push:
         # Normal fast-forward only: a concurrent publication is rejected.
