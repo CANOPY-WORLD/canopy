@@ -4,6 +4,27 @@ const CONTROL = 'canopy-cache-control';
 const activeKey = new URL('__active', base).href;
 let sources;
 
+async function fetchResource(request, options = {}) {
+  const signal = options.signal || request.signal;
+  for (let attempt = 0; ; attempt++) {
+    signal?.throwIfAborted();
+    try {
+      const response = await fetch(request, options);
+      if (![502, 503, 504].includes(response.status) || attempt === 3) return response;
+      response.body?.cancel().catch(() => {});
+    } catch (error) {
+      if (signal?.aborted || attempt === 3) throw error;
+    }
+    // Bounded retries for transient transport failures; cancellation still wins.
+    await new Promise((resolve, reject) => {
+      const cancel = () => { clearTimeout(timer); reject(signal.reason); };
+      const timer = setTimeout(() => { signal?.removeEventListener('abort', cancel); resolve(); }, 200 * 2 ** attempt);
+      signal?.addEventListener('abort', cancel, { once: true });
+      if (signal?.aborted) cancel();
+    });
+  }
+}
+
 function resourceURL(path) {
   if (typeof path !== 'string' || !path || path.startsWith('/') || /[\\%?#:]/.test(path) ||
       path.split('/').some(part => !part || part === '.' || part === '..')) {
@@ -23,7 +44,7 @@ async function readSources() {
   const url = new URL('asset-sources.json', base);
   let response;
   try {
-    response = await fetch(url, { cache: 'no-cache' });
+    response = await fetchResource(url, { cache: 'no-cache' });
     if (!response.ok) throw Error('Public resource index unavailable');
   } catch (error) {
     response = await (await activeCache())?.match(url);
@@ -66,8 +87,8 @@ self.addEventListener('fetch', event => {
     const logicalURL = new URL(resourcePath, base);
     const network = async () => {
       const target = map.get(resourcePath);
-      if (!target) return fetch(event.request);
-      return fetch(target, { headers: geometry ? undefined : event.request.headers,
+      if (!target) return fetchResource(event.request);
+      return fetchResource(target, { headers: geometry ? undefined : event.request.headers,
         cache: event.request.cache, credentials: 'same-origin', signal: event.request.signal });
     };
     if (event.request.cache === 'no-store' && !geometry) return network();

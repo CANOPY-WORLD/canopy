@@ -7,14 +7,16 @@ The Canopy repository now owns its public London resources under `scenario/imper
 | Check | Result and scope |
 | --- | --- |
 | Publication integrity | All 1,477 data checksums verified; no missing, duplicate or unlisted resources |
-| Static artifact | 562,791,027 bytes; includes viewer, guide and Scenario data; excludes private retained bundles, cache, credentials and hosting identities |
+| Static artifact | 562,791,949 bytes; includes viewer, guide and Scenario data; excludes private retained bundles, cache, credentials and hosting identities |
 | Python | 70 framework tests and 4 publication boundary tests passed |
-| JavaScript | 5 viewer tests and 5 service-worker routing tests passed |
+| JavaScript | 5 viewer tests and 7 service-worker routing tests passed, including recovery from transient HTTP 503 and bounded failure |
 | Static browser | Full GLB geometry loaded from `/canopy/`; first and final samples decoded for all 18 declared field resources |
 | Complete browser cache | All 1,563 download entries verified and cached; offline reload succeeded; no page/HTTP errors or external data-origin requests |
 | Local scientific viewer | London remains the sole catalog entry, all 9 selected layers load and final dynamic samples remain available; no errors |
 | Architecture guide | Desktop/mobile interaction and layout checks passed, including all 8 Methods and 9 Assets |
 | Documentation | English documents, component links, schema mirrors and review inventory passed the repository checker |
+
+Initial live checks matched 13 hosted resources against their local SHA-256 values and passed guide interaction checks. Two transient HTTP 503 responses observed during direct city loading motivated bounded transport retries; both affected files subsequently matched their source hashes.
 
 The Pages publisher builds from committed `main` and pushes the static artifact to `gh-pages`. The available GitHub OAuth connection lacks `workflow` scope, so publication uses built-in branch hosting instead of a custom Actions workflow. Source, public-data ownership and publication instructions are documented in [the publication standard](../../../visualizer/docs/publishing.md). Browser evidence is under `cache/qa/pages/` and execution logs under `cache/github-pages-migration/`. This change publishes the existing detailed presentation; the unified V2 scientific viewer continues to use its local read-only API. Historical simulations were not rerun.
 

@@ -1,6 +1,6 @@
 {
-  "version": "9ac3afb067387d510af4",
-  "bytes": 562476122,
+  "version": "31a13ccf3c9591de1fe9",
+  "bytes": 562477044,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -84,8 +84,8 @@
     },
     {
       "path": "asset-router.js",
-      "bytes": 3974,
-      "sha256": "8eba3c67d5237087c849c60229b141bf1cd80c3be7c193c17be6c760c50ace1f"
+      "bytes": 4896,
+      "sha256": "6be5aa6c58025c5472f012c81b02cfb40863adba14f5bdc8224fec7b43dd18a3"
     },
     {
       "path": "asset-sources.json",

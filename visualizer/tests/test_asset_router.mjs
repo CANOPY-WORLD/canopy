@@ -14,9 +14,11 @@ function worker(routes, files, cached = new Map()) {
     const url = typeof request === 'string' ? request : request.url || request.href;
     calls.push({url, request});
     if (url.endsWith('asset-sources.json')) return Response.json({schema_version:'1.0.0',resources:routes});
-    return files.get(url)?.clone() || new Response('Not found', {status:404});
+    const value = files.get(url);
+    return (Array.isArray(value) ? value.shift() : value)?.clone() || new Response('Not found', {status:404});
   };
   vm.runInNewContext(source, {URL, Response, DecompressionStream, Map, fetch,
+    setTimeout: fn => setTimeout(fn, 0), clearTimeout,
     self:{location:{href:'https://example.test/canopy/asset-router.js'},
       addEventListener:(type, fn) => listeners[type] = fn},
     caches:{open:async () => cache}});
@@ -65,4 +67,20 @@ test('external targets and parent-directory routes fail closed', async () => {
     const w = worker({'scenes/london/value.bin':target},new Map());
     await assert.rejects(w.get('/canopy/scenes/london/value.bin'), /Invalid public resource path/);
   }
+});
+
+test('a transient Pages 503 is retried before returning a resource', async () => {
+  const url = 'https://example.test/canopy/scenario/london/data/field.bin';
+  const w = worker({'scenes/london/field.bin':'scenario/london/data/field.bin'},
+    new Map([[url, [new Response('Unavailable',{status:503}),new Response('field')]]]));
+  assert.equal(await (await w.get('/canopy/scenes/london/field.bin')).text(), 'field');
+  assert.equal(w.calls.filter(call => call.url === url).length, 2);
+});
+
+test('persistent gateway failures stop after four attempts', async () => {
+  const url = 'https://example.test/canopy/scenario/london/data/field.bin';
+  const w = worker({'scenes/london/field.bin':'scenario/london/data/field.bin'},
+    new Map([[url, new Response('Unavailable',{status:503})]]));
+  assert.equal((await w.get('/canopy/scenes/london/field.bin')).status, 503);
+  assert.equal(w.calls.filter(call => call.url === url).length, 4);
 });
