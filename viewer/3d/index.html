@@ -5,7 +5,7 @@
 <link rel="icon" href="data:,">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CANOPY | Physics Urban World</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css"><link rel="stylesheet" href="opening.css">
 <script type="importmap">
 { "imports": {
   "three": "../../vendor/three/build/three.module.js",
@@ -154,11 +154,17 @@
   <input aria-label="Playback progress" type="range" id="step" min="1" max="100" value="1" disabled>
 </footer>
 
-<div class="overlay" id="loading" role="status" aria-label="Loading widget">
-  <div class="box">
-    <div id="loading-title" hidden>Loading</div><span id="percentage" hidden></span><span id="pct" hidden></span>
-    <div class="track" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="bar"></div></div>
-  </div>
+<div class="overlay" id="loading" role="status" aria-labelledby="loading-scenario">
+  <section class="loading-card">
+    <div class="canopy-logo" aria-label="Canopy">CANOPY<span aria-hidden="true"></span></div>
+    <h1 id="loading-scenario">Opening scenario</h1>
+    <p id="loading-description">Preparing the selected scenario.</p>
+    <div class="loading-progress">
+      <span id="loading-title" class="loading-sr-only">Preparing scenario</span>
+      <div class="track" role="progressbar" aria-label="Preparing the scene"><div id="bar"></div></div>
+      <div class="loading-status"><p id="pct">Connecting to scenario data…</p><span id="percentage" hidden></span></div>
+    </div>
+  </section>
 </div>
 <script type="module" src="../pages-bootstrap.js"></script>
 </body>

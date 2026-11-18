@@ -19,6 +19,7 @@ link('London case', home.href, 'viewer-home');
 box.append(title,message,actions);panel.append(box);document.body.append(panel);
 
 function fail(error) {
+  document.getElementById('loading')?.classList.add('hide');
   message.textContent = error?.message || String(error);
   panel.hidden=false;panel.style.display='flex';
   document.getElementById('viewer-retry').focus();

@@ -30,6 +30,13 @@ try {
     );
     scenes.push({ scene_id: current, title: metadata.title, viewer_url: location.href });
   }
+  const selected = scenes.find(scene => scene.scene_id === current);
+  if (selected) {
+    const title = document.getElementById('loading-scenario');
+    const description = document.getElementById('loading-description');
+    if (title) title.textContent = selected.title;
+    if (description) description.textContent = selected.description || 'Preparing geometry and recorded results for this scenario.';
+  }
   renderScenarioTabs(tabs, {current, items:scenes.map((scene) => {
       const target = new URL(scene.viewer_url, root);
       // Keep rendering preferences; scene-specific field/camera state is reset.
