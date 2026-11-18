@@ -1,14 +1,23 @@
 import {enhanceGroundMaterial} from './ground-materials.js';
-import {currentTerrain, terrainSurfaceGeometry, addHeightAttribute} from './corridor-terrain.js';
+import {currentTerrain, terrainSurfaceGeometry, addHeightAttribute, prepareDisplaySurface} from './corridor-terrain.js';
 import * as THREE from 'three';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {MeshoptDecoder} from 'three/addons/libs/meshopt_decoder.module.js';
 import {treeAssets} from './source-tree-assets.js';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
-export async function createVectorLandscape({url,onChange}) {
+export async function createVectorLandscape({url,onChange,quality='balanced',display=null}) {
  const base='context/vector_landscape/';
  const get=async p=>{const r=await fetch(url(base+p));if(!r.ok)throw Error(`${p}: ${r.status}`);return r};
- const [meta,source]=await Promise.all([get('manifest.json').then(r=>r.json()),get('source/scene-meta.json').then(r=>r.json())]);
+ const [meta,source]=await Promise.all([get('manifest.json').then(r=>r.json()),display?.placements?fetch(url(display.placements)).then(r=>{if(!r.ok)throw Error('Display placements unavailable');return display.placements.endsWith('.gz')?new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).json():r.json()}):get('source/scene-meta.json').then(r=>r.json())]);
  const surface=new THREE.Group(),vegetation=new THREE.Group();surface.name='vector_landscape';vegetation.name='mapped_vegetation';
- await Promise.all(meta.layers.map(async l=>{
+ if(display?.ground){
+  const gltf=await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(url(display.ground));
+  gltf.scene.updateMatrixWorld(true);
+  gltf.scene.traverse(mesh=>{if(!mesh.isMesh)return;enhanceGroundMaterial(mesh.material,mesh.name);prepareDisplaySurface(mesh);});
+  // Keep each land-cover node and its quantization transform intact for the
+  // existing visibility controls.
+  while(gltf.scene.children.length)surface.add(gltf.scene.children[0]);
+ }else await Promise.all(meta.layers.map(async l=>{
   const [original,r]=await Promise.all([get(l.file).then(r=>r.arrayBuffer()),fetch(url('context/terrain/'+(l.name==='unclassified-base'?'unclassified-base-exposed.f32.gz':l.file+'.gz')))]);
   if(!r.ok)throw Error(`Terrain vector surface ${l.name}: ${r.status}`);
   const elevated=await new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
@@ -20,7 +29,7 @@ export async function createVectorLandscape({url,onChange}) {
  const shares=[.4,.18,.14,.1,.08,.1],heights=[[13,26],[11,20],[10,18],[9,16],[10,19],[8,15]],sets=treeAssets.map(()=>[]);
  for(const t of source.trees){let v=t[2]*997%1,i=0;while(i<5&&v>=shares[i])v-=shares[i++];sets[i].push(t)}
  const dummy=new THREE.Object3D();
- treeAssets.forEach((asset,i)=>{const object=asset.build({THREE,kit,detail:'high'});object.updateMatrixWorld(true);const byMat=new Map();object.traverse(o=>{if(!o.isMesh)return;const g=o.geometry.clone().applyMatrix4(o.matrixWorld).rotateX(-Math.PI/2);if(!byMat.has(o.material))byMat.set(o.material,[]);byMat.get(o.material).push(g)});for(const [material,geoms] of byMat){const g=mergeGeometries(geoms,false);const mesh=new THREE.InstancedMesh(g,material,sets[i].length);mesh.name=asset.id;sets[i].forEach(([x,y,seed],j)=>{const h=heights[i][0]+(heights[i][1]-heights[i][0])*(seed*7.13%1);dummy.position.set(x,0,-y);dummy.rotation.set(0,seed*6.283,0);dummy.scale.setScalar(h);dummy.updateMatrix();mesh.setMatrixAt(j,dummy.matrix)});mesh.instanceMatrix.needsUpdate=true;mesh.computeBoundingSphere();vegetation.add(mesh)}});
+ treeAssets.forEach((asset,i)=>{const object=asset.build({THREE,kit,detail:quality==='full'?'high':'low'});object.updateMatrixWorld(true);const byMat=new Map();object.traverse(o=>{if(!o.isMesh)return;const g=o.geometry.clone().applyMatrix4(o.matrixWorld).rotateX(-Math.PI/2);if(!byMat.has(o.material))byMat.set(o.material,[]);byMat.get(o.material).push(g);o.geometry.dispose()});for(const [material,geoms] of byMat){const g=mergeGeometries(geoms,false);geoms.forEach(g=>g.dispose());const mesh=new THREE.InstancedMesh(g,material,sets[i].length);mesh.name=asset.id;sets[i].forEach(([x,y,seed],j)=>{const h=heights[i][0]+(heights[i][1]-heights[i][0])*(seed*7.13%1);dummy.position.set(x,0,-y);dummy.rotation.set(0,seed*6.283,0);dummy.scale.setScalar(h);dummy.updateMatrix();mesh.setMatrixAt(j,dummy.matrix)});mesh.instanceMatrix.needsUpdate=true;mesh.computeBoundingSphere();vegetation.add(mesh)}});
  const segments=source.fixtures.hedge.flatMap(line=>line.slice(1).map((b,i)=>[line[i],b])).filter(([a,b])=>Math.hypot(b[0]-a[0],b[1]-a[1])>0);
  const hedges=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshStandardMaterial({color:'#49623a',roughness:1}),segments.length);hedges.name='mapped_hedges';segments.forEach(([a,b],i)=>{const len=Math.hypot(b[0]-a[0],b[1]-a[1]);dummy.position.set((a[0]+b[0])/2,.75,-(a[1]+b[1])/2);dummy.rotation.set(0,Math.atan2(b[1]-a[1],b[0]-a[0]),0);dummy.scale.set(len+.45,1.5,.9);dummy.updateMatrix();hedges.setMatrixAt(i,dummy.matrix)});hedges.computeBoundingSphere();vegetation.add(hedges);
  surface.userData.counts=meta;vegetation.userData.counts={trees:source.trees.length,hedges:source.fixtures.hedge.length,hedgeSegments:segments.length};onChange();return {surface,vegetation,meta,signalPlacements:source.placements?.traffic_signal,sourcePlacements:source.placements};

@@ -9,7 +9,7 @@ import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { loadScene, sceneLink, ROOT } from '../scene.js';
 import { timelineTime, layerSpan } from '../recorded-clock.mjs';
-import { getFrame, f16, loadMask, npy, DATA, setDataBase } from '../npy.js';
+import { getFrame, f16, loadMask, npy, DATA, setDataBase, retainFrameSources, cacheInfo } from '../npy.js';
 import { initFrames, hasLayer, layerMeta, getFrameF32, framesInfo, fetchFrameBytes, frameReady, layerNetFps, bufferLayer, bufferState, cancelBuffered, releaseBefore } from '../frames.js';
 import { ON_PAGES } from '../config.js';
 import { fetchCityModel } from '../model-source.js';
@@ -31,7 +31,7 @@ import { EXPANSION_BATCHES, installExpansion } from './expansion.js';
 import { createTransport } from './transport.js';
 import { createTraffic } from './traffic.js';
 import { createDetailTiles } from './complete-detail-tiles.js';
-import {loadCorridorTerrain, currentTerrain} from './corridor-terrain.js';
+import {loadCorridorTerrain, currentTerrain, drapeBuildings} from './corridor-terrain.js';
 import { createCorridorContext } from './corridor-context.js';
 import { recordedFrame } from '../scene-run.js';
 
@@ -47,12 +47,16 @@ if (SCENE.wind_history) {
 }
 setDataBase(SCENE.physics, SCENE.protocol_display?.npy_transport);
 document.title = `${SCENE.title} · 3D`;
-// Lite mode: phones, tablets and low-memory machines get a proxy city extruded from the voxel masks instead of the
-// full model (which needs 1.5-2 GB of browser memory). ?lite=1 forces it, ?lite=0 forces the full model.
+// Without declared display assets, phones and low-memory devices use the voxel
+// proxy. ?lite=1 forces that fallback; ?lite=0 selects GLB geometry.
 const qs0 = new URLSearchParams(location.search);
+// The whole city is visible through its overview mesh. Complete source detail is
+// an explicit inspection mode; never download every detail tile at startup.
+const COMPLETE_DETAIL = qs0.get('quality') === 'full';
 const LITE =
   qs0.get('lite') === '1' ||
   (qs0.get('lite') !== '0' &&
+    !SCENE.display_assets &&
     (/iPhone|iPad|Android|Mobile/i.test(navigator.userAgent) ||
       (navigator.maxTouchPoints > 1 && /Mac/.test(navigator.platform)) ||
       (navigator.deviceMemory !== undefined && navigator.deviceMemory <= 4)));
@@ -82,7 +86,8 @@ const TL = SCENE.timeline ?? { step_s: 25, steps: 100 },
 const FOCUS = SCENE.focus; // {box: [[x, z], [x, z]], orbit_m, label}
 const HAS_UAV_LAYER = SCENE.uav?.enabled ?? SCENE.id === 'white_city';
 const HAS_REPLAY = SCENE.replay === 'demo_rev02'; // the South Kensington traffic / UAV / bird replay
-const MODEL = SCENE.model;
+const DISPLAY = !COMPLETE_DETAIL && !LITE ? SCENE.display_assets : null;
+const MODEL = DISPLAY?.buildings ? {...SCENE.model, url:DISPLAY.buildings, bytes:DISPLAY.buildings_bytes, parts_manifest:null} : SCENE.model;
 const PHASE_ORDER = (
   SCENE.phase_order ?? ['wind', 'temp', 'solar', 'diurnal', 'poll', 'flood']
 ).filter(has);
@@ -1001,35 +1006,8 @@ const solarKey = () =>
 const solarDayLabel = () => LAYERS.solar?.dates?.[ui.solarDate.value]?.label ?? ui.solarDate.value;
 // Decoded frame of a layer: the pre-rendered PNG (physics/web/, ~100 KB) when present, else the raw .npy Range read.
 // Both give the same array layout (wind: [u..., v..., w...]; shadow: Uint8Array 0/1, unpacked when the array stores packed bits).
-// Compact scalar sequences are decoded once before playback; reuse through solar's second pass.
-let preparedSequence = null;
 let solarPass = 0;
-async function compactFrame(key, file, k) {
-  if (!preparedSequence || preparedSequence.file !== file) {
-    const item = {file, frames: [], promise: null};
-    preparedSequence = item;
-    item.promise = (async () => {
-      const meta = await npy(file).header();
-      const count = meta.shape[0];
-      if (meta.block * count * 4 > 450 * 1024 * 1024) throw new Error('Sequence exceeds compact playback memory budget');
-      let cursor = 0, done = 0;
-      await Promise.all(Array.from({length: 3}, async () => {
-        while (cursor < count) {
-          const i = cursor++;
-          item.frames[i] = f16(await npy(file).read(i));
-          done++;
-          if (preparedSequence === item) ui.stage.textContent = `Preparing smooth playback · ${done} / ${count} frames`;
-        }
-      }));
-      if (preparedSequence === item) ui.stage.textContent = `Sequence · ${PHASES[state.phase].label}`;
-    })().catch(error => { if (preparedSequence === item) preparedSequence = null; throw error; });
-  }
-  const item = preparedSequence;
-  await item.promise;
-  return item.frames[k];
-}
 function frame(key, file, k, raw = false) {
-  if (SCENE.preview_fields_8m && state.introDone && seqMode() && (key === 'flood' || key.startsWith('solar_') || key.startsWith('shadow_'))) return compactFrame(key, file, k);
   if (hasLayer(key)) return getFrameF32(key, k, true);
   return getFrame(file, k).then((a) =>
     raw
@@ -1042,10 +1020,11 @@ function frame(key, file, k, raw = false) {
 // decode = true: decode into the frame cache (next frame or two); false: download the compressed bytes only (~1 MB a
 // frame instead of 12-17 MB decoded, so the 150 MB decoded cache is not thrashed)
 function prefetch(key, file, k, decode = true) {
-  if (preparedSequence?.file === file) return;
   if (SCENE.protocol_display?.strict_time && (k === null || k === undefined)) return;
-  if (hasLayer(key)) decode ? getFrameF32(key, k) : fetchFrameBytes(key, k, { droppable: true });
-  else if (decode) getFrame(file, k);
+  const pending = hasLayer(key) ? (decode ? getFrameF32(key, k) : fetchFrameBytes(key, k, { droppable: true })) : decode ? getFrame(file, k) : null;
+  // A failed speculative read must not become an unhandled rejection. The next
+  // demanded read retries normally and reports an actionable frame error.
+  pending?.catch(() => {});
 }
 const DECODE_AHEAD = 2;
 const fetchAhead = (rate) => Math.min(24, Math.max(6, Math.ceil(2.5 * rate)));   // ~2.5 s of playback held as bytes
@@ -1237,21 +1216,24 @@ async function loadStepInner(step) {
     wantSolar = has('solar') && (act.solar || solarPlane.fade > 0),
     wantDiurnal = has('diurnal') && (act.diurnal || diurnalPlane.fade > 0);
   const shadowMode = ui.solarMode.value === 'shadow';
-  // fetch only what is shown or fading (plus a first frame of each field for the readout); every other layer keeps its last frame
+  // Load only visible or fading fields. Hidden readouts do not need an initial
+  // frame of every layer, and switching widgets must not preload whole sequences.
   const wantWind =
       has('wind') &&
       (!SCENE.protocol_display?.strict_time || fi.wind !== null) &&
-      (act.wind || windPlane.fade > 0 || !state.fields.wind),
+      (act.wind || windPlane.fade > 0),
     wantPoll =
       has('poll') &&
       (!SCENE.protocol_display?.strict_time || fi.poll !== null) &&
-      (act.poll || pollPlane.fade > 0 || !state.fields.poll),
+      (act.poll || pollPlane.fade > 0),
     wantTemp =
       has('temp') &&
       (!SCENE.protocol_display?.strict_time || fi.temp !== null) &&
-      (act.temp || tempPlane.fade > 0 || !state.fields.temp);
+      (act.temp || tempPlane.fade > 0);
   state.loading = true;
   const dKey = 'diurnal_' + ui.diurnalMode.value.replace('Rel', '');
+  retainFrameSources([wantWind && FILES.wind, wantPoll && FILES.poll, wantTemp && FILES.temp,
+    wantFlood && FILES.flood, wantSolar && solarFile(), wantDiurnal && diurnalArray()].filter(Boolean));
   const [wr, pr, tr, fr, sr, dr] = await Promise.all([
     wantWind ? frame('wind', FILES.wind, fi.wind) : null,
     wantPoll ? frame('poll', FILES.poll, fi.poll) : null,
@@ -1359,7 +1341,6 @@ function setStep(s) {
 }
 function setPhase(phase) {
   solarPass = 0;
-  preparedSequence = null;
   state.phase = phase;
   syncFieldRate();
   ui.stage.textContent = seqMode() ? `Sequence · ${PHASES[phase].label}` : OVERLAY_LABEL;
@@ -1575,7 +1556,7 @@ function applyLayers() {
   if (solarPlane) solarPlane.target = on && act.solar && ui.solarMode.value !== 'shadow' ? 1 : 0;
   if (shadowPlane) shadowPlane.target = on && act.solar && ui.solarMode.value === 'shadow' ? 1 : 0;
   if (diurnalPlane) diurnalPlane.target = on && act.diurnal ? 1 : 0;
-  model.visible = LITE && ui.lModel.checked; // Full mode uses complete source geometry.
+  model.visible = (LITE || !COMPLETE_DETAIL || !MODEL.detail_tiles) && ui.lModel.checked;
   window.cityDetailTiles?.setEnabled(ui.lModel.checked);
   if (supplementBatches) supplementBatches.visible = $('l-supplement').checked;
   for (const expansion of expansions) expansion.setEnabled($('l-expansion').checked);
@@ -2061,6 +2042,10 @@ async function showCanopyBirds(){
 
 function runCampus(shot = 'overview') {
   viewIntent++;
+  ++state.token;
+  state.loading = false;
+  cancelBuffered();
+  retainFrameSources([]);
   corridorContext?.setPlaying(shot === 'traffic');
   window.canopyBirds?.setActive(shot==='birds');
   section = 'campus';
@@ -2413,7 +2398,7 @@ let contextStarted = false;
 let detailTiles = null; // All detailed tiles and landmarks stay resident in full mode.
 function animate(now) {
   requestAnimationFrame(animate);
-  if (!detailTiles && MODEL.detail_tiles && !LITE && model.children.length) {
+  if (!detailTiles && COMPLETE_DETAIL && MODEL.detail_tiles && !LITE && model.children.length) {
     detailTiles = createDetailTiles({ scene, camera, coarse: model, priorityCentre: qs0.get('shot')==='uavs' ? SCENE.uav?.focus_world_m : null, indexUrl: SCENE.url(MODEL.detail_tiles), onChange: invalidate });
     window.cityDetailTiles = detailTiles;
     detailTiles.setEnabled(ui.lModel.checked);
@@ -2421,7 +2406,7 @@ function animate(now) {
   detailTiles?.update(now);
   if (!contextStarted && model.children.length && SCENE.corridor_context) {
     contextStarted = true;
-    createCorridorContext({scene, config:SCENE.corridor_context, url:SCENE.url, onChange:invalidate})
+    createCorridorContext({scene, config:SCENE.corridor_context, url:SCENE.url, onChange:invalidate,quality:COMPLETE_DETAIL?'full':'balanced',display:DISPLAY})
       .then(value => {corridorContext=value; window.corridorContext=value; value.setPlaying(section === 'campus' && tour.shot === 'traffic' && qs0.get('play') !== '0'); invalidate();})
       .catch(error => {console.error(error); document.querySelector('#corridor-traffic-time').textContent = 'Context failed: ' + error.message;});
   }
@@ -2483,7 +2468,7 @@ function animate(now) {
   }
   if (uavLayer) {
     uavLayer.setVisible(section !== 'fields' && !window.cityTools?.current && (!uavLayer.flightSelection||tour.shot==='uavs'));
-    if (uavLayer.group.visible) { uavLayer.tick(elapsed / 1000); if(uavLayer.flightSelection){invalidate();ui.step.value=uavLayer.t;ui.step.max=uavLayer.duration;ui.timeLabel.textContent=`Flight ${uavLayer.t.toFixed(1)} / ${uavLayer.duration.toFixed(1)} s`;ui.stats.textContent=uavLayer.stats;ui.play.textContent=uavLayer.playing?'❚❚':'▶';} }
+    if (uavLayer.group.visible) { const previousTime=uavLayer.t;uavLayer.tick(elapsed / 1000); if(uavLayer.flightSelection){if(uavLayer.t!==previousTime)invalidate();ui.step.value=uavLayer.t;ui.step.max=uavLayer.duration;ui.timeLabel.textContent=`Flight ${uavLayer.t.toFixed(1)} / ${uavLayer.duration.toFixed(1)} s`;ui.stats.textContent=uavLayer.stats;ui.play.textContent=uavLayer.playing?'❚❚':'▶';} }
   }
   syncPlaybackUI();
   updateFlight(now);
@@ -2805,11 +2790,19 @@ async function boot() {
         }
         for (const m of [...groundMeshes, ...treeMeshes]) m.visible = false;
         setLoadingStatus('Optimizing scene geometry…');
-        const batches = await batchStaticCity(gltf.scene);
+        // Exported display meshes are already grouped and quantized. Rebatching
+        // them here would expand every attribute to float32 and duplicate it.
+        const batches = DISPLAY?.buildings ? {object:new THREE.Group(),stats:{prebatched:true}} : await batchStaticCity(gltf.scene);
         model.add(batches.object);
         for (const m of [...groundMeshes, ...treeMeshes]) if (!tileHidden.has(m)) m.visible = true;
         mainScene = gltf.scene;
         mainBatches = batches.object;
+        if (!COMPLETE_DETAIL && SCENE.corridor_context) {
+          // Apply offsets after batching: height attributes must use the final
+          // mesh's local scale, not the source mesh's quantization transform.
+          drapeBuildings(mainScene);
+          drapeBuildings(mainBatches);
+        }
         console.log('city batches:', batches.stats);
         if (tile) setLoadingStatus('South Kensington detail tile…');
         $('tile-ctl').style.display = tile ? 'contents' : 'none';
@@ -2910,7 +2903,7 @@ async function boot() {
       sceneId: SCENE.id,
       configURL: SCENE.uav?.config ? SCENE.url(SCENE.uav.config) : undefined,
     });
-    if(uavLayer.flightSelection&&!LITE)uavLayer.geometryReady=()=>detailTiles?.hasPoints(uavLayer.selectedRoute.points_enu_m.map(p=>[p[0],p[2],-p[1]]))??false;
+    if(uavLayer.flightSelection&&COMPLETE_DETAIL&&!LITE&&MODEL.detail_tiles)uavLayer.geometryReady=()=>detailTiles?.hasPoints(uavLayer.selectedRoute.points_enu_m.map(p=>[p[0],p[2],-p[1]]))??false;
     const query = new URLSearchParams(location.search);
     if (query.has('t')) uavLayer.update(+query.get('t'));
     applyReplayLayers();
@@ -3062,6 +3055,8 @@ async function boot() {
 if (SCENE.corridor_context) { colorbars = installColorbars({layers:LAYERS,repaint}); window.fieldColorbars=colorbars; }
 window.viewer = {
   performanceStats,
+  frameCacheInfo: cacheInfo,
+  geometryQuality: LITE ? 'lite' : COMPLETE_DETAIL ? 'full' : 'balanced',
   playbackRate: phaseRate,
   THREE,
   scene,

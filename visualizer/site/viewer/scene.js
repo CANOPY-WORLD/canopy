@@ -37,7 +37,7 @@ export async function loadScene() {
 /** URL of this page for another scene (keeps ?lite / ?tile style flags, drops view state). */
 export function sceneLink(id) {
   const qs = new URLSearchParams(location.search);
-  for (const k of [...qs.keys()]) if (!['lite', 'tile', 'expansion'].includes(k)) qs.delete(k);
+  for (const k of [...qs.keys()]) if (!['lite', 'quality', 'tile', 'expansion'].includes(k)) qs.delete(k);
   qs.set('scene', id);
   return location.pathname + '?' + qs.toString();
 }

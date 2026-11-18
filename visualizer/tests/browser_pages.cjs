@@ -23,7 +23,7 @@ const puppeteer = require(process.env.PUPPETEER_MODULE || 'puppeteer-core');
       await page.evaluate(() => {window.__qaRender=viewer.renderer.render; viewer.renderer.render=()=>{};});
     };
     await page.setViewport({width: 1440, height: 1000});
-    await page.goto(new URL('viewer/3d/?scene=imperial_corridor_8km&pose=campus&fields=0&shot=overview&hold=1&lite=0', base).href, {waitUntil:'domcontentloaded'});
+    await page.goto(new URL('viewer/3d/?scene=imperial_corridor_8km&pose=campus&fields=0&shot=overview&hold=1&lite=0&quality=full', base).href, {waitUntil:'domcontentloaded'});
     await pauseContinuousRender();
     await page.waitForFunction(() => window.viewer?.model.children.length > 0 && document.getElementById('loading').classList.contains('hide'), {timeout: 120000});
     const direct = await page.evaluate(() => ({scene: viewer.SCENE.id, children: viewer.model.children.length,
@@ -62,7 +62,7 @@ const puppeteer = require(process.env.PUPPETEER_MODULE || 'puppeteer-core');
       await new Promise(resolve => setTimeout(resolve, 1500));
       await page.screenshot({path:'cache/qa/pages/london-desktop.png'});
     }
-    await page.goto(base.href, {waitUntil:'domcontentloaded'});
+    await page.goto(new URL('?download=all',base).href, {waitUntil:'domcontentloaded'});
     await page.waitForFunction(() => location.pathname.endsWith('/viewer/3d/') ||
       (document.getElementById('resume') && !document.getElementById('resume').hidden), {timeout: 360000});
     assert(new URL(page.url()).pathname.endsWith('/viewer/3d/'), await page.$eval('#pct', e => e.textContent).catch(() => 'Download failed'));

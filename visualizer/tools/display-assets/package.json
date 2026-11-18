@@ -1,0 +1,12 @@
+{
+  "name": "canopy-display-asset-tools",
+  "private": true,
+  "version": "1.0.0",
+  "engines": {"node": ">=22"},
+  "dependencies": {
+    "@gltf-transform/core": "4.3.0",
+    "@gltf-transform/extensions": "4.3.0",
+    "@gltf-transform/functions": "4.3.0",
+    "meshoptimizer": "0.24.0"
+  }
+}
