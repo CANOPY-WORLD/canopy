@@ -1,3 +1,5 @@
+import {terrainNormals} from './surface-geometry.mjs';
+export {terrainSurfaceGeometry} from './surface-geometry.mjs';
 import * as THREE from 'three';
 import {enhanceGroundMaterial} from './ground-materials.js';
 let terrain=null;
@@ -13,13 +15,16 @@ export async function loadCorridorTerrain(url){
  const fetchOK=async path=>{const r=await fetch(url('context/terrain/'+path));if(!r.ok)throw Error(`Terrain ${path}: ${r.status}`);return r};
  const [data,network]=await Promise.all([fetchOK('terrain.json').then(r=>r.json()),fetchOK('road-network.json.gz').then(r=>new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).json())]);
  const dem=grid(data.terrain),road=grid(data.road_surface),segments=[],cells=new Map(),size=32;
+ let matchIndexReady=false;
+ function ensureMatchIndex(){if(matchIndexReady)return;
  network.lanes.forEach((lane,laneIndex)=>{for(let i=1;i<lane.shape.length;i++){
   const a=lane.shape[i-1],b=lane.shape[i],dx=b[0]-a[0],dy=b[1]-a[1],len2=dx*dx+dy*dy;if(len2<.001)continue;
   const s={a,b,dx,dy,len2,width:lane.width,laneIndex},id=segments.length;segments.push(s);
   for(let x=Math.floor(Math.min(a[0],b[0])/size);x<=Math.floor(Math.max(a[0],b[0])/size);x++)for(let y=Math.floor(Math.min(a[1],b[1])/size);y<=Math.floor(Math.max(a[1],b[1])/size);y++){const k=x+','+y;if(!cells.has(k))cells.set(k,[]);cells.get(k).push(id)}
- }});
+ }});matchIndexReady=true;}
  const previous=new Map();
  function match(x,north,heading,id,remember=true){
+  ensureMatchIndex();
   const cx=Math.floor(x/size),cy=Math.floor(north/size),last=previous.get(id);let best=null,score=Infinity;
   for(let ix=cx-1;ix<=cx+1;ix++)for(let iy=cy-1;iy<=cy+1;iy++)for(const k of cells.get(ix+','+iy)||[]){
    const s=segments[k],t=Math.max(0,Math.min(1,((x-s.a[0])*s.dx+(north-s.a[1])*s.dy)/s.len2)),distance=Math.hypot(x-s.a[0]-t*s.dx,north-s.a[1]-t*s.dy);
@@ -48,18 +53,8 @@ export function drapeBuildings(root){if(!terrain)return;root.updateWorldMatrix(t
  g.setAttribute('canopyHeight',new THREE.BufferAttribute(h,1));(Array.isArray(mesh.material)?mesh.material:[mesh.material]).forEach(patch);
  g.computeBoundingBox();g.boundingBox.min.y-=5/Math.abs(sy);g.boundingBox.max.y+=75/Math.abs(sy);g.computeBoundingSphere();g.boundingSphere.radius+=75/Math.abs(sy);
  });}
-function terrainNormals(g){const original=g.attributes.position,temporary=new Float32Array(original.count*3),h=g.attributes.canopyHeight;for(let i=0;i<original.count;i++){temporary[i*3]=original.getX(i);temporary[i*3+1]=original.getY(i)+h.getX(i);temporary[i*3+2]=original.getZ(i)}g.setAttribute('position',new THREE.BufferAttribute(temporary,3));g.computeVertexNormals();g.setAttribute('position',original);}
+export function applyTerrainMaterial(mesh){patch(mesh.material);mesh.frustumCulled=false;}
 export function addHeightAttribute(mesh,sampler){const pos=mesh.geometry.attributes.position,h=new Float32Array(pos.count);for(let i=0;i<pos.count;i++)h[i]=sampler(pos.getX(i),pos.getZ(i),i);mesh.geometry.setAttribute('canopyHeight',new THREE.BufferAttribute(h,1));patch(mesh.material);terrainNormals(mesh.geometry);mesh.frustumCulled=false;}
-// Split existing vector triangles; source boundary coordinates and holes remain intact.
-export function terrainSurfaceGeometry(array,base=false){
- const out=[];function emit(a,b,c){const ab=(a[0]-b[0])**2+(a[2]-b[2])**2,bc=(b[0]-c[0])**2+(b[2]-c[2])**2,ca=(c[0]-a[0])**2+(c[2]-a[2])**2;
-  if(Math.max(ab,bc,ca)<=400){out.push(...a,...b,...c);return}
-  let u=a,v=b,w=c;if(bc>=ab&&bc>=ca){u=b;v=c;w=a}else if(ca>=ab&&ca>=bc){u=c;v=a;w=b}const mid=u.map((x,i)=>(x+v[i])/2);emit(u,mid,w);emit(mid,v,w);
- }
- if(base){const y=array[1];for(let x=-4096;x<4096;x+=20)for(let z=-4096;z<4096;z+=20){const xx=Math.min(x+20,4096),zz=Math.min(z+20,4096);out.push(x,y,z,xx,y,z,xx,y,zz,x,y,z,xx,y,zz,x,y,zz)}}
- else for(let i=0;i<array.length;i+=9)emit(Array.from(array.subarray(i,i+3)),Array.from(array.subarray(i+3,i+6)),Array.from(array.subarray(i+6,i+9)));
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(out,3));g.computeVertexNormals();return g;
-}
 export function elevateInstances(root,on){root.traverse(mesh=>{if(!mesh.isInstancedMesh)return;
  if(!mesh.userData.flatMatrices){mesh.userData.flatMatrices=mesh.instanceMatrix.array.slice();const heights=new Float32Array(mesh.count);for(let i=0;i<mesh.count;i++)heights[i]=terrain.sample(mesh.instanceMatrix.array[i*16+12],mesh.instanceMatrix.array[i*16+14]);mesh.userData.terrainHeights=heights}
  const flat=mesh.userData.flatMatrices;for(let i=0;i<mesh.count;i++)mesh.instanceMatrix.array[i*16+13]=flat[i*16+13]+(on?mesh.userData.terrainHeights[i]:0);mesh.instanceMatrix.needsUpdate=true;mesh.computeBoundingSphere();

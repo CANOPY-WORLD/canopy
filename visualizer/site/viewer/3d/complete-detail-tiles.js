@@ -3,7 +3,7 @@ import {drapeBuildings} from './corridor-terrain.js';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-export function createDetailTiles({scene, coarse, indexUrl, priorityCentre = null, onChange = () => {}}) {
+export function createDetailTiles({scene, camera, focus, coarse, indexUrl, priorityCentre = null, onChange = () => {}}) {
   const group = new THREE.Group();
   group.name = 'complete_detail_geometry';
   scene.add(group);
@@ -33,7 +33,7 @@ export function createDetailTiles({scene, coarse, indexUrl, priorityCentre = nul
       const root = new THREE.Group(); root.name = `detail:${tile.id}`; group.add(root);
       const files = [tile.file, ...(tile.landmarks || []).map(l => l.file)].filter(Boolean);
       let remaining = files.length;
-      for (const file of files) jobs.push(async loader => {
+      for (const file of files) jobs.push({tile, run: async loader => {
         const gltf = await loader.loadAsync(new URL(file, indexUrl).href);
         root.add(gltf.scene);
         drapeBuildings(gltf.scene);
@@ -47,17 +47,37 @@ export function createDetailTiles({scene, coarse, indexUrl, priorityCentre = nul
         });
         progress.loaded++;
         if (--remaining === 0) loaded.push(tile.id);
-      });
+      }});
     }
     progress.total = jobs.length; status();
-    let cursor = 0;
+    const frustum = new THREE.Frustum(), projection = new THREE.Matrix4();
+    const centre = new THREE.Vector3(), bounds = new THREE.Sphere();
+    function nextJob() {
+      // Prioritize current visible source tiles; every queued mesh still loads
+      // at its original resolution. Re-evaluate after each asynchronous load.
+      if (camera) {
+        camera.updateMatrixWorld();
+        frustum.setFromProjectionMatrix(projection.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
+      }
+      const target = priorityCentre ? {x:priorityCentre[0], z:priorityCentre[2]} : focus?.() ?? camera?.position ?? {x:0,z:0};
+      const score = job => {
+        centre.set(job.tile.centre_xz[0], 100, job.tile.centre_xz[1]);
+        bounds.set(centre, Math.hypot(job.tile.half_m, job.tile.half_m, 100));
+        const outside = camera && !frustum.intersectsSphere(bounds) ? 100000 : 0;
+        return outside + Math.hypot(centre.x-target.x, centre.z-target.z);
+      };
+      jobs.sort((a,b) => score(a)-score(b));
+      return jobs.shift();
+    }
     await Promise.all(Array.from({length: 3}, async () => {
       const loader = new GLTFLoader();
-      while (cursor < jobs.length) {
-        const job = jobs[cursor++];
-        try { await job(loader); }
+      while (jobs.length) {
+        const job = nextJob();
+        try { await job.run(loader); }
         catch (error) { progress.errors.push(String(error)); console.error(error); }
         status(); onChange();
+        // Give camera input and a rendered frame a turn between source meshes.
+        await new Promise(resolve => requestAnimationFrame(resolve));
       }
     }));
     progress.complete = progress.errors.length === 0;

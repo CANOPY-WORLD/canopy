@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "canopy.website-profile",
+  "scenario_id": "imperial_corridor_8km",
+  "features": {
+    "birds": {
+      "enabled": false,
+      "resources": [
+        "assets/birds/README.txt",
+        "assets/birds/bird_replay.f32.gz",
+        "assets/birds/bird_replay.json",
+        "assets/birds/bird_states.u8.gz",
+        "assets/birds/compression-report.json"
+      ]
+    },
+    "traffic": {
+      "enabled": false,
+      "resources": [
+        "context/traffic-am.bin",
+        "context/traffic-am.json"
+      ]
+    }
+  }
+}

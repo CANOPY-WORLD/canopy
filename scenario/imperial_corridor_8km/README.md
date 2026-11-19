@@ -11,7 +11,7 @@ The London 8 km case uses [scenario.json](scenario.json) to select the shared Mo
 | Model | Shared registry; the GLB crop → heightfield → solar chain has been executed |
 | Running | Historical full-domain task recipes are not migrated; `tasks` is currently empty |
 | Visualizer | Shared standard template with nine selected historical layers |
-| Detailed presentation | Terrain/context, traffic and UAV features remain in the compatibility website |
+| Detailed presentation | Terrain/context, UAV and fields; bird and vehicle replays disabled by the website profile |
 
 Full 3D computational representations and full-domain rerun recipes are separate from importing recorded display layers. The [migration record](migration.json) and [integration status](../../model/docs/framework/migration-status.md) describe the boundary.
 
@@ -23,11 +23,13 @@ Physics Urban World — Imperial Corridor, London.
 
 [Open Canopy on GitHub Pages](https://canopy-world.github.io/canopy/). Canopy publishes the shared viewer; this Scenario's 1,477 public resources (558,073,283 bytes) live in the independent [London data repository](https://github.com/CANOPY-WORLD/canopy-scenario-imperial-corridor-8km) and [data website](https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/). The [publication reference](publication.json) pins its source revision and immutable snapshot URL; [data/manifest.json](data/manifest.json) is a locked inventory only. Existing presentation paths resolve to the independent data host without copying payloads into Canopy's Pages artifact.
 
-The opening page downloads and verifies this selected Scenario's complete presentation for browser caching; a [direct viewer link](https://canopy-world.github.io/canopy/viewer/3d/?scene=imperial_corridor_8km) loads resources on demand. The data website links back to the same Viewer. Both GitHub Pages sites currently share the `canopy-world.github.io` origin, at different repository paths.
+Normal entry opens the selected Scenario without first downloading its complete package. The [direct viewer link](https://canopy-world.github.io/canopy/viewer/3d/?scene=imperial_corridor_8km) also loads resources on demand. `?download=all` downloads and verifies the enabled presentation for offline browser caching. The data website links back to the same Viewer. Both GitHub Pages sites currently share the `canopy-world.github.io` origin, at different repository paths.
+
+[website.json](website.json) disables birds and vehicle replay and removes their seven payloads (58,364,419 bytes) from the website download list. The enabled data totals 499,708,864 bytes; frontend files add to this download. Both buttons are absent, and old `?shot=birds` / `?shot=traffic` links open Overview. Roads, terrain, mapped signals, UAVs and physics fields remain available. Original payloads and the pinned snapshot manifest remain intact in the data repository. Read the [website profile standard](../../visualizer/docs/publishing.md#optional-website-profile) before changing feature selection, and the [asset size review](../../asset/docs/london-display-budget.md) for compression measurements and remaining work.
 
 Open via HTTPS or a localhost server. Full building geometry is retained. Compact fields retain original sampled timestamps; spatial averaging smooths local extrema. Existing provenance remains in exported scene metadata and context source files. The publication manifest records the source commit and upstream Releases; relocation preserves every payload byte and checksum.
 
-The loading illustration is a stylized pixel-art campus, not a measured building model.
+The loading page uses the Canopy wordmark, Scenario introduction and progress bar.
 
 ## Low-altitude UAV demo
 

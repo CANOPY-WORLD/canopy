@@ -28,6 +28,8 @@ The distribution manifest declares every payload path, presentation route, byte 
 
 ## Validate
 
+The optional `website.json` selects public bird/traffic availability and their exact snapshot payloads. It does not modify scientific layer selection or the immutable publication. Follow the [website profile standard](../visualizer/docs/publishing.md#optional-website-profile), regenerate download indexes, and check that disabled data is never requested.
+
 ```sh
 canopy --root . validate imperial_corridor_8km
 python model/tools/build_review_inventory.py --refresh-assets

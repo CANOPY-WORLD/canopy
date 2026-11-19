@@ -9,10 +9,10 @@ const puppeteer = require(process.env.PUPPETEER_MODULE || 'puppeteer-core');
   const pauseRender = process.env.CANOPY_QA_PAUSE_RENDER === '1';
   const browser = await puppeteer.launch({executablePath: process.env.CHROME_PATH || '/opt/google/chrome/chrome',
     headless: true, args: ['--no-sandbox', '--enable-unsafe-swiftshader']});
-  const errors = [], external = new Set();
+  const errors = [], external = new Set(), requests = [];
   const watch = page => {
     page.on('pageerror', e => {errors.push(e.message); console.error('Page error:', e.message);});
-    page.on('request', r => {const u = new URL(r.url()); if (/^https?:/.test(u.protocol) && u.origin !== base.origin) external.add(u.origin);});
+    page.on('request', r => {const u = new URL(r.url()); requests.push(u.pathname); if (/^https?:/.test(u.protocol) && u.origin !== base.origin) external.add(u.origin);});
     page.on('response', r => {if (r.status() >= 400 && !r.url().endsWith('/favicon.ico')) errors.push(`${r.status()} ${r.url()}`);});
   };
   try {
@@ -62,7 +62,7 @@ const puppeteer = require(process.env.PUPPETEER_MODULE || 'puppeteer-core');
       await new Promise(resolve => setTimeout(resolve, 1500));
       await page.screenshot({path:'cache/qa/pages/london-desktop.png'});
     }
-    await page.goto(base.href, {waitUntil:'domcontentloaded'});
+    await page.goto(new URL('?download=all',base).href, {waitUntil:'domcontentloaded'});
     await page.waitForFunction(() => location.pathname.endsWith('/viewer/3d/') ||
       (document.getElementById('resume') && !document.getElementById('resume').hidden), {timeout: 360000});
     assert(new URL(page.url()).pathname.endsWith('/viewer/3d/'), await page.$eval('#pct', e => e.textContent).catch(() => 'Download failed'));
@@ -74,6 +74,9 @@ const puppeteer = require(process.env.PUPPETEER_MODULE || 'puppeteer-core');
       return {expected:manifest.files.length, actual:(await stored.keys()).length, bytes:manifest.bytes};
     }, base.href);
     assert.equal(cache.actual, cache.expected);
+    const profile = await page.evaluate(() => viewer.SCENE.website_features || {});
+    if (profile.birds === false) assert(!requests.some(path => path.includes('/assets/birds/')));
+    if (profile.traffic === false) assert(!requests.some(path => /\/context\/traffic-am\.(bin|json)$/.test(path)));
     console.log('All publication files verified and cached', JSON.stringify(cache));
     const workers = [];
     for (const target of browser.targets().filter(target => target.type() === 'service_worker')) {

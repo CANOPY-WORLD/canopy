@@ -14,6 +14,8 @@ The minimal layout applies after loading. The separate loading page contains onl
 
 ## Presentation boundary
 
+Normal homepage entry opens the existing Viewer without a full-package download; `?download=all` explicitly caches the enabled presentation. Keep original geometry and field samples. Prioritize visible nearby geometry while loading all source detail in the background. Read the current field frame with a small look-ahead window and a byte-bounded cache; never decode an entire sequence on widget selection. The [loading and asset review](../asset/docs/london-display-budget.md) describes current limits.
+
 The shell owns the renderer, scene, camera, timeline, selected layers, legend and picking. Scenario configuration selects `template:standard`, a supported preset, Asset/layer references and optional camera. Widgets implement display behavior. A widget must not start a solver, mutate an Asset, write scenario configuration, infer a new physical result or fetch undeclared private filesystem paths.
 
 | Widget interface | Required behavior |
@@ -41,6 +43,8 @@ The detailed London website under `site/` is a compatibility presentation. Appro
 Keep resource addresses in the generated mapping, preserve recorded encodings, and test from a project subpath. Only explicitly declared HTTPS snapshot roots may serve remote resources; cross-origin hosts must permit CORS. Do not forward credentials to data hosts. Preserve Range, cancellation, bounded retries and offline caching. A selected Scenario download must never include another Scenario's data. Verify deployed manifest hashes before updating public references; there is no silent fallback to another dataset.
 
 ## Verify the change
+
+Optional public bird/traffic availability belongs in Scenario's `website.json`, using the [website profile standard](docs/publishing.md#optional-website-profile). Keep its download exclusions and runtime feature switches in agreement. Removing a widget button alone does not stop a data download. Keep terrain and mapped roads available when vehicle replay is disabled.
 
 ```sh
 node --test visualizer/tests/test_viewer.mjs

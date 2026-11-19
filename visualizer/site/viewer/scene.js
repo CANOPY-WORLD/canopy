@@ -26,6 +26,22 @@ export async function loadScene() {
   const r = await fetch(base + 'scene.json', { cache: 'no-cache' });
   if (!r.ok) throw new Error(`scene ${id}: ${base}scene.json is missing (HTTP ${r.status})`);
   const scene = await r.json();
+  if (entry.website_profile) {
+    if (entry.website_profile !== `scenario/${id}/website.json`) throw new Error('Invalid website profile path');
+    const response = await fetch(new URL(entry.website_profile, ROOT), { cache: 'no-cache' });
+    if (!response.ok) throw new Error(`Website profile unavailable (HTTP ${response.status})`);
+    const profile = await response.json();
+    if (profile.schema_version !== '1.0.0' || profile.kind !== 'canopy.website-profile' ||
+        profile.scenario_id !== id || !profile.features || typeof profile.features !== 'object' || Array.isArray(profile.features) ||
+        Object.entries(profile.features).some(([name, feature]) =>
+          !['birds', 'traffic'].includes(name) || typeof feature?.enabled !== 'boolean'))
+      throw new Error('Invalid website profile');
+    scene.website_features = Object.fromEntries(Object.entries(profile.features).map(([name, feature]) => [name, feature.enabled]));
+    if (scene.website_features.traffic === false) {
+      scene.traffic = null;
+      if (scene.corridor_context) scene.corridor_context.traffic_enabled = false;
+    }
+  }
   scene.id = id;
   scene.base = base;
   scene.physics = new URL(scene.physics_dir ?? 'physics/', base).href;

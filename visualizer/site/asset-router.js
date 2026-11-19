@@ -126,7 +126,9 @@ self.addEventListener('fetch', event => {
       return new Response(response.body.pipeThrough(new DecompressionStream('gzip')),
         { headers: { 'Content-Type': 'model/gltf-binary' } });
     }
-    if (['', 'index.html', 'download-manifest.json', 'preload.js', 'asset-sources.json'].includes(path)) {
+    // Refresh frontend/configuration on normal entry even if an older complete
+    // cache is active. Immutable mapped payloads can still reuse that cache.
+    if (!map.has(resourcePath) || ['', 'index.html', 'download-manifest.json', 'preload.js', 'asset-sources.json'].includes(path)) {
       try { const response = await network(); return response.ok ? response : await cached() || response; }
       catch (error) { const response = await cached(); if (response) return response; throw error; }
     }

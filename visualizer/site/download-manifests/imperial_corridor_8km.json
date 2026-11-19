@@ -1,7 +1,7 @@
 {
-  "version": "1950ecdc6231184ed8db",
+  "version": "5bacb95561d9d93301af",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 562585889,
+  "bytes": 504230945,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -85,38 +85,13 @@
     },
     {
       "path": "asset-router.js",
-      "bytes": 6195,
-      "sha256": "0e04b7b7485004788ac6afe7455ac926c31d7ad731f9d3f9ee37ae711b3ad2c3"
+      "bytes": 6379,
+      "sha256": "f31a46de54108201ab745fa6ffb629bd7f4983fd7d936b004ac9c7209b6e02e4"
     },
     {
       "path": "asset-sources.json",
       "bytes": 349614,
       "sha256": "8d6af7359fff6dfd0badae8132a4dfdc06ca37ba0101cd93e8574ad6bd990545"
-    },
-    {
-      "path": "assets/birds/README.txt",
-      "bytes": 756,
-      "sha256": "19af9cc799de5c1fb3314ea37d82a880164abb60a759a8a01dab31f4f9d9fb81"
-    },
-    {
-      "path": "assets/birds/bird_replay.f32.gz",
-      "bytes": 46598142,
-      "sha256": "b86894ab9f5320c9f8ad0bb55e683a0b87cf590c464d0f319bc7fb6f029f0de4"
-    },
-    {
-      "path": "assets/birds/bird_replay.json",
-      "bytes": 183254,
-      "sha256": "eef92627a9ef1f6883b8078d406d905f0f7a0bdd481a6aacbbbe2c233955d820"
-    },
-    {
-      "path": "assets/birds/bird_states.u8.gz",
-      "bytes": 16709,
-      "sha256": "d799ec054d3d9d99164721afa4c10da8021ca9514eafe4e3514ab5859c3dc4ea"
-    },
-    {
-      "path": "assets/birds/compression-report.json",
-      "bytes": 407,
-      "sha256": "d42d2cdadb232ca289d4e1c523d904664dd196c96e03bbdc696ddb4a7d5d8b46"
     },
     {
       "path": "assets/uav-low-altitude-20261111/config.json",
@@ -215,13 +190,13 @@
     },
     {
       "path": "preload.js",
-      "bytes": 7071,
-      "sha256": "24dbd1de3fea3badc4d3e285dce2312b078912ff548455d57748e9e40832d279"
+      "bytes": 7647,
+      "sha256": "9b69f26c479e797139926072b969d9f5ba24a924b0bc4cb9adb5e26278268d24"
     },
     {
       "path": "scenario-index.json",
-      "bytes": 962,
-      "sha256": "a1fffcc3554b121da1939df25ec5951fac7be4daf851a60b07ea138f03e36f86"
+      "bytes": 1103,
+      "sha256": "3cde038498fce07080db138654c68474e4c2ca064946aab57e8ae538eac63a0d"
     },
     {
       "path": "scenario/imperial_corridor_8km/data/manifest.json",
@@ -232,6 +207,11 @@
       "path": "scenario/imperial_corridor_8km/publication.json",
       "bytes": 645,
       "sha256": "954a9fdcca53b54bcd2b03d2db0cf8aeac4e98a391dfac057198679a082aa6af"
+    },
+    {
+      "path": "scenario/imperial_corridor_8km/website.json",
+      "bytes": 558,
+      "sha256": "90b9985630b6f3a72b6c81afd1d717d21575fb315d0a39c939a478d780734588"
     },
     {
       "path": "scenes/imperial_corridor_8km/compact-provenance/fields-8m-report.json",
@@ -377,16 +357,6 @@
       "path": "scenes/imperial_corridor_8km/context/terrain/unclassified-base-exposed.f32.gz",
       "bytes": 5706187,
       "sha256": "6ad7ed6e508abffdefa89c646c4010bdc251e64d558ee139164fc555b8a0e56a"
-    },
-    {
-      "path": "scenes/imperial_corridor_8km/context/traffic-am.bin",
-      "bytes": 11457088,
-      "sha256": "74d45a00093614b5da1f99f9908d2bd51205ab26b0acb572bf61ddd63f899d61"
-    },
-    {
-      "path": "scenes/imperial_corridor_8km/context/traffic-am.json",
-      "bytes": 108063,
-      "sha256": "caad41000ae1ea8466482d0a226f08bbdb91dbf838e1a95cc0ad354f9d1c07e3"
     },
     {
       "path": "scenes/imperial_corridor_8km/context/vector_landscape/00-wetland.f32",
@@ -3290,8 +3260,8 @@
     },
     {
       "path": "scenes/index.json",
-      "bytes": 226,
-      "sha256": "2add1dff164c2c3f0d124881bda467ab370f0b1bd1e91e419efd4c1e42741a55"
+      "bytes": 295,
+      "sha256": "3a8262f42697904be81e1142611b097fa7929b64d91029e406108ac299726545"
     },
     {
       "path": "src/visualization/public-scenes.json",
@@ -7625,13 +7595,13 @@
     },
     {
       "path": "viewer/3d/complete-detail-tiles.js",
-      "bytes": 3830,
-      "sha256": "d13b4d981b0b0958dfe32839651b42e5a58e0919ad854da1b078379a9bd34083"
+      "bytes": 5042,
+      "sha256": "ccad87219faff62b3b2057e8b949d2a31ba970beb1466dd24821eacf918df9ba"
     },
     {
       "path": "viewer/3d/corridor-context.js",
-      "bytes": 10452,
-      "sha256": "ea709c9397f72c16d17cf7cbf01783f209b61d3b9782969f172d097b17bd1f87"
+      "bytes": 11089,
+      "sha256": "e06f07eb2c3520b5baa99b10f25fe668f30789fa965ef960b8dc76fe2f0363ed"
     },
     {
       "path": "viewer/3d/corridor-signals.js",
@@ -7640,8 +7610,8 @@
     },
     {
       "path": "viewer/3d/corridor-terrain.js",
-      "bytes": 9949,
-      "sha256": "721b1f2309448ec61571fbbd5a3d43fd5c9c38cc8fc15b58cdde5d6e97e4aec6"
+      "bytes": 8890,
+      "sha256": "6e400520aa6b0835fb9381cc1dc229ac16d8d29f02aed5f8aa9bd9f35b42bf0f"
     },
     {
       "path": "viewer/3d/corridor-vehicles.js",
@@ -7679,9 +7649,19 @@
       "sha256": "06815acf7ad39e0ff69c1bc45450aab2cb6a3ae897f8a2e1664a2cc6fdf15e4c"
     },
     {
+      "path": "viewer/3d/ground-geometry-worker.mjs",
+      "bytes": 510,
+      "sha256": "d8c4e9b20bda616767070698b1eda4ed35853f6c770642865430a64a9d276755"
+    },
+    {
       "path": "viewer/3d/ground-materials.js",
       "bytes": 2359,
       "sha256": "4aba3c1b2952f7a0e24a655ed4a3556439a72979a9bb4edf44a3e89938e723db"
+    },
+    {
+      "path": "viewer/3d/ground-preparation.mjs",
+      "bytes": 1992,
+      "sha256": "676b261b096a1e81e381f29b46022025d5a37af925224d2a809774e080599476"
     },
     {
       "path": "viewer/3d/index.html",
@@ -7690,8 +7670,8 @@
     },
     {
       "path": "viewer/3d/main.js",
-      "bytes": 125824,
-      "sha256": "63868342010de0108776c88f4b55b54e2aacb50e171e742890b6bb80dee2f049"
+      "bytes": 124943,
+      "sha256": "05c29f7d7375b5e0f72bf0725bb75042694edbb9585e9e7dfab948dc20aa68c8"
     },
     {
       "path": "viewer/3d/opening.css",
@@ -7734,6 +7714,11 @@
       "sha256": "63d5b8006818d66f32856ef836a4376ae0ede516ccad5d025f5309db12d2d2db"
     },
     {
+      "path": "viewer/3d/surface-geometry.mjs",
+      "bytes": 2819,
+      "sha256": "79d7e7e71963f95c5ddfb24277cd5cfb0867779fdf18589e938e30093c9cc96d"
+    },
+    {
       "path": "viewer/3d/tile.js",
       "bytes": 7660,
       "sha256": "304cf852b26087b80ae5fbab6f46b4abd5a6a9f8936520b5b072bd74a0454bc0"
@@ -7760,8 +7745,8 @@
     },
     {
       "path": "viewer/3d/vector-landscape.js",
-      "bytes": 4296,
-      "sha256": "fde495dd441528c3fff03a82b1c1712e6b8ee581dc2bf4fcfc0bf98a3d64909c"
+      "bytes": 4454,
+      "sha256": "6a4fed64974c9ceca230f86074d371be734b9060a27f3cc99d5c0833dbed868e"
     },
     {
       "path": "viewer/3d/wind-uav-layer.js",
@@ -7789,6 +7774,11 @@
       "sha256": "d90af45c6c394afff27fcde277b9d018253de7319232cae8b468e8543b05fc66"
     },
     {
+      "path": "viewer/frame-cache.mjs",
+      "bytes": 1970,
+      "sha256": "68f38031400fb7c87853db274e49cbc7705034d3e29481eb078fd4a40328e360"
+    },
+    {
       "path": "viewer/frames.js",
       "bytes": 8635,
       "sha256": "f20a30a6f3c63e9adf4774c575951a48c7d1246f058e1555e9765b6017664478"
@@ -7805,8 +7795,8 @@
     },
     {
       "path": "viewer/npy.js",
-      "bytes": 5174,
-      "sha256": "5002c85e38219935d1bde6d134e969c1ff9d80b0ff08bcb257420e5b040b690a"
+      "bytes": 4647,
+      "sha256": "2d0704af7aea8f7b19fb114dc4efdb24239b3b1e27599cb45f85c9a3b10dbc36"
     },
     {
       "path": "viewer/pages-bootstrap.js",
@@ -7835,8 +7825,8 @@
     },
     {
       "path": "viewer/scene.js",
-      "bytes": 2097,
-      "sha256": "1a631437129bb98ec575cd8aea79d67a8f101111b12c7eace00d0eb59aaf519d"
+      "bytes": 3213,
+      "sha256": "8619c78efa6aadd555e00465ed8162fc706dd4cba03a7d2e4f460dd7c3fb24a0"
     }
   ]
 }
