@@ -12,6 +12,8 @@ The public presentation uses a minimal widget player: Scenario-enabled widget bu
 
 Both the homepage download flow and the direct Viewer show a simple loading page: the Canopy wordmark, the selected Scenario title and short description, and a progress bar. Read the introduction from the public catalog. Show measured geometry-transfer progress when available and an indeterminate bar during preparation. The page uses no preview renderer and disappears when initialization completes.
 
+The public Viewer now keeps an overview and loads original building detail around the current view, releasing it when the view moves away. Ground surfaces appear incrementally, and physics masks wait until a field is selected. See the [geometry loading contract](docs/streamed-geometry.md) for concurrency, cancellation, complete-mode access and verification.
+
 ## Internal structure
 
 ```mermaid

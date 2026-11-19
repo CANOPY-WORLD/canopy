@@ -22,7 +22,18 @@ const puppeteer=require(process.env.PUPPETEER_MODULE||'puppeteer-core');
   assert(!requests.some(url=>/download-manifests?/.test(url)),'Opening must not trigger the complete offline download');
   const before=requests.length;
   const select=async field=>{
-   await page.evaluate(field=>{document.querySelector(`[data-field=${field}]`).click();if(document.querySelector('#play').getAttribute('aria-label')==='Pause')document.querySelector('#play').click();},field);
+   // The first field prepares masks asynchronously. Pause when that widget
+   // becomes active, not the previous widget while the request is pending.
+   await page.evaluate(field=>new Promise((resolve,reject)=>{
+    const button=document.querySelector(`[data-field=${field}]`);
+    const observer=new MutationObserver(()=>{
+     if(button.getAttribute('aria-pressed')!=='true'||viewer.state.phase!==field)return;
+     observer.disconnect();clearTimeout(timer);
+     if(viewer.state.playing)document.querySelector('#play').click();resolve();
+    });
+    const timer=setTimeout(()=>{observer.disconnect();reject(Error('Field selection timed out'));},120000);
+    observer.observe(button,{attributes:true,attributeFilter:['aria-pressed']});button.click();
+   }),field);
    await page.waitForFunction(field=>viewer.state.phase===field&&viewer.state.introDone&&!viewer.state.loading,{},field);
   };
   await select('solar');
