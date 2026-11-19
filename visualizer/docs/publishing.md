@@ -81,6 +81,8 @@ This is a distribution inventory. London's GLB/gzip, compressed fields, binary r
 
 The builder still supports explicit local `data/` publications without a reference for small fixtures or self-contained exports. Such files count against the main site budget. This is not the default for growing public Scenarios.
 
+Every selected Scenario must also meet the [publication budgets](../../asset/docs/publication-budgets.md): 200 MB total and 150 MB each for Geometry and Physics State, using decimal stored bytes. `asset-budget.json` classifies the complete distribution inventory. This includes inactive variants and associated metadata; on-demand fetching does not exempt files. The PR workflow validates pinned remote sizes, and the publisher repeats the budget gate before building an artifact.
+
 ## Loading and caching
 
 `build_pages.py` generates `asset-sources.json` version `2.0.0`. Logical Viewer paths map to relative frontend files or exact remote HTTPS resources under explicitly declared `remote_bases`. The worker accepts legacy version `1.0.0` local mappings for migration. Unknown versions and undeclared remote targets fail explicitly.
@@ -109,6 +111,7 @@ Do not substitute another snapshot when a referenced host fails. Diagnose a fail
 
 ```sh
 python model/tools/build_review_inventory.py
+python asset/tools/check_budgets.py --verify-remote
 python visualizer/tools/build_pages.py --refresh --output cache/pages-preview/canopy
 python -m unittest discover -s visualizer/tests -p 'test_pages.py' -v
 python -m unittest discover -s model/tests -v

@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 
 from build_pages import ROOT, build
@@ -22,6 +23,9 @@ def publish(push=False):
     remote_main = git('ls-remote', 'origin', 'refs/heads/main').split()[0]
     if push and source != remote_main:
         raise ValueError('Push the reviewed main commit before publishing its website')
+    # The PR gate and publication use the same limits and complete inventories.
+    subprocess.run([sys.executable, str(ROOT / 'asset/tools/check_budgets.py'), '--verify-remote'],
+                   cwd=ROOT, check=True)
     cache = ROOT / 'cache'
     cache.mkdir(exist_ok=True)
     workspace = Path(tempfile.mkdtemp(prefix='pages-release-', dir=cache))
