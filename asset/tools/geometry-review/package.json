@@ -1,0 +1,7 @@
+{
+  "name": "canopy-geometry-review",
+  "private": true,
+  "type": "module",
+  "scripts": {"test": "node --test test-lossless.mjs"},
+  "dependencies": {"meshoptimizer": "0.24.0"}
+}

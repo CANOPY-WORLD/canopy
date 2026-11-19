@@ -72,3 +72,5 @@ Archives keep the portable `project/<scenario>/...` member layout. On restoratio
 For local retention, remote distribution and future large-array formats, see the [storage strategy](docs/storage.md). The [London Asset catalog](../scenario/imperial_corridor_8km/asset-catalog.json) lists the current retained bundle metadata.
 
 Approved website exports are stored in independent Scenario data repositories. Canopy keeps a pinned [publication reference](../scenario/imperial_corridor_8km/publication.json) and locked [distribution manifest](../scenario/imperial_corridor_8km/data/manifest.json), preserving hashes and presentation routes without changing scientific Asset semantics. The shared Viewer reads remote files; the main Pages artifact contains metadata only. See the [publication standard](../visualizer/docs/publishing.md).
+
+Review the [lossless geometry measurements](docs/geometry-compression-review.md) and [reproducible converter](tools/geometry-review/README.md) before changing public geometry encodings. Originals and scientific payloads remain intact.
