@@ -83,7 +83,7 @@ class PublicationTests(unittest.TestCase):
         for name in ('index.html', 'preload.js', 'asset-router.js', 'scenes/index.json'):
             path = self.root / 'visualizer/site' / name
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(json.dumps({'default': 'test'}) if name.endswith('.json') else 'fixture')
+            path.write_text(json.dumps({'default': 'test', 'scenes': [{'id': 'test'}]}) if name.endswith('.json') else 'fixture')
         path = self.root / 'visualizer/src/visualization/public-scenes.json'
         path.parent.mkdir(parents=True)
         path.write_text('{}')
@@ -134,6 +134,44 @@ class PublicationTests(unittest.TestCase):
         (self.data / 'sample.bin').write_bytes(b'public')
         with self.assertRaisesRegex(ValueError, 'Unlisted'):
             pages.publications(self.root)
+
+    def test_disabled_website_features_leave_snapshot_intact_and_skip_downloads(self):
+        reference = self.remote()
+        self.frontend()
+        original_manifest = (self.data / 'manifest.json').read_bytes()
+        profile = {'schema_version': '1.0.0', 'kind': 'canopy.website-profile',
+                   'scenario_id': 'test', 'features': {
+                       'traffic': {'enabled': False, 'resources': ['sample.bin']}}}
+        path = self.data.parent / 'website.json'
+        path.write_text(json.dumps(profile))
+        _, files, routing, download = pages.generated(self.root)
+        self.assertEqual((self.data / 'manifest.json').read_bytes(), original_manifest)
+        self.assertEqual(json.loads(routing)['resources']['scenes/test/sample.bin'], reference['base_url'] + 'sample.bin')
+        self.assertNotIn('scenes/test/sample.bin', {r['path'] for r in json.loads(download)['files']})
+        index = json.loads(files['scenario-index.json'])['scenarios'][0]
+        self.assertEqual((index['bytes'], index['files'], index['snapshot_bytes'], index['excluded_bytes']), (0, 0, 6, 6))
+        scene = json.loads(files['scenes/index.json'])['scenes'][0]
+        self.assertEqual(json.loads(files[scene['website_profile']]), profile)
+        profile['features']['traffic']['enabled'] = True
+        path.write_text(json.dumps(profile))
+        _, _, _, download = pages.generated(self.root)
+        self.assertIn('scenes/test/sample.bin', {r['path'] for r in json.loads(download)['files']})
+
+    def test_website_profile_rejects_unknown_features_and_unlisted_resources(self):
+        profile = {'schema_version': '1.0.0', 'kind': 'canopy.website-profile',
+                   'scenario_id': 'test', 'features': {}}
+        path = self.data.parent / 'website.json'
+        for name, feature in (
+            ('unknown', {'enabled': False, 'resources': []}),
+            ('birds', {'enabled': 'false', 'resources': []}),
+            ('birds', {'enabled': False, 'resources': ['not-in-the-snapshot.bin']}),
+            ('birds', {'enabled': False, 'resources': ['../private.bin']}),
+            ('birds', {'enabled': False, 'resources': ['sample.bin', 'sample.bin']}),
+        ):
+            profile['features'] = {name: feature}
+            path.write_text(json.dumps(profile))
+            with self.subTest(feature=feature), self.assertRaises(ValueError):
+                pages.website_profile(self.data.parent, self.manifest)
 
     def test_downloads_are_scoped_to_the_selected_scenario(self):
         reference = self.remote()

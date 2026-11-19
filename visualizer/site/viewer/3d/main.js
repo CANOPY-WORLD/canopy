@@ -9,7 +9,7 @@ import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { loadScene, sceneLink, ROOT } from '../scene.js';
 import { timelineTime, layerSpan } from '../recorded-clock.mjs';
-import { getFrame, f16, loadMask, npy, DATA, setDataBase } from '../npy.js';
+import { getFrame, f16, loadMask, npy, DATA, setDataBase, retainFrameSources, cacheInfo } from '../npy.js';
 import { initFrames, hasLayer, layerMeta, getFrameF32, framesInfo, fetchFrameBytes, frameReady, layerNetFps, bufferLayer, bufferState, cancelBuffered, releaseBefore } from '../frames.js';
 import { ON_PAGES } from '../config.js';
 import { fetchCityModel } from '../model-source.js';
@@ -82,6 +82,7 @@ const TL = SCENE.timeline ?? { step_s: 25, steps: 100 },
 const FOCUS = SCENE.focus; // {box: [[x, z], [x, z]], orbit_m, label}
 const HAS_UAV_LAYER = SCENE.uav?.enabled ?? SCENE.id === 'white_city';
 const HAS_REPLAY = SCENE.replay === 'demo_rev02'; // the South Kensington traffic / UAV / bird replay
+const shotEnabled = shot => SCENE.website_features?.[shot === 'trafficMap' ? 'traffic' : shot] !== false;
 const MODEL = SCENE.model;
 const PHASE_ORDER = (
   SCENE.phase_order ?? ['wind', 'temp', 'solar', 'diurnal', 'poll', 'flood']
@@ -243,7 +244,7 @@ function setupSceneUI() {
         ...(SCENE.traffic ? [['trafficMap', 'Traffic map']] : []),
       ]; // the close-up traffic and transport orbits stay reachable by ?shot=traffic|transport
   tabs.replaceChildren(
-    ...shots.map(([k, t]) => mk('shot', 'shot', k, t)),
+    ...shots.filter(([k]) => shotEnabled(k)).map(([k, t]) => mk('shot', 'shot', k, t)),
     ...PHASE_ORDER.map((k) => mk('field', 'field', k, TAB_NAME[k] ?? k)),
     auto,
   );
@@ -1001,35 +1002,8 @@ const solarKey = () =>
 const solarDayLabel = () => LAYERS.solar?.dates?.[ui.solarDate.value]?.label ?? ui.solarDate.value;
 // Decoded frame of a layer: the pre-rendered PNG (physics/web/, ~100 KB) when present, else the raw .npy Range read.
 // Both give the same array layout (wind: [u..., v..., w...]; shadow: Uint8Array 0/1, unpacked when the array stores packed bits).
-// Compact scalar sequences are decoded once before playback; reuse through solar's second pass.
-let preparedSequence = null;
 let solarPass = 0;
-async function compactFrame(key, file, k) {
-  if (!preparedSequence || preparedSequence.file !== file) {
-    const item = {file, frames: [], promise: null};
-    preparedSequence = item;
-    item.promise = (async () => {
-      const meta = await npy(file).header();
-      const count = meta.shape[0];
-      if (meta.block * count * 4 > 450 * 1024 * 1024) throw new Error('Sequence exceeds compact playback memory budget');
-      let cursor = 0, done = 0;
-      await Promise.all(Array.from({length: 3}, async () => {
-        while (cursor < count) {
-          const i = cursor++;
-          item.frames[i] = f16(await npy(file).read(i));
-          done++;
-          if (preparedSequence === item) ui.stage.textContent = `Preparing smooth playback · ${done} / ${count} frames`;
-        }
-      }));
-      if (preparedSequence === item) ui.stage.textContent = `Sequence · ${PHASES[state.phase].label}`;
-    })().catch(error => { if (preparedSequence === item) preparedSequence = null; throw error; });
-  }
-  const item = preparedSequence;
-  await item.promise;
-  return item.frames[k];
-}
 function frame(key, file, k, raw = false) {
-  if (SCENE.preview_fields_8m && state.introDone && seqMode() && (key === 'flood' || key.startsWith('solar_') || key.startsWith('shadow_'))) return compactFrame(key, file, k);
   if (hasLayer(key)) return getFrameF32(key, k, true);
   return getFrame(file, k).then((a) =>
     raw
@@ -1042,10 +1016,10 @@ function frame(key, file, k, raw = false) {
 // decode = true: decode into the frame cache (next frame or two); false: download the compressed bytes only (~1 MB a
 // frame instead of 12-17 MB decoded, so the 150 MB decoded cache is not thrashed)
 function prefetch(key, file, k, decode = true) {
-  if (preparedSequence?.file === file) return;
   if (SCENE.protocol_display?.strict_time && (k === null || k === undefined)) return;
-  if (hasLayer(key)) decode ? getFrameF32(key, k) : fetchFrameBytes(key, k, { droppable: true });
-  else if (decode) getFrame(file, k);
+  const pending = hasLayer(key) ? (decode ? getFrameF32(key, k) : fetchFrameBytes(key, k, { droppable: true })) : decode ? getFrame(file, k) : null;
+  // A demanded read retries normally if a speculative read fails.
+  pending?.catch(() => {});
 }
 const DECODE_AHEAD = 2;
 const fetchAhead = (rate) => Math.min(24, Math.max(6, Math.ceil(2.5 * rate)));   // ~2.5 s of playback held as bytes
@@ -1237,21 +1211,23 @@ async function loadStepInner(step) {
     wantSolar = has('solar') && (act.solar || solarPlane.fade > 0),
     wantDiurnal = has('diurnal') && (act.diurnal || diurnalPlane.fade > 0);
   const shadowMode = ui.solarMode.value === 'shadow';
-  // fetch only what is shown or fading (plus a first frame of each field for the readout); every other layer keeps its last frame
+  // Preserve every recorded sample, loading only visible or fading fields.
   const wantWind =
       has('wind') &&
       (!SCENE.protocol_display?.strict_time || fi.wind !== null) &&
-      (act.wind || windPlane.fade > 0 || !state.fields.wind),
+      (act.wind || windPlane.fade > 0),
     wantPoll =
       has('poll') &&
       (!SCENE.protocol_display?.strict_time || fi.poll !== null) &&
-      (act.poll || pollPlane.fade > 0 || !state.fields.poll),
+      (act.poll || pollPlane.fade > 0),
     wantTemp =
       has('temp') &&
       (!SCENE.protocol_display?.strict_time || fi.temp !== null) &&
-      (act.temp || tempPlane.fade > 0 || !state.fields.temp);
+      (act.temp || tempPlane.fade > 0);
   state.loading = true;
   const dKey = 'diurnal_' + ui.diurnalMode.value.replace('Rel', '');
+  retainFrameSources([wantWind && FILES.wind, wantPoll && FILES.poll, wantTemp && FILES.temp,
+    wantFlood && FILES.flood, wantSolar && solarFile(), wantDiurnal && diurnalArray()].filter(Boolean));
   const [wr, pr, tr, fr, sr, dr] = await Promise.all([
     wantWind ? frame('wind', FILES.wind, fi.wind) : null,
     wantPoll ? frame('poll', FILES.poll, fi.poll) : null,
@@ -1359,7 +1335,6 @@ function setStep(s) {
 }
 function setPhase(phase) {
   solarPass = 0;
-  preparedSequence = null;
   state.phase = phase;
   syncFieldRate();
   ui.stage.textContent = seqMode() ? `Sequence · ${PHASES[phase].label}` : OVERLAY_LABEL;
@@ -2052,6 +2027,7 @@ let savedLandscapeDisplay={ground:true,trees:true};
 let canopyBirdsLoading=null;
 let fieldPreparation=null, fieldInitializationError=null, viewIntent=0;
 async function showCanopyBirds(){
+  if (!shotEnabled('birds')) return;
   if(!canopyBirdsLoading)canopyBirdsLoading=import('./canopy-birds-preview.js').then(m=>m.installBirdPreview(window.viewer,invalidate));
   const birds=await canopyBirdsLoading;
   const selected=section==='campus'&&tour.shot==='birds';
@@ -2060,7 +2036,12 @@ async function showCanopyBirds(){
 }
 
 function runCampus(shot = 'overview') {
+  if (!shotEnabled(shot)) shot = 'overview';
   viewIntent++;
+  ++state.token;
+  state.loading = false;
+  cancelBuffered();
+  retainFrameSources([]);
   corridorContext?.setPlaying(shot === 'traffic');
   window.canopyBirds?.setActive(shot==='birds');
   section = 'campus';
@@ -2414,7 +2395,7 @@ let detailTiles = null; // All detailed tiles and landmarks stay resident in ful
 function animate(now) {
   requestAnimationFrame(animate);
   if (!detailTiles && MODEL.detail_tiles && !LITE && model.children.length) {
-    detailTiles = createDetailTiles({ scene, camera, coarse: model, priorityCentre: qs0.get('shot')==='uavs' ? SCENE.uav?.focus_world_m : null, indexUrl: SCENE.url(MODEL.detail_tiles), onChange: invalidate });
+    detailTiles = createDetailTiles({ scene, camera, focus:()=>controls.target, coarse: model, priorityCentre: qs0.get('shot')==='uavs' ? SCENE.uav?.focus_world_m : null, indexUrl: SCENE.url(MODEL.detail_tiles), onChange: invalidate });
     window.cityDetailTiles = detailTiles;
     detailTiles.setEnabled(ui.lModel.checked);
   }
@@ -3062,6 +3043,7 @@ async function boot() {
 if (SCENE.corridor_context) { colorbars = installColorbars({layers:LAYERS,repaint}); window.fieldColorbars=colorbars; }
 window.viewer = {
   performanceStats,
+  frameCacheInfo: cacheInfo,
   playbackRate: phaseRate,
   THREE,
   scene,

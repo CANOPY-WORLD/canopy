@@ -62,6 +62,20 @@ test('directory navigation resolves the cached index page', async () => {
   assert.equal(await (await w.get('/canopy/viewer/3d/?scene=london')).text(), 'cached viewer');
 });
 
+test('current frontend and website profiles override an older complete cache', async () => {
+  for (const path of ['viewer/3d/main.js', 'scenes/index.json', 'scenario/london/website.json']) {
+    const url='https://example.test/canopy/'+path;
+    const cache=new Map([
+      ['https://example.test/canopy/__active',new Response('canopy-complete-old')],
+      [url,new Response('old frontend')],
+    ]);
+    const online=worker({},new Map([[url,new Response('current frontend')]]),cache);
+    assert.equal(await (await online.get('/canopy/'+path)).text(),'current frontend');
+    const offline=worker({},new Map(),cache);
+    assert.equal(await (await offline.get('/canopy/'+path)).text(),'old frontend');
+  }
+});
+
 test('undeclared external targets and parent-directory routes fail closed', async () => {
   for (const target of ['../secret','https://elsewhere.test/data','data/%2e%2e/private']) {
     const w = worker({'scenes/london/value.bin':target},new Map());

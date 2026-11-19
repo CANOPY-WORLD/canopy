@@ -38,6 +38,15 @@ export async function createCorridorContext({scene, config, url, onChange}) {
     if(terrainMode!==mode){terrainMode=mode;ground.children.forEach(m=>{m.geometry=mode?m.userData.terrainGeometry:m.userData.flatGeometry});elevateInstances(landscape.vegetation,mode);elevateInstances(signals,mode);onChange();}
     const visible=groundToggle.checked,roadVisible=visible&&(roadsToggle?.checked??true),landVisible=visible&&surfaceToggle.checked,vegVisible=treesToggle.checked&&vegetationToggle.checked;if(ground.visible!==landVisible||roads&&roads.visible!==roadVisible||landscape.vegetation.visible!==vegVisible)onChange();ground.visible=landVisible;if(roads)roads.visible=roadVisible&&!mode;elevatedRoads.visible=roadVisible&&mode;landscape.vegetation.visible=vegVisible;const furnitureVisible=mode&&visible&&detailControls.querySelector('input').checked;if(furniture.visible!==furnitureVisible)onChange();furniture.visible=furnitureVisible;}
   syncGround();
+  if (config.traffic_enabled === false) {
+    // Ground, road elevation and mapped signals are independent of vehicle replay.
+    for (const control of panel.querySelectorAll('[id^="corridor-traffic-"]')) control.disabled = true;
+    panel.querySelector('#corridor-traffic-visible').checked = false;
+    panel.querySelector('#corridor-traffic-time').textContent = 'Traffic not loaded';
+    return {group,ground,roads,elevatedRoads,terrain,signals,furniture,vegetation:landscape.vegetation,
+      landscapeMeta:landscape.meta,cars:null,meta:null,frames:[],frame:-1,playing:false,
+      show(){},setPlaying(){},tick(){syncGround();}};
+  }
   const [meta,response]=await Promise.all([fetch(url(config.traffic_meta)).then(r=>{if(!r.ok)throw Error('Traffic metadata unavailable');return r.json()}),fetch(url(config.traffic_binary))]);
   if(!response.ok)throw Error('Traffic frames unavailable');
   const buffer=await response.arrayBuffer(), bytes=new DataView(buffer), frames=[];let offset=0,maxCount=0;

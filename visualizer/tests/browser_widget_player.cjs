@@ -8,11 +8,12 @@ const puppeteer = require(process.env.PUPPETEER_MODULE || 'puppeteer-core');
   const pauseRender = process.env.CANOPY_QA_PAUSE_RENDER === '1';
   const browser = await puppeteer.launch({executablePath:process.env.CHROME_PATH || '/opt/google/chrome/chrome',
     headless:true, args:['--no-sandbox','--enable-unsafe-swiftshader']});
-  const errors = [], checks = [];
+  const errors = [], checks = [], requests = [];
   try {
     const page = await browser.newPage();
     page.setDefaultTimeout(60000);
     page.on('pageerror', e => { errors.push(e.message); console.error(e.message); });
+    page.on('request', r => requests.push(new URL(r.url()).pathname));
     page.on('console', m => { if(m.type() === 'error') errors.push(m.text()); });
     page.on('response', r => { if(r.status() >= 400 && !r.url().endsWith('/favicon.ico')) errors.push(`${r.status()} ${r.url()}`); });
     await page.setViewport({width:1440,height:1000});
@@ -66,16 +67,25 @@ const puppeteer = require(process.env.PUPPETEER_MODULE || 'puppeteer-core');
     await page.waitForFunction(()=>document.querySelector('#play').disabled && document.querySelector('#step').disabled);
     checks.push('Static campus view: no invented timeline');
 
-    await clickWidget('[data-shot=traffic]'); await ready(); await pause();
-    await seek(10);
+    const shots = new Set(await page.$$eval('#tabs [data-shot]', els => els.map(el => el.dataset.shot)));
     const traffic = () => corridorContext.frame;
-    assert.equal(await page.evaluate(traffic),10);
-    await stationary(traffic); await advances(traffic);
-    await seek(await page.$eval('#step',el=>el.max));
-    await page.click('#play');
-    await page.waitForFunction(()=>corridorContext.frame < corridorContext.frames.length-1 && corridorContext.playing);
-    await pause(); await minimal();
-    checks.push('Traffic: play, pause, seek, restart'); console.log(checks.at(-1));
+    if (shots.has('traffic')) {
+      await clickWidget('[data-shot=traffic]'); await ready(); await pause();
+      await seek(10);
+      assert.equal(await page.evaluate(traffic),10);
+      await stationary(traffic); await advances(traffic);
+      await seek(await page.$eval('#step',el=>el.max));
+      await page.click('#play');
+      await page.waitForFunction(()=>corridorContext.frame < corridorContext.frames.length-1 && corridorContext.playing);
+      await pause(); await minimal();
+      checks.push('Traffic: play, pause, seek, restart'); console.log(checks.at(-1));
+    } else {
+      await page.waitForFunction(() => !!window.corridorContext);
+      assert.equal(await page.evaluate(() => viewer.SCENE.website_features.traffic), false);
+      assert.equal(await page.evaluate(() => corridorContext.cars), null);
+      assert.equal(await page.evaluate(() => corridorContext.frames.length), 0);
+      checks.push('Traffic disabled: ground loaded without vehicles or frames');
+    }
 
     await clickWidget('[data-shot=uavs]'); await ready(); await pause();
     const uav=()=>viewer.uavs.t;
@@ -89,11 +99,17 @@ const puppeteer = require(process.env.PUPPETEER_MODULE || 'puppeteer-core');
     await pause(); await minimal();
     checks.push('UAV: play, pause, seek, restart'); console.log(checks.at(-1));
 
-    await clickWidget('[data-shot=birds]'); await ready(); await pause();
-    const birds=()=>canopyBirds.time;
-    await seek(60); assert.equal(await page.evaluate(birds),60);
-    await stationary(birds); await advances(birds); await minimal();
-    checks.push('Birds: play, pause, seek'); console.log(checks.at(-1));
+    if (shots.has('birds')) {
+      await clickWidget('[data-shot=birds]'); await ready(); await pause();
+      const birds=()=>canopyBirds.time;
+      await seek(60); assert.equal(await page.evaluate(birds),60);
+      await stationary(birds); await advances(birds); await minimal();
+      checks.push('Birds: play, pause, seek'); console.log(checks.at(-1));
+    } else {
+      assert.equal(await page.evaluate(() => viewer.SCENE.website_features.birds), false);
+      assert.equal(await page.evaluate(() => !!window.canopyBirds), false);
+      checks.push('Birds disabled: no replay instance');
+    }
 
     const fieldNames=await page.$$eval('#tabs [data-field]',els=>els.map(el=>el.dataset.field));
     for(const field of fieldNames) {
@@ -117,11 +133,12 @@ const puppeteer = require(process.env.PUPPETEER_MODULE || 'puppeteer-core');
     }
 
     // A field request followed immediately by another selection may finish later.
-    await page.evaluate(()=>{document.querySelector('[data-field=wind]').click();document.querySelector('[data-shot=traffic]').click();});
-    await page.waitForFunction(()=>document.querySelector('[data-shot=traffic]').getAttribute('aria-pressed')==='true');
+    const destination = shots.has('traffic') ? 'traffic' : 'overview';
+    await page.evaluate(shot=>{document.querySelector('[data-field=wind]').click();document.querySelector(`[data-shot=${shot}]`).click();}, destination);
+    await page.waitForFunction(shot=>document.querySelector(`[data-shot=${shot}]`).getAttribute('aria-pressed')==='true',{},destination);
     await ready(); await pause(); await seek(7);
-    assert.equal(await page.evaluate(traffic),7);
-    await stationary(traffic);
+    assert.equal(await page.evaluate(destination === 'traffic' ? traffic : orbit),7);
+    await stationary(destination === 'traffic' ? traffic : orbit);
     checks.push('Rapid switching keeps the latest widget and clock');
     await clickWidget('[data-shot=overview]'); await ready(); await pause();
     await new Promise(resolve=>setTimeout(resolve,2800));
@@ -134,6 +151,8 @@ const puppeteer = require(process.env.PUPPETEER_MODULE || 'puppeteer-core');
     await page.focus('#step'); const before=await page.evaluate(orbit); await page.keyboard.press('ArrowRight');
     assert((await page.evaluate(orbit))>before);
     await minimal();
+    if (!shots.has('birds')) assert(!requests.some(path => path.includes('/assets/birds/')), 'Disabled bird data must never be requested');
+    if (!shots.has('traffic')) assert(!requests.some(path => /\/context\/traffic-am\.(bin|json)$/.test(path)), 'Disabled traffic data must never be requested');
     assert.deepEqual(errors,[]);
     const result={passed:true,checks,geometry:'existing lightweight London mode',continuousRenderingPaused:pauseRender,viewports:[1440,390],errors};
     fs.writeFileSync('cache/qa/widget-player/results.json',JSON.stringify(result,null,2)+'\n');

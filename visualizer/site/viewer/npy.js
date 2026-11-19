@@ -1,6 +1,7 @@
 /* Minimal .npy reader over HTTP Range requests (ES module), used by the 3-D page. Paths are relative to the scene's
    physics/ folder (DATA, set by main.js from scene.json before any read). */
 import { readCompressedRange } from './compressed-assets.js';
+import { FrameCache } from './frame-cache.mjs';
 export let DATA = '';
 let transport = null;
 export function setDataBase(url, compressed = null) {
@@ -113,40 +114,15 @@ export function npy(path) {
   return files.get(path);
 }
 
-const cache = new Map(),
-  inflight = new Map();
-let cacheBytes = 0;
-export const CACHE_CAP = 200 * 1024 * 1024; // raw frames kept for scrubbing; 600 MB pushed low-memory machines into GC stalls
+export const CACHE_CAP = ((globalThis.navigator?.deviceMemory ?? 8) <= 4 ? 32 : 64) * 1024 * 1024;
+const cache = new FrameCache(CACHE_CAP);
+export function retainFrameSources(paths) { cache.retainSources(paths); }
 export function cacheInfo() {
-  return { bytes: cacheBytes, frames: cache.size };
+  return cache.info();
 }
 /** Cached, LRU-evicted frame read (raw bytes; decode with f16()). */
 export async function getFrame(path, index) {
-  const key = path + '#' + index;
-  if (cache.has(key)) {
-    const v = cache.get(key);
-    cache.delete(key);
-    cache.set(key, v);
-    return v;
-  }
-  if (inflight.has(key)) return inflight.get(key);
-  const p = (async () => {
-    const arr = await npy(path).read(index);
-    cache.set(key, arr);
-    cacheBytes += arr.byteLength;
-    while (cacheBytes > CACHE_CAP && cache.size > 1) {
-      const k = cache.keys().next().value;
-      cacheBytes -= cache.get(k).byteLength;
-      cache.delete(k);
-    }
-    return arr;
-  })();
-  inflight.set(key, p);
-  try {
-    return await p;
-  } finally {
-    inflight.delete(key);
-  }
+  return cache.get(path, index, () => npy(path).read(index));
 }
 const masks = {};
 export async function loadMask(path) {

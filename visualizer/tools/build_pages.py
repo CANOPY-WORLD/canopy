@@ -141,6 +141,35 @@ def frontend(root):
     return files
 
 
+def website_profile(scenario_root, manifest):
+    """Select optional website features without changing an immutable snapshot."""
+    path = bounded(scenario_root, 'website.json')
+    if not path.is_file():
+        return None, set()
+    profile = json.loads(path.read_bytes())
+    if (not isinstance(profile, dict) or set(profile) != {'schema_version', 'kind', 'scenario_id', 'features'} or
+            profile.get('schema_version') != '1.0.0' or
+            profile.get('kind') != 'canopy.website-profile' or
+            profile.get('scenario_id') != scenario_root.name or
+            not isinstance(profile.get('features'), dict) or
+            not profile['features'].keys() <= {'birds', 'traffic'}):
+        raise ValueError(f'Invalid website profile: {path}')
+    records = {record['path']: record['viewer_path'] for record in manifest['files']}
+    claimed, excluded = set(), set()
+    for feature in profile['features'].values():
+        if (not isinstance(feature, dict) or set(feature) != {'enabled', 'resources'} or
+                type(feature['enabled']) is not bool or not isinstance(feature['resources'], list)):
+            raise ValueError(f'Invalid website feature: {path}')
+        for name in feature['resources']:
+            bounded(scenario_root / 'data', name)
+            if name not in records or name in claimed:
+                raise ValueError(f'Unknown or duplicate website resource: {name}')
+            claimed.add(name)
+            if not feature['enabled']:
+                excluded.add(records[name])
+    return path, excluded
+
+
 def generated(root):
     resources, manifests = publications(root)
     files = frontend(root)
@@ -148,24 +177,39 @@ def generated(root):
         raise ValueError('A public resource collides with a frontend file')
     routes = {name: record['path'] for name, record in resources.items()}
     routes.update({name: name for name in files if name.endswith('.glb.gz')})
-    scenarios, remote_bases = [], []
+    scenarios, remote_bases, exclusions = [], [], {}
+    scene_index = json.loads(files['scenes/index.json'])
     for scenario in sorted({r['scenario_id'] for r in resources.values()}):
         scenario_root = root / 'scenario' / scenario
         description = json.loads((scenario_root / 'scenario.json').read_bytes())
         manifest = json.loads((scenario_root / 'data/manifest.json').read_bytes())
         reference = publication_reference(scenario_root)
+        profile, excluded = website_profile(scenario_root, manifest)
+        exclusions[scenario] = excluded
+        excluded_bytes = sum(resources[name]['bytes'] for name in excluded)
         entry = {'id': scenario, 'title': description.get('title', scenario),
                  'viewer_url': 'viewer/3d/?scene=' + scenario,
                  'download_manifest': 'download-manifests/' + scenario + '.json',
-                 'snapshot': manifest.get('snapshot'), 'bytes': manifest['bytes'],
-                 'files': len(manifest['files'])}
+                 'snapshot': manifest.get('snapshot'), 'bytes': manifest['bytes'] - excluded_bytes,
+                 'files': len(manifest['files']) - len(excluded),
+                 'snapshot_bytes': manifest['bytes'], 'excluded_bytes': excluded_bytes}
+        for scene in scene_index.get('scenes', []):
+            if scene['id'] == scenario:
+                scene.pop('website_profile', None)
+                if profile:
+                    scene['website_profile'] = profile.relative_to(root).as_posix()
+        if profile:
+            name = profile.relative_to(root).as_posix()
+            files[name] = profile.read_bytes()
+            entry['website_profile'] = name
         if reference:
             remote_bases.append(reference['base_url'])
             entry.update(repository=reference['repository'], revision=reference['revision'],
                          data_website=reference['website'], manifest_url=reference['base_url'] + 'manifest.json',
                          manifest_sha256=reference['manifest']['sha256'])
         scenarios.append(entry)
-    default = json.loads(files['scenes/index.json'])['default']
+    files['scenes/index.json'] = encode(scene_index)
+    default = scene_index['default']
     if default not in {entry['id'] for entry in scenarios}:
         raise ValueError('Default Scenario has no publication')
     routing = encode({'schema_version': '2.0.0', 'remote_bases': sorted(set(remote_bases)),
@@ -180,7 +224,8 @@ def generated(root):
     downloads = {}
     for scenario in scenarios:
         inventory = shared + [{'path': name, 'bytes': record['bytes'], 'sha256': record['sha256']}
-                              for name, record in resources.items() if record['scenario_id'] == scenario['id']]
+                              for name, record in resources.items()
+                              if record['scenario_id'] == scenario['id'] and name not in exclusions[scenario['id']]]
         inventory.sort(key=lambda f: f['path'])
         version = hashlib.sha256(encode(inventory)).hexdigest()[:20]
         downloads[scenario['id']] = encode({'version': version, 'scenario_id': scenario['id'],
@@ -193,7 +238,7 @@ def generated(root):
 def build(root, output=None, refresh=False):
     resources, files, routing, download = generated(root)
     indexes = {name: data for name, data in files.items()
-               if name in ('asset-sources.json', 'scenario-index.json') or name.startswith('download-manifests/')}
+               if name in ('asset-sources.json', 'scenario-index.json', 'scenes/index.json') or name.startswith('download-manifests/')}
     indexes['download-manifest.json'] = download
     for name, data in indexes.items():
         target = root / 'visualizer/site' / name
