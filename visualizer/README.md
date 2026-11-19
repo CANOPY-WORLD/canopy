@@ -64,3 +64,5 @@ The local server explicitly maps existing `/src/visualization/`, `/project/`, `/
 The [interactive architecture guide](guide/README.md) lists the current Model, Asset and Visualizer contents and links to their extension standards. Open `/guide/` on the local server.
 
 The committed `main` source is built into [Canopy Pages](https://canopy-world.github.io/canopy/) and its [guide](https://canopy-world.github.io/canopy/guide/) together. Public payloads live in independent Scenario repositories; Canopy publishes a [Scenario link index](https://canopy-world.github.io/canopy/scenario-index.json), pinned references and the shared Viewer. Follow the [publishing standard](docs/publishing.md) for remote checksums, selected-Scenario caching, local preview and deployment.
+
+The separate [geometry comparison page](geometry-review/README.md) reviews original and losslessly compressed London assets. It has independent review hosting and does not alter the production Viewer.
