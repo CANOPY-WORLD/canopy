@@ -32,7 +32,10 @@ Add the semantic definition to the protocol, extend both `asset/schemas/` and `m
 
 ## Verify the change
 
+Public exports must satisfy the [publication budgets](docs/publication-budgets.md): each Scenario is limited to 200,000,000 stored bytes overall and 150,000,000 bytes per Geometry/Physics State category. Classify every distribution file in `scenario/<id>/asset-budget.json`. Preserve originals outside the selected web distribution; do not reduce scientific fidelity to satisfy the gate.
+
 ```sh
+python3 asset/tools/check_budgets.py --verify-remote
 python -m unittest discover -s model/tests -v
 python model/tools/check_contract.py /path/to/export/manifest.json
 canopy --root . validate imperial_corridor_8km

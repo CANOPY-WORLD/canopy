@@ -26,6 +26,8 @@ Host approved website data in a dedicated Scenario repository, under `snapshots/
 
 The distribution manifest declares every payload path, presentation route, byte size and SHA-256. It is separate from the V2 Asset registry and V1.1 scientific payload contract. Follow the [publication standard](../visualizer/docs/publishing.md). Canopy publishes the shared viewer, guide and public Scenario index; the viewer reads the selected Scenario's independently hosted data. Downloads must remain scoped to the selected Scenario. New routes use `scenes/<scenario_id>/`; only London's historical aliases remain for compatibility.
 
+Add an `asset-budget.json` classification policy for every public Scenario. Follow the [publication budget standard](../asset/docs/publication-budgets.md): total resources are limited to 200 MB, with Geometry and Physics State each limited to 150 MB. Count every file in the selected inventory, including inactive exports. PRs fail for over-budget or unclassified resources; raw retained research data is outside this web-only budget.
+
 ## Validate
 
 ```sh

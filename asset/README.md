@@ -4,6 +4,8 @@
 
 Before adding a feature, read the [Asset contribution standard](CONTRIBUTING.md). [All component standards](../model/docs/framework/contributing.md) provide the shared entrypoint.
 
+Public Scenario resources must meet the [publication budgets](docs/publication-budgets.md): 200 MB total, with Geometry and Physics State each limited to 150 MB. All limits use decimal stored bytes and are checked in PRs.
+
 An Asset is a versioned, Scenario-owned Geometry or Physics result. Its small JSON descriptor identifies the payload, exact input versions, coordinates, provenance and file checksums. Bulk arrays and meshes remain separate binary files.
 
 ## Internal structure
