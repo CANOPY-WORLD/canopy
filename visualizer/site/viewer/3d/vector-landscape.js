@@ -4,7 +4,7 @@ import {createGroundPreparation} from './ground-preparation.mjs';
 import * as THREE from 'three';
 import {treeAssets} from './source-tree-assets.js';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
-export async function createVectorLandscape({url,onChange}) {
+export async function createVectorLandscape({url,onChange,onSurface=()=>{}}) {
  const base='context/vector_landscape/';
  const get=async p=>{const r=await fetch(url(base+p));if(!r.ok)throw Error(`${p}: ${r.status}`);return r};
  const [meta,source]=await Promise.all([get('manifest.json').then(r=>r.json()),get('source/scene-meta.json').then(r=>r.json())]);
@@ -12,13 +12,18 @@ export async function createVectorLandscape({url,onChange}) {
  const preparation=createGroundPreparation(currentTerrain().dem);
  surface.userData.preparation=preparation.mode;
  const geometry=arrays=>{const g=new THREE.BufferGeometry();for(const [name,array] of Object.entries(arrays))g.setAttribute(name,new THREE.BufferAttribute(array,name==='canopyHeight'?1:3));return g;};
- try { await Promise.all(meta.layers.map(async l=>{
+ // At most two surface pairs are downloading/preparing at once. Completed
+ // surfaces can render immediately; no full-landscape allocation barrier.
+ let cursor=0;
+ try { await Promise.all(Array.from({length:2},async()=>{while(cursor<meta.layers.length){
+  const l=meta.layers[cursor++];
   const [original,r]=await Promise.all([get(l.file).then(r=>r.arrayBuffer()),fetch(url('context/terrain/'+(l.name==='unclassified-base'?'unclassified-base-exposed.f32.gz':l.file+'.gz')))]);
   if(!r.ok)throw Error(`Terrain vector surface ${l.name}: ${r.status}`);
   const elevated=await new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
   const result=await preparation.build(original,elevated),g=geometry(result.terrain),flat=geometry(result.flat);
-  const mesh=new THREE.Mesh(g,enhanceGroundMaterial(new THREE.MeshStandardMaterial({color:l.color,side:THREE.DoubleSide,roughness:1}),l.name));mesh.name=l.name;applyTerrainMaterial(mesh);mesh.userData.terrainGeometry=g;mesh.userData.flatGeometry=flat;surface.add(mesh);
- })); } finally {preparation.dispose();}
+  const mesh=new THREE.Mesh(g,enhanceGroundMaterial(new THREE.MeshStandardMaterial({color:l.color,side:THREE.DoubleSide,roughness:1}),l.name));mesh.name=l.name;applyTerrainMaterial(mesh);mesh.userData.terrainGeometry=g;mesh.userData.flatGeometry=flat;surface.add(mesh);onSurface(surface);onChange();
+  await new Promise(resolve=>setTimeout(resolve,0));
+ }})); } finally {preparation.dispose();}
  const kit={rng(seed){let n=Math.floor(seed*2147483648)||1;return ()=>((n=n*16807%2147483647)-1)/2147483646},paintedMaterial(name,w,h,paint,opts){const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;paint(canvas.getContext('2d'),w,h);const map=new THREE.CanvasTexture(canvas);map.colorSpace=THREE.SRGBColorSpace;map.wrapS=map.wrapT=THREE.RepeatWrapping;map.anisotropy=4;return new THREE.MeshStandardMaterial({map,...opts})}};
  const shares=[.4,.18,.14,.1,.08,.1],heights=[[13,26],[11,20],[10,18],[9,16],[10,19],[8,15]],sets=treeAssets.map(()=>[]);
  for(const t of source.trees){let v=t[2]*997%1,i=0;while(i<5&&v>=shares[i])v-=shares[i++];sets[i].push(t)}

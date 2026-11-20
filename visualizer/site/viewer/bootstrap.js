@@ -32,12 +32,13 @@ document.addEventListener('webglcontextlost', event => {
 window.addEventListener('viewer-context-lost', () => fail(new Error('The browser lost its graphics context. Reload the scene to recover.')));
 const quality = document.getElementById('geometry-quality');
 if (quality) {
-  const value = new URLSearchParams(location.search).get('lite');
-  quality.value = value==='1'?'lite':value==='0'?'full':'auto';
+  const params = new URLSearchParams(location.search), value = params.get('lite');
+  quality.value = value==='1'?'lite':params.get('quality')==='full'?'full':'auto';
   quality.addEventListener('change',()=>{
     const url=new URL(location.href);
-    if(quality.value==='auto')url.searchParams.delete('lite');
-    else url.searchParams.set('lite',quality.value==='lite'?'1':'0');
+    if(quality.value==='auto'){url.searchParams.delete('lite');url.searchParams.delete('quality');}
+    else {url.searchParams.set('lite',quality.value==='lite'?'1':'0');
+      if(quality.value==='full')url.searchParams.set('quality','full');else url.searchParams.delete('quality');}
     location.assign(url.href);
   });
 }

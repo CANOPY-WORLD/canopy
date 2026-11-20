@@ -31,7 +31,8 @@ import { EXPANSION_BATCHES, installExpansion } from './expansion.js';
 import { createTransport } from './transport.js';
 import { createTraffic } from './traffic.js';
 import { createDetailTiles } from './complete-detail-tiles.js';
-import {loadCorridorTerrain, currentTerrain} from './corridor-terrain.js';
+import { createStreamedDetailTiles } from './streamed-detail-tiles.js';
+import {loadCorridorTerrain, currentTerrain, drapeBuildings} from './corridor-terrain.js';
 import { createCorridorContext } from './corridor-context.js';
 import { recordedFrame } from '../scene-run.js';
 
@@ -84,6 +85,7 @@ const HAS_UAV_LAYER = SCENE.uav?.enabled ?? SCENE.id === 'white_city';
 const HAS_REPLAY = SCENE.replay === 'demo_rev02'; // the South Kensington traffic / UAV / bird replay
 const shotEnabled = shot => SCENE.website_features?.[shot === 'trafficMap' ? 'traffic' : shot] !== false;
 const MODEL = SCENE.model;
+const STREAM_GEOMETRY = Boolean(MODEL.detail_tiles) && qs0.get('quality') !== 'full';
 const PHASE_ORDER = (
   SCENE.phase_order ?? ['wind', 'temp', 'solar', 'diurnal', 'poll', 'flood']
 ).filter(has);
@@ -392,6 +394,9 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.addEventListener('change', invalidate);
 controls.enableDamping = true;
 controls.dampingFactor = 0.08;
+// Explore the city under the pointer, keeping the streaming focus on the ground.
+controls.screenSpacePanning = false;
+controls.zoomToCursor = true;
 controls.maxPolarAngle = Math.PI / 2 - 0.02;
 controls.enabled = false;
 
@@ -1550,13 +1555,13 @@ function applyLayers() {
   if (solarPlane) solarPlane.target = on && act.solar && ui.solarMode.value !== 'shadow' ? 1 : 0;
   if (shadowPlane) shadowPlane.target = on && act.solar && ui.solarMode.value === 'shadow' ? 1 : 0;
   if (diurnalPlane) diurnalPlane.target = on && act.diurnal ? 1 : 0;
-  model.visible = LITE && ui.lModel.checked; // Full mode uses complete source geometry.
+  model.visible = ui.lModel.checked && (LITE || STREAM_GEOMETRY || !MODEL.detail_tiles);
   window.cityDetailTiles?.setEnabled(ui.lModel.checked);
   if (supplementBatches) supplementBatches.visible = $('l-supplement').checked;
   for (const expansion of expansions) expansion.setEnabled($('l-expansion').checked);
   base.visible = ui.lGround.checked && !SCENE.corridor_context?.vector_landscape;
-  for (const m of groundMeshes) m.visible = ui.lGround.checked && !replaced(m);
-  for (const m of treeMeshes) m.visible = ui.lTrees.checked && !replaced(m);
+  for (const m of groundMeshes) m.visible = ui.lGround.checked && !SCENE.corridor_context && !replaced(m);
+  for (const m of treeMeshes) m.visible = ui.lTrees.checked && !SCENE.corridor_context && !replaced(m);
   updateFades(0);
 }
 function updateFades(dt) {
@@ -2025,7 +2030,8 @@ function setSectionUI() {
 /** Site section: ground, trees and (South Kensington) the traffic / UAV replay visible; the physics fields hidden; the shot tour runs. */
 let savedLandscapeDisplay={ground:true,trees:true};
 let canopyBirdsLoading=null;
-let fieldPreparation=null, fieldInitializationError=null, viewIntent=0;
+let fieldInitializationError=null, viewIntent=0;
+let prepareFields = () => Promise.resolve();
 async function showCanopyBirds(){
   if (!shotEnabled('birds')) return;
   if(!canopyBirdsLoading)canopyBirdsLoading=import('./canopy-birds-preview.js').then(m=>m.installBirdPreview(window.viewer,invalidate));
@@ -2221,7 +2227,8 @@ function setupTransportUI() {
 /** Fields section: climb to the overhead view, hide ground / trees / replay, play the fields in sequence. */
 async function runFields(phase = PHASE_ORDER[0]) {
   const intent=++viewIntent;
-  if(fieldPreparation){ui.stage.textContent='Loading physics field masks…';await fieldPreparation;}
+  ui.stage.textContent='Loading physics field masks…';
+  await prepareFields();
   if(intent!==viewIntent)return;
   if(fieldInitializationError){ui.stage.textContent='Physics fields unavailable: '+fieldInitializationError.message;return;}
   window.canopyBirds?.setActive(false);
@@ -2389,20 +2396,40 @@ renderer.domElement.addEventListener('pointerleave', () => {
 // ------------------------------------------------------------------ render loop
 let last = performance.now(),
   lastTrafficStats = -Infinity;
-let corridorContext = null;
+let corridorContext = null, partialGround = null;
 let contextStarted = false;
-let detailTiles = null; // All detailed tiles and landmarks stay resident in full mode.
+let detailTiles = null, detailRoute = null, geometryPrepared = false;
+const geometryRetry = document.createElement('button');
+geometryRetry.id = 'geometry-retry'; geometryRetry.hidden = true;
+geometryRetry.style.cssText = 'position:fixed;bottom:72px;left:50%;transform:translateX(-50%);z-index:12;padding:8px 14px;background:#20392e;color:#eef2e9;border:1px solid #819b87;border-radius:6px;font:13px system-ui';
+geometryRetry.onclick = () => {
+  if (detailTiles?.progress.requiredOutside) {runCampus('overview');}
+  else if (detailTiles?.progress.requiredTiles > 8) {
+    const url = new URL(location.href); url.searchParams.set('quality','full'); url.searchParams.set('lite','0'); location.assign(url);
+  } else detailTiles?.retry();
+};
+document.body.append(geometryRetry);
+function geometryStatus(progress) {
+  geometryRetry.hidden = !progress.errors.length;
+  geometryRetry.textContent = progress.requiredOutside ? 'This route extends beyond building coverage. Return to overview' : progress.requiredTiles > 8 ? 'This route needs complete geometry. Open full mode' : 'Some building details could not load. Retry';
+  geometryRetry.title = progress.errors.join('\n');
+}
 function animate(now) {
   requestAnimationFrame(animate);
-  if (!detailTiles && MODEL.detail_tiles && !LITE && model.children.length) {
-    detailTiles = createDetailTiles({ scene, camera, focus:()=>controls.target, coarse: model, priorityCentre: qs0.get('shot')==='uavs' ? SCENE.uav?.focus_world_m : null, indexUrl: SCENE.url(MODEL.detail_tiles), onChange: invalidate });
+  if (!detailTiles && MODEL.detail_tiles && !LITE && geometryPrepared) {
+    detailTiles = (STREAM_GEOMETRY ? createStreamedDetailTiles : createDetailTiles)({ onStatus: geometryStatus, scene, camera, focus:()=>controls.target, coarse: model, priorityCentre: qs0.get('shot')==='uavs' ? SCENE.uav?.focus_world_m : null, indexUrl: SCENE.url(MODEL.detail_tiles), onChange: invalidate });
     window.cityDetailTiles = detailTiles;
     detailTiles.setEnabled(ui.lModel.checked);
   }
+  const route = section === 'campus' && tour.shot === 'uavs' ? uavLayer?.selectedRoute : null;
+  if (detailRoute !== route) {
+    detailRoute = route;
+    detailTiles?.setRequiredPoints?.(route ? route.points_enu_m.map(p => [p[0], p[2], -p[1]]) : []);
+  }
   detailTiles?.update(now);
-  if (!contextStarted && model.children.length && SCENE.corridor_context) {
+  if (!contextStarted && geometryPrepared && SCENE.corridor_context) {
     contextStarted = true;
-    createCorridorContext({scene, config:SCENE.corridor_context, url:SCENE.url, onChange:invalidate})
+    createCorridorContext({scene, config:SCENE.corridor_context, url:SCENE.url, onChange:invalidate, onSurface:surface=>{partialGround=surface;}})
       .then(value => {corridorContext=value; window.corridorContext=value; value.setPlaying(section === 'campus' && tour.shot === 'traffic' && qs0.get('play') !== '0'); invalidate();})
       .catch(error => {console.error(error); document.querySelector('#corridor-traffic-time').textContent = 'Context failed: ' + error.message;});
   }
@@ -2413,6 +2440,9 @@ function animate(now) {
   const elapsed = Math.max(0, now - last);
   currentTerrain()?.setEnabled(section !== 'fields');
   corridorContext?.tick(elapsed / 1000);
+  if (!corridorContext && partialGround && partialGround.visible !== ui.lGround.checked) {
+    partialGround.visible = ui.lGround.checked; invalidate();
+  }
   if(section==='campus'&&tour.shot==='birds'&&window.canopyBirds){const b=window.canopyBirds;ui.play.textContent=b.playing?'❚❚':'▶';ui.step.value=b.time;ui.rate.value=b.rate;ui.timeLabel.textContent=`Birds · ${b.time.toFixed(1)} / ${b.manifest.last_frame_t_s.toFixed(0)} s`;}
 
   if (corridorContext && section === 'campus' && tour.shot === 'traffic') {
@@ -2479,7 +2509,7 @@ function animate(now) {
     renderDirty = false;
   }
 }
-renderer.domElement.addEventListener('pointerdown', () => {
+function takeCameraControl() {
   if (section === 'campus') {
     if (flight) {
       flight = null;
@@ -2493,7 +2523,11 @@ renderer.domElement.addEventListener('pointerdown', () => {
       setSectionUI();
     }
   }
-});
+}
+// Capture before OrbitControls: the first gesture must enable its handlers,
+// rather than only cancelling the tour after that gesture has been ignored.
+renderer.domElement.addEventListener('pointerdown', takeCameraControl, {capture: true});
+renderer.domElement.addEventListener('wheel', takeCameraControl, {capture: true, passive: true});
 window.addEventListener('resize', () => {
   invalidate();
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -2536,10 +2570,13 @@ async function boot() {
   camera.lookAt(a0.target);
   requestAnimationFrame(animate);
 
-  // data first (small), then the model
+  // Prepare masks only for a selected physics view (or the explicit voxel viewer).
   const M = SCENE.masks ?? {};
   let dataError = null;
-  const dataReady = (async () => {
+  let dataReady;
+  prepareFields = () => {
+    if (dataReady) return dataReady;
+    dataReady = (async () => {
     if (!SCENE.protocol_display) await initFrames();
     console.log('field frames:', framesInfo());
     for (const [cell, file] of Object.entries(M.footprint ?? {}))
@@ -2552,11 +2589,11 @@ async function boot() {
       if (layerInvalid[key].length !== LG[key].w * LG[key].h)
         throw new Error(`Invalid ${key} mask dimensions`);
     }
-    if (!qs0.has('step') && qs0.get('shot') !== 'uavs') await loadStepInner(Math.max(1, Math.round(STEPS * 0.6)));
   })().catch((e) => {
     dataError = e;fieldInitializationError=e;
   });
-  fieldPreparation=dataReady;dataReady.then(()=>{fieldPreparation=null;});
+    return dataReady;
+  };
 
   const loader = new GLTFLoader();
   loader.setMeshoptDecoder(MeshoptDecoder);
@@ -2687,7 +2724,7 @@ async function boot() {
   if (LITE) {
     // proxy city from the masks (already needed for the fields), then the replay layers
     setLoadingStatus('Lite mode · building the voxel city…');
-    await dataReady;
+    await prepareFields();
     if (dataError) throw dataError;
     const lite = SCENE.lite,
       lg = gridOf(lite.cell_m ?? CELL);
@@ -2881,7 +2918,10 @@ async function boot() {
         throw e;
       });
     releaseBatchedGeometry();
+    if (STREAM_GEOMETRY) drapeBuildings(model);
   }
+  geometryPrepared = true;
+  applyLayers();
   if (HAS_UAV_LAYER) {
     setLoadingStatus(`${SCENE.title} UAV routes…`);
     uavLayer = await createUavLayer({
@@ -2934,8 +2974,8 @@ async function boot() {
     setupTransportUI();
   }
   // The UAV replay already carries its wind samples and collision evidence.
-  // Let its city view open while independent field masks load in the background.
-  if(qs0.get('shot')!=='uavs'||!HAS_UAV_LAYER||LITE){await dataReady;if(dataError)throw dataError;}
+  // City views do not wait for, or request, independent field masks.
+  if (LITE || qs0.get('fields') === '1' || qs0.get('pose') === 'overhead') {await prepareFields(); if (dataError) throw dataError;}
   ui.loading.classList.add('hide');
   try { const saved = JSON.parse(sessionStorage.getItem('canopy-download-timing') || 'null'); if(saved && Date.now()-saved.finished<600000){ const seconds=Math.round((Date.now()-saved.started)/1000);const download=Math.round((saved.finished-saved.started)/1000);const note=document.createElement('div');note.textContent=`Ready in ${Math.floor(seconds/60)}m ${seconds%60}s · Download ${Math.floor(download/60)}m ${download%60}s`;note.style.cssText='position:fixed;bottom:90px;left:24px;padding:10px 14px;background:#142a32dd;color:#e4ebe4;font:12px system-ui;z-index:15;border-radius:6px';(document.getElementById('viewer-details') ?? document.body).append(note);setTimeout(()=>note.remove(),15000);sessionStorage.removeItem('canopy-download-timing');} } catch {}
 

@@ -12,6 +12,8 @@ The bottom controls must follow the selected widget's actual clock and bounds. P
 
 The minimal layout applies after loading. The separate loading page contains only the Canopy wordmark, a Scenario introduction from the public catalog, and a progress bar with its current loading status. Do not add a preview renderer, animated city or decorative content. Use actual transfer progress when known and an indeterminate bar otherwise; never invent an overall completion percentage. Hide playback controls until initialization completes, honor reduced motion and keep a readable retry path if loading fails.
 
+Follow the [geometry loading contract](docs/streamed-geometry.md) when changing asset delivery. Keep a visible overview until replacements are complete, bound transfer and preparation queues, dispose stale results, and release distant detailed tiles. Progress-only updates must not cause a scene render. Keep complete geometry mode available and preserve every source asset and recorded sample.
+
 ## Presentation boundary
 
 Normal homepage entry opens the existing Viewer without a full-package download; `?download=all` explicitly caches the enabled presentation. Keep original geometry and field samples. Prioritize visible nearby geometry while loading all source detail in the background. Read the current field frame with a small look-ahead window and a byte-bounded cache; never decode an entire sequence on widget selection. The [loading and asset review](../asset/docs/london-display-budget.md) describes current limits.
