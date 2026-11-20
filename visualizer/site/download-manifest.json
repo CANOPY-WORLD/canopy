@@ -1,7 +1,7 @@
 {
-  "version": "208a4c439f83330ae472",
+  "version": "ee6fa6266d222f353c78",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 504250918,
+  "bytes": 504251377,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -7675,8 +7675,8 @@
     },
     {
       "path": "viewer/3d/main.js",
-      "bytes": 126875,
-      "sha256": "50ccc3d149a7f81b1dbe5f0d90a6da6d8a3877b2cb8b92daaaf966213a829fc2"
+      "bytes": 127334,
+      "sha256": "009a36c484ac5385356c6a24eb226b55001c38f5f8f5a6b311d02d767ac73331"
     },
     {
       "path": "viewer/3d/opening.css",

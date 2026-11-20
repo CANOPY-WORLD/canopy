@@ -394,6 +394,9 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.addEventListener('change', invalidate);
 controls.enableDamping = true;
 controls.dampingFactor = 0.08;
+// Explore the city under the pointer, keeping the streaming focus on the ground.
+controls.screenSpacePanning = false;
+controls.zoomToCursor = true;
 controls.maxPolarAngle = Math.PI / 2 - 0.02;
 controls.enabled = false;
 
@@ -2506,7 +2509,7 @@ function animate(now) {
     renderDirty = false;
   }
 }
-renderer.domElement.addEventListener('pointerdown', () => {
+function takeCameraControl() {
   if (section === 'campus') {
     if (flight) {
       flight = null;
@@ -2520,7 +2523,11 @@ renderer.domElement.addEventListener('pointerdown', () => {
       setSectionUI();
     }
   }
-});
+}
+// Capture before OrbitControls: the first gesture must enable its handlers,
+// rather than only cancelling the tour after that gesture has been ignored.
+renderer.domElement.addEventListener('pointerdown', takeCameraControl, {capture: true});
+renderer.domElement.addEventListener('wheel', takeCameraControl, {capture: true, passive: true});
 window.addEventListener('resize', () => {
   invalidate();
   camera.aspect = window.innerWidth / window.innerHeight;

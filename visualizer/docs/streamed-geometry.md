@@ -24,6 +24,12 @@ The design reference is the [Bristol preview](https://srst-by722.github.io/brist
 
 Default geometry mode streams original detail. `?quality=full&lite=0` retains the existing complete geometry loader; `?lite=1` retains the explicit voxel display. The source files and their provenance remain available. The widget strip and bottom playback controls retain their existing layout. A retry action appears only after a loading failure.
 
+## Exploring beyond the initial campus
+
+The initial camera points at Imperial, but the tile index covers the published 8 km city. Right-drag (or two-finger drag on touch devices) pans along the ground; the wheel zooms toward the pointer. The first pointer or wheel gesture cancels camera choreography before OrbitControls handles that same event. It must not take an extra click to leave the initial orbit, and a wheel gesture must not be overwritten by the tour on the next frame. No navigation panels are added.
+
+Detailed residency follows the moved view target. At overview height, the existing city-wide overview remains visible while detailed tiles are released. Re-entering a neighbourhood loads its original detail. This is independent of the initial Imperial camera and does not limit the published geometry to the campus. Tests must exercise real input from the homepage as well as assigning diagnostic camera positions; direct assignments alone cannot catch a tour blocking user input.
+
 ## Interfaces for future changes
 
 - [asset-queue.mjs](../site/viewer/3d/asset-queue.mjs) owns job priority, cancellation, bounded attempts and serialized preparation. `load` receives an abort signal and byte-progress callback; `prepare` returns an owned resource; `commit` attaches it; `discard` releases a stale result. A finished download keeps its queue slot until preparation finishes.
@@ -65,6 +71,7 @@ python3 visualizer/tools/build_pages.py --refresh --output cache/streaming-previ
 python3 -m http.server 8778 --directory cache/streaming-preview
 # In another terminal; set PUPPETEER_MODULE and CHROME_PATH if needed:
 node visualizer/tests/browser_geometry_streaming.cjs http://127.0.0.1:8778/canopy/
+node visualizer/tests/browser_city_navigation.cjs http://127.0.0.1:8778/canopy/
 node visualizer/tests/browser_loading_budget.cjs http://127.0.0.1:8778/canopy/
 CANOPY_QA_PAUSE_RENDER=1 node visualizer/tests/browser_widget_player.cjs http://127.0.0.1:8778/canopy/
 ```
