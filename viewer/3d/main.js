@@ -243,7 +243,7 @@ function setupSceneUI() {
         ...(SCENE.traffic ? [['trafficMap', 'Traffic map']] : []),
       ]; // the close-up traffic and transport orbits stay reachable by ?shot=traffic|transport
   tabs.replaceChildren(
-    ...shots.map(([k, t]) => mk('shot', 'shot', k, t)),
+    ...shots.filter(([k]) => k !== 'birds' || SCENE.birds_enabled !== false).map(([k, t]) => mk('shot', 'shot', k, t)),
     ...PHASE_ORDER.map((k) => mk('field', 'field', k, TAB_NAME[k] ?? k)),
     auto,
   );
@@ -273,6 +273,7 @@ function setupSceneUI() {
         return o;
       }),
     );
+    if (LAYERS.solar.shadow_only) { ui.solarMode.value='shadow'; $('solar-ghi-option').disabled=true; $('solar-ghi-option').hidden=true; }
     $('solar-ghi-option').textContent = LAYERS.solar.ghi_label ?? 'Irradiance';
     $('solar-shadow-option').textContent = LAYERS.solar.shadow_label ?? 'Shadows';
   }
@@ -2052,6 +2053,7 @@ let savedLandscapeDisplay={ground:true,trees:true};
 let canopyBirdsLoading=null;
 let fieldPreparation=null, fieldInitializationError=null, viewIntent=0;
 async function showCanopyBirds(){
+  if(SCENE.birds_enabled === false)return;
   if(!canopyBirdsLoading)canopyBirdsLoading=import('./canopy-birds-preview.js').then(m=>m.installBirdPreview(window.viewer,invalidate));
   const birds=await canopyBirdsLoading;
   const selected=section==='campus'&&tour.shot==='birds';
@@ -2060,6 +2062,7 @@ async function showCanopyBirds(){
 }
 
 function runCampus(shot = 'overview') {
+  if(shot === 'birds' && SCENE.birds_enabled === false)shot='overview';
   viewIntent++;
   corridorContext?.setPlaying(shot === 'traffic');
   window.canopyBirds?.setActive(shot==='birds');
@@ -3038,7 +3041,7 @@ async function boot() {
     }
     if (qs.has('mode')) ui.mode.value = qs.get('mode');
     if (qs.has('phase') && has(qs.get('phase'))) state.phase = qs.get('phase');
-    if (qs.has('solar')) ui.solarMode.value = qs.get('solar'); // ?solar=shadow|ghi
+    if (qs.has('solar') && !LAYERS.solar?.shadow_only) ui.solarMode.value = qs.get('solar'); // ?solar=shadow|ghi
     if (qs.has('day')) ui.solarDate.value = qs.get('day'); // ?day=20260621|20261221
     if (qs.has('diurnal')) ui.diurnalMode.value = qs.get('diurnal'); // ?diurnal=ground|air0|air12
     solarPhaseSetup();
