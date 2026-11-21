@@ -7,6 +7,9 @@ import {MeshoptDecoder} from 'three/addons/libs/meshopt_decoder.module.js';
 export function createDetailTiles({scene,camera,coarse,indexUrl,priorityCentre=null,onChange=()=>{}}) {
  const group=new THREE.Group();group.name='streamed_detail_geometry';scene.add(group);
  const progress={loaded:0,total:0,complete:false,errors:[]};
+ let completeResolve,completeReject,indexLoaded=false;
+ const complete=new Promise((resolve,reject)=>{completeResolve=resolve;completeReject=reject;});
+ complete.catch(()=>{}); // Startup observes failures after the index is ready.
  const texturePool=new Map(),materialPool=new Map(),records=new Map();
  let tiles=[],enabled=true,active=0,last=-Infinity,anchor=priorityCentre,routePins=new Set(),pinUntil=0;
  let occupancy,extent,grid;const patched=new Set();
@@ -35,7 +38,8 @@ export function createDetailTiles({scene,camera,coarse,indexUrl,priorityCentre=n
  function refresh(){
   if(occupancy){occupancy.image.data.fill(0);for(const r of records.values())if(r.complete&&enabled)occupancy.image.data[r.tile._cell]=255;occupancy.needsUpdate=true;}
   stats.textures=texturePool.size;stats.materials=materialPool.size;stats.residentTiles=records.size;stats.inFlight=active;
-  progress.loaded=[...records.values()].filter(r=>r.complete).length;progress.total=tiles.filter(t=>t._wanted).length;progress.complete=progress.loaded>=progress.total&&!active;
+  progress.loaded=[...records.values()].filter(r=>r.complete).length;progress.total=tiles.length;progress.complete=indexLoaded&&enabled&&progress.loaded===progress.total&&!active;
+  if(progress.complete)completeResolve(progress.loaded);
   if(new URLSearchParams(location.search).has('geometryQA'))document.title=`Geometry QA: ${stats.residentTiles} tiles, ${stats.textures} textures, ${stats.materials} materials, ${stats.evictions} evictions, ${progress.errors.length} errors`;
   coarse.visible=enabled;group.visible=enabled;onChange();
  }
@@ -55,7 +59,7 @@ export function createDetailTiles({scene,camera,coarse,indexUrl,priorityCentre=n
     r.disposers.push(dispose);root.add(gltf.scene);drapeBuildings(gltf.scene);group.updateWorldMatrix(true,false);root.updateWorldMatrix(true,false);gltf.scene.updateWorldMatrix(true,true);gltf.scene.traverse(o=>{o.matrixAutoUpdate=false;o.matrixWorldAutoUpdate=false;});
    }
    if(!token.cancelled&&tile._wanted){r.complete=true;root.visible=true;}else if(records.get(tile.id)===r)evict(r);
-  }catch(e){progress.errors.push(String(e));tile._retry=performance.now()+15000;if(records.get(tile.id)===r)evict(r);console.error(e);}finally{active--;refresh();pump();}
+  }catch(e){progress.errors.push(String(e));completeReject(e);tile._retry=performance.now()+15000;if(records.get(tile.id)===r)evict(r);console.error(e);}finally{active--;refresh();pump();}
  }
  function pump(){if(!enabled)return;for(const t of tiles.filter(t=>t._wanted).sort((a,b)=>a._distance-b._distance)){if(active>=3)break;if(!records.has(t.id)&&!(t._retry>performance.now()))void load(t);}}
  function update(now=performance.now()){
@@ -69,7 +73,7 @@ export function createDetailTiles({scene,camera,coarse,indexUrl,priorityCentre=n
  const ready=(async()=>{const response=await fetch(indexUrl);if(!response.ok)throw Error(`Detail index HTTP ${response.status}`);const index=await response.json();tiles=index.tiles;
   const xs=[...new Set(tiles.map(t=>t.centre_xz[0]))].sort((a,b)=>a-b),zs=[...new Set(tiles.map(t=>t.centre_xz[1]))].sort((a,b)=>a-b),half=tiles[0].half_m;grid=[xs.length,zs.length];extent=new THREE.Vector4(xs[0]-half,zs[0]-half,xs.at(-1)-xs[0]+2*half,zs.at(-1)-zs[0]+2*half);
   occupancy=new THREE.DataTexture(new Uint8Array(grid[0]*grid[1]),...grid,THREE.RedFormat);occupancy.minFilter=occupancy.magFilter=THREE.NearestFilter;occupancy.generateMipmaps=false;
-  for(const t of tiles)t._cell=xs.indexOf(t.centre_xz[0])+grid[0]*zs.indexOf(t.centre_xz[1]);update();return tiles.length;
- })().catch(e=>{progress.errors.push(String(e));console.error(e);return 0;});
- return {ready,group,progress,stats,update,setEnabled(on){enabled=on;last=-Infinity;update();refresh();},get loaded(){return [...records.values()].filter(r=>r.complete).map(r=>r.tile.id);},hasPoints(points){const needed=new Set();for(const p of points){const t=tiles.find(t=>Math.abs(p[0]-t.centre_xz[0])<=t.half_m&&Math.abs(p[2]-t.centre_xz[1])<=t.half_m);if(!t)return false;needed.add(t.id);}routePins=needed;pinUntil=performance.now()+2000;return [...needed].every(id=>records.get(id)?.complete);}};
+  for(const t of tiles)t._cell=xs.indexOf(t.centre_xz[0])+grid[0]*zs.indexOf(t.centre_xz[1]);indexLoaded=true;update();return tiles.length;
+ })().catch(e=>{progress.errors.push(String(e));completeReject(e);console.error(e);return 0;});
+ return {ready,complete,group,progress,stats,update,setEnabled(on){enabled=on;last=-Infinity;update();refresh();},get loaded(){return [...records.values()].filter(r=>r.complete).map(r=>r.tile.id);},hasPoints(points){const needed=new Set();for(const p of points){const t=tiles.find(t=>Math.abs(p[0]-t.centre_xz[0])<=t.half_m&&Math.abs(p[2]-t.centre_xz[1])<=t.half_m);if(!t)return false;needed.add(t.id);}routePins=needed;pinUntil=performance.now()+2000;return [...needed].every(id=>records.get(id)?.complete);}};
 }
