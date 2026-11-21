@@ -89,11 +89,17 @@ const puppeteer = require(process.env.PUPPETEER_MODULE || 'puppeteer-core');
     await pause(); await minimal();
     checks.push('UAV: play, pause, seek, restart'); console.log(checks.at(-1));
 
+    if (await page.evaluate(() => viewer.SCENE.birds_enabled === false)) {
+      assert.equal(await page.$('[data-shot=birds]'), null);
+      assert.equal(await page.evaluate(() => !!window.canopyBirds), false);
+      checks.push('Birds disabled by Scenario: no tab or replay loaded'); console.log(checks.at(-1));
+    } else {
     await clickWidget('[data-shot=birds]'); await ready(); await pause();
     const birds=()=>canopyBirds.time;
     await seek(60); assert.equal(await page.evaluate(birds),60);
     await stationary(birds); await advances(birds); await minimal();
     checks.push('Birds: play, pause, seek'); console.log(checks.at(-1));
+    }
 
     const fieldNames=await page.$$eval('#tabs [data-field]',els=>els.map(el=>el.dataset.field));
     for(const field of fieldNames) {
