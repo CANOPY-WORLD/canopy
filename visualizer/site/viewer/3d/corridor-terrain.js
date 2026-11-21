@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import {enhanceGroundMaterial} from './ground-materials.js';
-import {roadContactPolicy, contactTriangles} from './road-contact.mjs';
+import {roadContactPolicy, contactTriangles, ROAD_SURFACE_OFFSET, resampleRoadLine} from './road-contact.mjs';
 let terrain=null;
 const enabled={value:1};
 const patched=new WeakSet();
@@ -19,21 +19,22 @@ export async function loadCorridorTerrain(url){
   const s={a,b,dx,dy,len2,width:lane.width,laneIndex},id=segments.length;segments.push(s);
   for(let x=Math.floor(Math.min(a[0],b[0])/size);x<=Math.floor(Math.max(a[0],b[0])/size);x++)for(let y=Math.floor(Math.min(a[1],b[1])/size);y<=Math.floor(Math.max(a[1],b[1])/size);y++){const k=x+','+y;if(!cells.has(k))cells.set(k,[]);cells.get(k).push(id)}
  }});
- const previous=new Map();
+ const previous=new Map(),contactPolicy=roadContactPolicy(network);
+ const drapedLanes=network.lanes.map(lane=>contactPolicy.lane(lane));
  function match(x,north,heading,id,remember=true){
   const cx=Math.floor(x/size),cy=Math.floor(north/size),last=previous.get(id);let best=null,score=Infinity;
   for(let ix=cx-1;ix<=cx+1;ix++)for(let iy=cy-1;iy<=cy+1;iy++)for(const k of cells.get(ix+','+iy)||[]){
    const s=segments[k],t=Math.max(0,Math.min(1,((x-s.a[0])*s.dx+(north-s.a[1])*s.dy)/s.len2)),distance=Math.hypot(x-s.a[0]-t*s.dx,north-s.a[1]-t*s.dy);
    if(distance>Math.max(8,s.width+3))continue;
-   const h=s.a[2]+t*(s.b[2]-s.a[2]),alignment=heading===undefined?1:(Math.cos(heading)*s.dx+Math.sin(heading)*s.dy)/Math.sqrt(s.len2);
+   const h=drapedLanes[s.laneIndex]?dem.sample(x,north):s.a[2]+t*(s.b[2]-s.a[2]),alignment=heading===undefined?1:(Math.cos(heading)*s.dx+Math.sin(heading)*s.dy)/Math.sqrt(s.len2);
    const continuity=last&&Math.hypot(x-last.x,north-last.north)<30?Math.min(8,Math.abs(h-last.height))*.6:0;
    const value=distance+Math.max(0,1-alignment)*4+continuity;
-   if(value<score){score=value;best={height:h,distance,lane:s.laneIndex,grade:(s.b[2]-s.a[2])/Math.sqrt(s.len2),x,north}};
+   if(value<score){score=value;best={height:h,distance,lane:s.laneIndex,grade:drapedLanes[s.laneIndex]?(dem.sample(x+s.dx/Math.sqrt(s.len2),north+s.dy/Math.sqrt(s.len2))-dem.sample(x-s.dx/Math.sqrt(s.len2),north-s.dy/Math.sqrt(s.len2)))/2:(s.b[2]-s.a[2])/Math.sqrt(s.len2),x,north}};
   }
-  const result=best||{height:road.sample(x,north),distance:null,lane:null,grade:0,x,north};
+  const result=best||{height:dem.sample(x,north),distance:null,lane:null,grade:0,x,north};
   if(remember&&id!==undefined)previous.set(id,result);return result;
  }
- terrain={dem,road,network,segments,match,clearMatches:()=>previous.clear(),sample:(x,z)=>dem.sample(x,-z),get enabled(){return enabled.value===1},setEnabled(value){enabled.value=value?1:0},stats:{nx:data.terrain.nx,ny:data.terrain.ny,cell_m:data.terrain.dx,min:Math.min(...dem.h.slice(0,1)),source:data.terrain.source.name}};
+ terrain={dem,road,network,segments,match,roadOffset:ROAD_SURFACE_OFFSET,clearMatches:()=>previous.clear(),sample:(x,z)=>dem.sample(x,-z),get enabled(){return enabled.value===1},setEnabled(value){enabled.value=value?1:0},stats:{nx:data.terrain.nx,ny:data.terrain.ny,cell_m:data.terrain.dx,min:Math.min(...dem.h.slice(0,1)),source:data.terrain.source.name}};
  terrain.stats.min=dem.h.reduce((a,b)=>Math.min(a,b),Infinity);terrain.stats.max=dem.h.reduce((a,b)=>Math.max(a,b),-Infinity);window.corridorTerrain=terrain;return terrain;
 }
 export function currentTerrain(){return terrain}
@@ -66,15 +67,16 @@ export function elevateInstances(root,on){root.traverse(mesh=>{if(!mesh.isInstan
  const flat=mesh.userData.flatMatrices;for(let i=0;i<mesh.count;i++)mesh.instanceMatrix.array[i*16+13]=flat[i*16+13]+(on?mesh.userData.terrainHeights[i]:0);mesh.instanceMatrix.needsUpdate=true;mesh.computeBoundingSphere();
  });}
 export function createElevatedRoads(){const root=new THREE.Group(),positions=[],heights=[],junctionP=[],junctionH=[],lineP=[],lineH=[],seamP=[],seamH=[];
- function vertex(out,hs,x,north,h){out.push(x,.22,-north);hs.push(h)}
+ function vertex(out,hs,x,north,h){out.push(x,ROAD_SURFACE_OFFSET,-north);hs.push(h)}
  const contact=roadContactPolicy(terrain.network);
- function seam(a,b){for(const q of contactTriangles(a,b,(x,n)=>terrain.dem.sample(x,n),.22))vertex(seamP,seamH,...q)}
- for(const lane of terrain.network.lanes){const pts=lane.shape,half=lane.width/2,edges=pts.map((p,i)=>{const a=pts[Math.max(0,i-1)],b=pts[Math.min(pts.length-1,i+1)],dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy)||1;return [[p[0]-dy/len*half,p[1]+dx/len*half,p[2]],[p[0]+dy/len*half,p[1]-dx/len*half,p[2]]]});
+ function seam(a,b){for(const q of contactTriangles(a,b,(x,n)=>terrain.dem.sample(x,n),ROAD_SURFACE_OFFSET))vertex(seamP,seamH,...q)}
+ for(const lane of terrain.network.lanes){const draped=contact.lane(lane),pts=draped?resampleRoadLine(lane.shape):lane.shape,half=lane.width/2,edges=pts.map((p,i)=>{const a=pts[Math.max(0,i-1)],b=pts[Math.min(pts.length-1,i+1)],dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy)||1;return [[p[0]-dy/len*half,p[1]+dx/len*half,p[2]],[p[0]+dy/len*half,p[1]-dx/len*half,p[2]]]});
+  if(draped)for(const pair of edges)for(const p of pair)p[2]=terrain.dem.sample(p[0],p[1]);
   for(let i=1;i<pts.length;i++){const [a,b]=edges[i-1],[c,d]=edges[i];for(const v of [a,b,d,a,d,c])vertex(positions,heights,...v);for(const v of [a,c,b,d])vertex(lineP,lineH,...v);
    if(contact.lane(lane))for(const [u,v] of [[a,c],[b,d]])seam(u,v)}
  }
- for(const junction of terrain.network.junctions){const shape=junction.shape;if(shape.length<3)continue;const points=shape.map(p=>new THREE.Vector2(p[0],p[1]));for(const triangle of THREE.ShapeUtils.triangulateShape(points,[]))for(const i of triangle)vertex(junctionP,junctionH,...shape[i]);if(contact.junction(junction))for(let i=0;i<shape.length;i++)seam(shape[i],shape[(i+1)%shape.length])}
+ for(const junction of terrain.network.junctions){const shape=contact.junction(junction)?junction.shape.map(p=>[p[0],p[1],terrain.dem.sample(p[0],p[1])]):junction.shape;if(shape.length<3)continue;const points=shape.map(p=>new THREE.Vector2(p[0],p[1]));for(const triangle of THREE.ShapeUtils.triangulateShape(points,[]))for(const i of triangle)vertex(junctionP,junctionH,...shape[i]);if(contact.junction(junction))for(let i=0;i<shape.length;i++)seam(shape[i],shape[(i+1)%shape.length])}
  function mesh(p,h,offset){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setAttribute('canopyHeight',new THREE.Float32BufferAttribute(h,1));terrainNormals(g);const m=new THREE.MeshStandardMaterial({color:'#646c70',roughness:1,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:offset,polygonOffsetUnits:offset});patch(m);enhanceGroundMaterial(m,'asphalt');const mesh=new THREE.Mesh(g,m);mesh.frustumCulled=false;root.add(mesh)}
  mesh(positions,heights,-2);mesh(junctionP,junctionH,-3);if(seamP.length){mesh(seamP,seamH,-1);const seam=root.children[root.children.length-1];seam.name='Terrain-to-road display seams';seam.material.color.set('#969183');}
- const lg=new THREE.BufferGeometry();lg.setAttribute('position',new THREE.Float32BufferAttribute(lineP,3));lg.setAttribute('canopyHeight',new THREE.Float32BufferAttribute(lineH,1));const lm=new THREE.LineBasicMaterial({color:'#c9c9b6',depthWrite:false});patch(lm);const lines=new THREE.LineSegments(lg,lm);lines.position.y=.035;lines.name='lane_boundaries';lines.visible=false;lines.frustumCulled=false;root.add(lines);root.name='Source XYZ lane surfaces and junctions';root.userData={lanes:terrain.network.lanes.length,junctions:terrain.network.junctions.length};return root;
+ const lg=new THREE.BufferGeometry();lg.setAttribute('position',new THREE.Float32BufferAttribute(lineP,3));lg.setAttribute('canopyHeight',new THREE.Float32BufferAttribute(lineH,1));const lm=new THREE.LineBasicMaterial({color:'#c9c9b6',depthWrite:false});patch(lm);const lines=new THREE.LineSegments(lg,lm);lines.position.y=.035;lines.name='lane_boundaries';lines.visible=false;lines.frustumCulled=false;root.add(lines);root.name='Terrain-draped ordinary roads and source elevated structures';root.userData={lanes:terrain.network.lanes.length,junctions:terrain.network.junctions.length};return root;
 }

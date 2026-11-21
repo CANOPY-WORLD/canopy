@@ -33,7 +33,7 @@ export async function createCorridorContext({scene, config, url, onChange}) {
   let terrainMode=null;
   const roads=roadAsset?.scene ?? null, boundaries=elevatedRoads.children.filter(o=>o.name==='lane_boundaries');
   if(roads){roads.name='vector_road_network';group.add(roads);roads.traverse(o=>{if(o.isMesh&&o.name==='lane_boundaries'){boundaries.push(o);o.visible=false}});
-    panel.querySelector('#corridor-roads-status').textContent='70,076 source lanes · original XYZ elevations in 3D mode · source bridge ramps; no invented tunnel depths';
+    panel.querySelector('#corridor-roads-status').textContent='70,076 source lanes · ordinary roads draped to terrain · source bridge ramps; no invented tunnel depths';
     panel.querySelector('#corridor-lane-boundaries').onchange=e=>{for(const mesh of boundaries)mesh.visible=e.target.checked;onChange()};
     panel.querySelector('#corridor-roads-visible').onchange=()=>syncGround();
   }
@@ -61,7 +61,7 @@ export async function createCorridorContext({scene, config, url, onChange}) {
       if(!meta.vehicles[id])throw Error('Unknown traffic vehicle');
       const x=bytes.getFloat32(k+4,true),north=bytes.getFloat32(k+8,true),heading=bytes.getFloat32(k+12,true);
       const road=terrain.enabled?terrain.match(x,north,heading,id):{height:0,grade:0};
-      out.set(id,{id,kind,x,north,heading,height:road.height+.22,pitch:Math.atan(road.grade)});
+      out.set(id,{id,kind,x,north,heading,height:road.height+(terrain.enabled?terrain.roadOffset:.22),pitch:Math.atan(road.grade)});
     }
     decoded.set(index,out);return out;
   }

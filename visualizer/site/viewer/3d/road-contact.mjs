@@ -1,4 +1,13 @@
-// Display-only contact with the DEM; source lane elevations remain unchanged.
+// Display-only draping/contact; source lane elevations remain unchanged.
+export const ROAD_SURFACE_OFFSET=.025;
+export function resampleRoadLine(points,spacing=5){
+ if(!points.length)return [];
+ if(!(spacing>0))throw new RangeError("Road sample spacing must be positive");
+ const out=[points[0]];
+ for(let i=1;i<points.length;i++){const a=points[i-1],b=points[i],steps=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/spacing));for(let j=1;j<=steps;j++)out.push(a.map((v,k)=>v+(b[k]-v)*j/steps))}
+ return out;
+}
+
 export function roadContactPolicy(network) {
  const excludedEdges=new Set(),excludedJunctions=new Set();
  network.edges.forEach((edge,i)=>{

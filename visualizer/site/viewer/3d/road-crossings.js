@@ -19,7 +19,7 @@ export async function createRoadCrossings({url, terrain}) {
         const corners = [[lo,-1.5],[hi,-1.5],[hi,1.5],[lo,1.5]].map(([s,w]) => {
           const x=a[0]+dx*s-dn*w, north=a[1]+dn*s+dx*w;
           const match=terrain.match(x,north,undefined,undefined,false);
-          return {x,north,height:match.height+.235,valid:match.distance!==null&&match.distance<4};
+          return {x,north,height:match.height+(terrain.roadOffset??.025)+.015,valid:match.distance!==null&&match.distance<4};
         });
         // Exclude source ways that do not align with the available road network.
         if (!corners.every(p=>p.valid)) continue;

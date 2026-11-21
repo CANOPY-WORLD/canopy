@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {roadContactPolicy,contactTriangles} from '../site/viewer/3d/road-contact.mjs';
+import {roadContactPolicy,contactTriangles,resampleRoadLine} from '../site/viewer/3d/road-contact.mjs';
 import {readFile} from 'node:fs/promises';
 import {gzipSync} from 'node:zlib';
 
@@ -49,15 +49,33 @@ test('rendered lane and junction seams meet terrain and exclude bridge geometry'
  globalThis.window={};
  globalThis.fetch=async url=>new Response(url.endsWith('.gz')?gzipSync(JSON.stringify(network)):JSON.stringify({terrain:grid,road_surface:grid}));
  try{
-  await module.loadCorridorTerrain(path=>path);
+  const original=JSON.stringify(network);
+  const terrain=await module.loadCorridorTerrain(path=>path);
+  assert.equal(terrain.match(5,0,0).height,8);
+  assert.equal(terrain.match(25,0,0).height,20);
+  assert.equal(JSON.stringify(network),original);
   const root=module.createElevatedRoads(),seam=root.getObjectByName('Terrain-to-road display seams');
+  assert.equal(JSON.stringify(terrain.network),original);
+  const surface=root.children[0].geometry;
+  for(let i=0;i<surface.attributes.position.count;i++){
+   const p=surface.attributes.position,expected=p.getX(i)<=10?8.025:20.025;
+   assert(Math.abs(p.getY(i)+surface.attributes.canopyHeight.getX(i)-expected)<1e-5);
+  }
   const p=seam.geometry.attributes.position,h=seam.geometry.attributes.canopyHeight;
-  assert.equal(p.count,30); // Two lane edges and three junction edges, six vertices each.
+  assert.equal(p.count,42); // Four resampled lane edges and three junction edges.
   for(let i=0;i<p.count;i++){
    assert(p.getX(i)<=10,'Bridge geometry must remain unsupported');
    const y=p.getY(i)+h.getX(i);
-   assert(Math.abs(y-8)<1e-5||Math.abs(y-10.22)<1e-5);
+   assert(Math.abs(y-8)<1e-5||Math.abs(y-8.025)<1e-5);
   }
   for(const child of root.children){child.geometry.dispose();child.material.dispose();}
  }finally{globalThis.fetch=previousFetch;globalThis.window=previousWindow;}
 });
+
+ test('resampling bounds long ordinary road spans without changing source elevations',()=>{
+ const points=[[0,0,10],[12,0,16]],before=JSON.stringify(points);
+ assert.deepEqual(resampleRoadLine([]),[]);
+ assert.throws(()=>resampleRoadLine(points,0),RangeError);
+ assert.deepEqual(resampleRoadLine(points),[[0,0,10],[4,0,12],[8,0,14],[12,0,16]]);
+ assert.equal(JSON.stringify(points),before);
+ });
