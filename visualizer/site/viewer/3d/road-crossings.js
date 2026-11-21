@@ -12,11 +12,14 @@ export async function createRoadCrossings({url, terrain}) {
       const a = line[i-1], b = line[i], length = Math.hypot(b[0]-a[0], b[1]-a[1]);
       if (length < 0.001) continue;
       const dx = (b[0]-a[0])/length, dn = (b[1]-a[1])/length;
-      for (let start = Math.ceil(travelled)-travelled; start+0.5 <= length; start += 1) {
-        const corners = [[start,-1.5],[start+.5,-1.5],[start+.5,1.5],[start,1.5]].map(([s,w]) => {
+      // Carry the stripe phase through polyline vertices, including partial stripes.
+      for (let start = Math.floor(travelled)-travelled; start < length; start += 1) {
+        const lo=Math.max(0,start),hi=Math.min(length,start+.5);
+        if(hi-lo<.0001)continue;
+        const corners = [[lo,-1.5],[hi,-1.5],[hi,1.5],[lo,1.5]].map(([s,w]) => {
           const x=a[0]+dx*s-dn*w, north=a[1]+dn*s+dx*w;
           const match=terrain.match(x,north,undefined,undefined,false);
-          return {x,north,height:match.height+.29,valid:match.distance!==null&&match.distance<4};
+          return {x,north,height:match.height+.235,valid:match.distance!==null&&match.distance<4};
         });
         // Exclude source ways that do not align with the available road network.
         if (!corners.every(p=>p.valid)) continue;
@@ -31,9 +34,10 @@ export async function createRoadCrossings({url, terrain}) {
     const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.computeVertexNormals();return g;
   };
   const flatGeometry=geometry(flat), terrainGeometry=geometry(elevated);
-  const mesh=new THREE.Mesh(terrainGeometry,new THREE.MeshBasicMaterial({color:0xf3f0dc,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));
+  const mesh=new THREE.Mesh(terrainGeometry,new THREE.MeshBasicMaterial({color:0xffffff,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4}));
   mesh.name='mapped_zebra_crossings';mesh.userData.stripes=flat.length/18;
   mesh.userData.attribution=data.attribution;
+  mesh.userData.dimensions='Illustrative 0.5 m stripes at 1 m spacing, 3 m width; source crossing paths';
   mesh.setTerrain=enabled=>{mesh.geometry=enabled?terrainGeometry:flatGeometry;};
   return mesh;
 }
