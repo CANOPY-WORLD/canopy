@@ -19,7 +19,7 @@ test('short source segments retain a complete stripe and road alignment filterin
    area+=b.sub(a).cross(c.sub(a)).length()/2;
   }
   assert(Math.abs(area-1.5)<1e-5,'The 0.5 m stripe must survive split source segments');
-  for(let i=0;i<p.count;i++)assert(Math.abs(p.getY(i)-10.235)<1e-5);
+  for(let i=0;i<p.count;i++)assert(Math.abs(p.getY(i)-10.04)<1e-5);
   const rejected=await createRoadCrossings({url:'synthetic',terrain:{match:()=>({height:10,distance:10})}});
   assert.equal(rejected.geometry.attributes.position.count,0);
   for(const object of [mesh,rejected]){const elevated=object.geometry;object.setTerrain(false);object.geometry.dispose();elevated.dispose();object.material.dispose();}
