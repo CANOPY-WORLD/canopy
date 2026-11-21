@@ -1,7 +1,7 @@
 {
-  "version": "1950ecdc6231184ed8db",
+  "version": "b3a255a134cb6f0186fe",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 562585889,
+  "bytes": 562594928,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -7625,13 +7625,13 @@
     },
     {
       "path": "viewer/3d/complete-detail-tiles.js",
-      "bytes": 3830,
-      "sha256": "d13b4d981b0b0958dfe32839651b42e5a58e0919ad854da1b078379a9bd34083"
+      "bytes": 8583,
+      "sha256": "43d6c2bdb0ea7c134c8acbb3b5d76eb82ca861196c1bd085e82ea62f951c39bf"
     },
     {
       "path": "viewer/3d/corridor-context.js",
-      "bytes": 10452,
-      "sha256": "ea709c9397f72c16d17cf7cbf01783f209b61d3b9782969f172d097b17bd1f87"
+      "bytes": 11834,
+      "sha256": "04ffe473c80d091fae85853b50fe3982108fa4b51a265f69923eb5afc7e9194a"
     },
     {
       "path": "viewer/3d/corridor-signals.js",
@@ -7690,8 +7690,8 @@
     },
     {
       "path": "viewer/3d/main.js",
-      "bytes": 125824,
-      "sha256": "63868342010de0108776c88f4b55b54e2aacb50e171e742890b6bb80dee2f049"
+      "bytes": 126172,
+      "sha256": "c7a84717b843351db2f7b1d23213f84b02c2198b10031353e5147a6f9fc1a169"
     },
     {
       "path": "viewer/3d/opening.css",
@@ -7717,6 +7717,11 @@
       "path": "viewer/3d/replay.js",
       "bytes": 29610,
       "sha256": "bb192101392a8a62e1a3941713a9a9110f296ff5110b303d43a9412997981825"
+    },
+    {
+      "path": "viewer/3d/road-crossings.js",
+      "bytes": 2071,
+      "sha256": "7553aa978bab7f2af3367dfcef540cdbd1a83c7b4995b4703542892b426f3c4b"
     },
     {
       "path": "viewer/3d/source-traffic-signal.js",
@@ -7837,6 +7842,11 @@
       "path": "viewer/scene.js",
       "bytes": 2097,
       "sha256": "1a631437129bb98ec575cd8aea79d67a8f101111b12c7eace00d0eb59aaf519d"
+    },
+    {
+      "path": "viewer/traffic-interpolation.mjs",
+      "bytes": 485,
+      "sha256": "13e0a82af103faf403e437b316fff515c8b7b6cbc06bdc19cf586acad315bf9f"
     }
   ]
 }
