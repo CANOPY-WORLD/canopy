@@ -47,14 +47,15 @@ if (SCENE.wind_history) {
 }
 setDataBase(SCENE.physics, SCENE.protocol_display?.npy_transport);
 document.title = `${SCENE.title} · 3D`;
-// Lite mode: phones, tablets and low-memory machines get a proxy city extruded from the voxel masks instead of the
-// full model (which needs 1.5-2 GB of browser memory). ?lite=1 forces it, ?lite=0 forces the full model.
+// iPhone and iPad default to complete geometry, including iPadOS desktop mode.
+// Other mobile/low-memory devices retain automatic Lite mode. Explicit lite=1/0 wins.
 const qs0 = new URLSearchParams(location.search);
+const APPLE_MOBILE = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+  (navigator.maxTouchPoints > 1 && /Mac/.test(navigator.platform));
 const LITE =
   qs0.get('lite') === '1' ||
-  (qs0.get('lite') !== '0' &&
-    (/iPhone|iPad|Android|Mobile/i.test(navigator.userAgent) ||
-      (navigator.maxTouchPoints > 1 && /Mac/.test(navigator.platform)) ||
+  (qs0.get('lite') !== '0' && !APPLE_MOBILE &&
+    (/Android|Mobile/i.test(navigator.userAgent) ||
       (navigator.deviceMemory !== undefined && navigator.deviceMemory <= 4)));
 
 // ------------------------------------------------------------------ grid <-> model alignment
