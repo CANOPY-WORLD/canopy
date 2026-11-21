@@ -6,7 +6,7 @@ import {trafficSignalAsset} from './source-traffic-signal.js';
 // upstream app uses column 3 as rotation around ENU up, not a height.
 export function createCorridorSignals(placements) {
   if (!Array.isArray(placements) || !placements.length) throw Error('Original traffic signal placements missing');
-  const group = new THREE.Group(); group.name = 'Mapped traffic signals (static aspects)';
+  const group = new THREE.Group(); group.name = 'Mapped traffic signals (phase unavailable)';
   const materials = new Map();
   const kit = {mat(color, options = {}) {
     const key = JSON.stringify([color, options]);
@@ -36,6 +36,6 @@ export function createCorridorSignals(placements) {
     });
     mesh.instanceMatrix.needsUpdate = true; mesh.computeBoundingSphere(); group.add(mesh);
   }
-  group.userData = {count: placements.length, timed: false, source: 'scene-meta.json placements.traffic_signal', positions: 'Original ENU positions/yaw; flattened with existing roads and cars', dimensions: 'Original display model; not surveyed hardware'};
+  group.userData = {count: placements.length, timed: false, phase: 'unavailable', source: 'scene-meta.json placements.traffic_signal', positions: 'Original ENU positions/yaw; flattened with existing roads and cars', dimensions: 'Original display model; not surveyed hardware'};
   return group;
 }

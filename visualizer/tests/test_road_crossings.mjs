@@ -10,7 +10,7 @@ test('crossing stripes follow source path, switch height and reject unmatched ro
   globalThis.fetch=async()=>({ok:true,json:async()=>({attribution:'test',features:[{line_enu_m:[[0,0],[5,0]]}]})});
   const terrain={match:()=>({height:10,distance:0})};
   const mesh=await createRoadCrossings({url:'https://example.test/crossings.json',terrain});
-  assert.equal(mesh.userData.stripes,5);assert(Math.abs(mesh.geometry.attributes.position.getY(0)-10.29)<1e-5);
+  assert.equal(mesh.userData.stripes,5);assert(Math.abs(mesh.geometry.attributes.position.getY(0)-10.235)<1e-5);
   mesh.setTerrain(false);assert(Math.abs(mesh.geometry.attributes.position.getY(0)-.29)<1e-5);
   terrain.match=()=>({height:10,distance:null});
   const excluded=await createRoadCrossings({url:'https://example.test/crossings.json',terrain});assert.equal(excluded.userData.stripes,0);

@@ -1,5 +1,5 @@
 // Restored from the original Imperial Corridor viewer app.mjs.
-// Geometry and dimensions preserved; static coloured aspects, no recorded phases.
+// Geometry and dimensions preserved; unlit lenses because recorded phases are absent.
 export const trafficSignalAsset = {
   id: "traffic_signal",
   kind: "street",
@@ -12,7 +12,7 @@ export const trafficSignalAsset = {
       used_for: "signal pole as a separate street element",
     },
   ],
-  notes: "Aspects drawn red/amber/green, not timed.",
+  notes: "Unlit coloured lenses; no recorded signal phases.",
   build({ THREE: i, kit: e, detail: n = "high" }) {
     let r = new i.Group(),
       t = e.mat("#2b2e31"),
@@ -33,10 +33,10 @@ export const trafficSignalAsset = {
       o(new i.BoxGeometry(0.32, 0.25, 0.95), e.mat("black"), 0, 0.12, 2.9),
       o(new i.BoxGeometry(0.52, 0.02, 1.17), e.mat("#f2f2f2"), 0, -0.005, 2.9),
       o(new i.BoxGeometry(0.46, 0.025, 1.11), e.mat("#1a1a1a"), 0, 0, 2.9),
-      ["#d42a1f", "#e8a317", "#2aa84a"].forEach((a, s) => {
+      ["#46110c", "#493409", "#0d3618"].forEach((a, s) => {
         (o(
           new i.CylinderGeometry(0.09, 0.09, 0.03, 12),
-          e.mat(a, { emissive: new i.Color(a), emissiveIntensity: 0.35 }),
+          e.mat(a),
           0,
           0.26,
           3.2 - s * 0.3,
