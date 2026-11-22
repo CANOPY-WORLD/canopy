@@ -1,7 +1,7 @@
 {
-  "version": "2b1a4895794f917ec375",
+  "version": "7f1fa917fabb4a6013f3",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 281729544,
+  "bytes": 281734173,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -7720,8 +7720,8 @@
     },
     {
       "path": "viewer/3d/external-preview.mjs",
-      "bytes": 2715,
-      "sha256": "fe5fd570c4234b4770ae1da7d5cc0d8e2e2249e34dc4305ef45f2c9c4f8ed0c1"
+      "bytes": 4078,
+      "sha256": "a998a20ac62b25748a1fc7b79f51dd57961ff32af4cde40d5d5ceccccc1bfed8"
     },
     {
       "path": "viewer/3d/field-colorbar.mjs",
@@ -7862,6 +7862,11 @@
       "path": "viewer/3d/transport.js",
       "bytes": 9397,
       "sha256": "08177f89cc58c99dca305db6300feeb253988e7a7472b94a49c792eb2e013974"
+    },
+    {
+      "path": "viewer/3d/tube-intro.js",
+      "bytes": 3266,
+      "sha256": "c7f1b773cb840ab523a8b57f7990e0f8e1cb3e329fd743bf38734fce37fe65be"
     },
     {
       "path": "viewer/3d/uav-layer.js",
