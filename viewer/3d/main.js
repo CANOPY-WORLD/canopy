@@ -1840,7 +1840,7 @@ const TOUR_SHOTS = {
     ...(SCENE.corridor_context ? {fixed: () => {
       // Exhibition Road / Thurloe Place; keep the focus above the displayed terrain.
       const height=SCENE.corridor_context?.native_traffic ? 0 : currentTerrain()?.sample(1876,1248)??0;
-      return {target:new THREE.Vector3(1876,height+3,1248),pos:new THREE.Vector3(1926,height+65,1298)};
+      return {target:new THREE.Vector3(1876,height+3,1248),pos:new THREE.Vector3(1926,height+90,1298)};
     }} : {}),
     dist: 0.55,
     elev: 48,
@@ -2422,22 +2422,13 @@ function startCityLayers() {
     contextReady.catch(()=>{}); // Boot awaits this before revealing the city.
   }
 }
-// Native traffic is a layer in the shared scene, with its own recorded road heights.
-// Hide incompatible city context only while that widget is selected; restore on exit.
-const nativeHiddenObjects=new Map();
+// Native SUMO heights are relative to the flat city datum, not the DEM.
+// Keep the shared city visible and use its original flat geometry during replay.
 let nativeTrafficActive=false;
 function syncNativeTrafficView(){
   const active=Boolean(corridorContext?.nativeTraffic && section==='campus' && tour.shot==='traffic');
+  currentTerrain()?.setEnabled(section !== 'fields' && !active);
   corridorContext?.setNativeActive?.(active);
-  if(active){
-    for(const object of scene.children)if(!object.isLight && object!==corridorContext.group){
-      if(!nativeHiddenObjects.has(object))nativeHiddenObjects.set(object,object.visible);
-      object.visible=false;
-    }
-  }else if(nativeTrafficActive){
-    for(const [object,visible] of nativeHiddenObjects)object.visible=visible;
-    nativeHiddenObjects.clear();applyLayers();
-  }
   if(active!==nativeTrafficActive)invalidate();
   nativeTrafficActive=active;
 }
@@ -2451,7 +2442,6 @@ function animate(now) {
   }
   const elapsed = Math.max(0, now - last);
   syncNativeTrafficView();
-  currentTerrain()?.setEnabled(section !== 'fields');
   corridorContext?.tick(elapsed / 1000);
   if(section==='campus'&&tour.shot==='birds'&&window.canopyBirds){const b=window.canopyBirds;ui.play.textContent=b.playing?'❚❚':'▶';ui.step.value=b.time;ui.rate.value=b.rate;ui.timeLabel.textContent=`Birds · ${b.time.toFixed(1)} / ${b.manifest.last_frame_t_s.toFixed(0)} s`;}
 
