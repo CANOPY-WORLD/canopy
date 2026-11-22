@@ -77,3 +77,18 @@ Beyond asset kind and layer kinds, Method inputs can declare computational repre
 Temperature and steady-pollution interfaces check that the wind's `derived_from` includes the exact selected geometry version, and verify origin, spacing and shape. Mismatched inputs require an explicit conversion. Unknown historical relationships remain unknown; sharing a scenario does not justify inventing a geometry dependency.
 
 Imperial Corridor's historical display arrays retain every original float16 sample, unit and mask, converted to `npy_frames`. Nonuniform flood timestamps are copied individually. Solar clocks are not forced into other physics results' epochs. The current view explicitly selects relative comparison: equal second values do not imply the same real event.
+
+### Conditional transient traffic tracer
+
+`pollution/traffic_transient` consumes the versioned `transport_grid_json` and
+`emissions_json` computational artifacts documented in
+[its Method guide](../../pollution/traffic_transient/README.md). These are distinct
+from native `mac_state_json`: the supplied cell-centre wind is explicitly
+reconstructed and pressure-projected. Sparse emissions store interval-integrated
+micrograms and exact target-grid indices, with a wind manifest hash. The Method
+validates array declarations, matching coordinates, fluid membership and time
+coverage before execution. The existing V1.1 display encoding remains unchanged:
+`npy_frames` holds horizontal concentration slices; the final ZYX volume and
+projected face arrays are declared computational artifacts. Incomplete source
+previews retain excluded mass and cell locations and are not complete air-quality
+fields. PMx increments cannot be relabelled as calibrated total PM2.5.
