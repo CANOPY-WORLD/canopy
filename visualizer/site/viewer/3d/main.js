@@ -1,3 +1,5 @@
+import { unpackShadow } from './shadow-codec.mjs';
+import { solarLight } from './solar-light.mjs';
 import { installColorbars } from './field-colorbar.mjs';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -478,15 +480,7 @@ function uploadShadow(u8) {
 }
 /** packed shadow rows (uint8 [rows, cols/8], numpy packbits axis 1) -> Uint8Array 0/1 of the fine grid */
 function unpackBits(packed, g) {
-  const out = new Uint8Array(g.w * g.h),
-    bpr = g.w >> 3;
-  for (let r = 0; r < g.h; r++)
-    for (let b = 0; b < bpr; b++) {
-      const v = packed[r * bpr + b],
-        o = r * g.w + b * 8;
-      for (let k = 0; k < 8; k++) out[o + k] = (v >> (7 - k)) & 1;
-    }
-  return out;
+  return unpackShadow(packed, g.w, g.h);
 }
 
 let colorbars = null;
@@ -1006,12 +1000,14 @@ async function compactFrame(key, file, k) {
     item.promise = (async () => {
       const meta = await npy(file).header();
       const count = meta.shape[0];
-      if (meta.block * count * 4 > 450 * 1024 * 1024) throw new Error('Sequence exceeds compact playback memory budget');
+      const block = key.startsWith('shadow_') && LAYERS.solar?.shadow_packed ? LG.shadow.w * LG.shadow.h : meta.block;
+      if (block * count * 4 > 450 * 1024 * 1024) throw new Error('Sequence exceeds compact playback memory budget');
       let cursor = 0, done = 0;
       await Promise.all(Array.from({length: 3}, async () => {
         while (cursor < count) {
           const i = cursor++;
-          item.frames[i] = f16(await npy(file).read(i));
+          const raw = await npy(file).read(i);
+          item.frames[i] = key.startsWith('shadow_') && LAYERS.solar?.shadow_packed ? unpackBits(raw, LG.shadow) : f16(raw);
           done++;
           if (preparedSequence === item) ui.stage.textContent = `Preparing smooth playback · ${done} / ${count} frames`;
         }
@@ -1126,15 +1122,9 @@ function placeSun(altDeg, azDeg) {
     sun.intensity = SUN_DEFAULT.intensity;
     return;
   }
-  const alt = THREE.MathUtils.degToRad(Math.max(altDeg, 2)),
-    az = THREE.MathUtils.degToRad(azDeg),
-    r = 3000;
-  sun.position.set(
-    r * Math.cos(alt) * Math.sin(az),
-    r * Math.sin(alt),
-    -r * Math.cos(alt) * Math.cos(az),
-  );
-  sun.intensity = SUN_DEFAULT.intensity * (0.35 + 0.65 * Math.min(1, Math.max(0, altDeg) / 40));
+  const light = solarLight(altDeg, azDeg);
+  sun.position.set(...light.position);
+  sun.intensity = SUN_DEFAULT.intensity * light.intensity;
 }
 function frameIndex(step) {
   const own = (ph) => seqMode() && state.phase === ph,

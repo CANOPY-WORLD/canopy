@@ -3,12 +3,12 @@
   "kind": "canopy.publication-reference",
   "scenario_id": "imperial_corridor_8km",
   "repository": "https://github.com/CANOPY-WORLD/canopy-scenario-imperial-corridor-8km",
-  "revision": "59e9135be993e9aef22b48beb3eddbb00da379fb",
+  "revision": "10cafc93f48124fce7ae632114751bb58cb94ae1",
   "website": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/",
-  "base_url": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/",
-  "snapshot": "london-compact-20261122",
+  "base_url": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-solar-small-20261122/",
+  "snapshot": "london-solar-small-20261122",
   "manifest": {
     "path": "data/manifest.json",
-    "sha256": "28c533575c8d849fed1df7a51384b41044b3dd9c49cc0c663f6082c9c0271ce4"
+    "sha256": "269310f22b43045a30585a7ae11d9dc020e69566087556b02c7c9b2f6dc6bdd8"
   }
 }

@@ -73,7 +73,7 @@ def publications(root):
         scenario = data_root.parent.name
         manifest = json.loads(manifest_path.read_bytes())
         reference = publication_reference(data_root.parent)
-        if (manifest.get('schema_version') != '1.0.0' or
+        if (manifest.get('schema_version') not in ('1.0.0', '1.1.0') or
                 manifest.get('kind') != 'canopy.publication' or
                 manifest.get('scenario_id') != scenario or
                 not (data_root.parent / 'scenario.json').is_file()):
@@ -100,12 +100,21 @@ def publications(root):
                 raise ValueError(f'Public resource checksum/size mismatch: {path}')
             if record['bytes'] >= 100 * 1024 ** 2:
                 raise ValueError(f'Public resource exceeds ordinary Git file limit: {path}')
+            source_base = reference['base_url'] if reference else None
+            if 'source_snapshot' in record:
+                snapshot = record['source_snapshot']
+                if (manifest['schema_version'] != '1.1.0' or not reference or
+                        not isinstance(snapshot, str) or
+                        not re.fullmatch('[a-zA-Z0-9][a-zA-Z0-9._-]*', snapshot) or
+                        snapshot == manifest['snapshot']):
+                    raise ValueError('Invalid immutable source snapshot')
+                source_base = reference['base_url'].rsplit('/snapshots/', 1)[0] + '/snapshots/' + snapshot + '/'
             declared.add(name)
             total += record['bytes']
             resources[viewer_path] = {'source': None if reference else path,
                                       'scenario_id': scenario,
-                                      'path': reference['base_url'] + name if reference else path.relative_to(root).as_posix(),
-                                      'bytes': record['bytes'], 'sha256': record['sha256']}
+                                      'path': source_base + name if reference else path.relative_to(root).as_posix(),
+                                      'bytes': record['bytes'], 'sha256': record['sha256'], 'remote_base': source_base}
         actual = {p.relative_to(data_root).as_posix() for p in data_root.rglob('*') if p.is_file()}
         expected = {'manifest.json'} if reference else declared | {'manifest.json'}
         if actual != expected or total != manifest['bytes']:
@@ -161,6 +170,7 @@ def generated(root):
                  'files': len(manifest['files'])}
         if reference:
             remote_bases.append(reference['base_url'])
+            remote_bases.extend(r['remote_base'] for r in resources.values() if r['scenario_id'] == scenario and r['remote_base'])
             entry.update(repository=reference['repository'], revision=reference['revision'],
                          data_website=reference['website'], manifest_url=reference['base_url'] + 'manifest.json',
                          manifest_sha256=reference['manifest']['sha256'])

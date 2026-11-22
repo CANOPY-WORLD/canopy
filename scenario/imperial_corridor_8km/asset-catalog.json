@@ -247,7 +247,39 @@
           "selected": false
         }
       ]
+    },
+    {
+      "reference": "solar_day_20260621_100_20261122_physics@1",
+      "kind": "physics",
+      "run_id": "solar_day_20260621_100_20261122",
+      "simulation": "solar",
+      "scope": "verification",
+      "derived_from": [],
+      "manifest_sha256": "8fa604683decc995649e57d0ee0d768851b49648eb8d678ce6697ddb91105fec",
+      "bundle_bytes": 450042950,
+      "bundle_files": 217,
+      "sample_count": 100,
+      "time_range_s": [
+        0.0,
+        86400.0
+      ],
+      "layers": [
+        {
+          "id": "irradiance",
+          "kind": "scalar_field",
+          "format": "npy_frames",
+          "unit": "W/m2",
+          "selected": false
+        },
+        {
+          "id": "shadow",
+          "kind": "scalar_field",
+          "format": "npy_frames",
+          "unit": "1",
+          "selected": false
+        }
+      ]
     }
   ],
-  "unique_bundle_bytes": 778843918
+  "unique_bundle_bytes": 1228886868
 }
