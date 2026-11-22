@@ -1,39 +1,28 @@
-# Local integration validation
+# Integration validation
 
-Base: CANOPY-WORLD/canopy main commit `40d7c004adb73880e1f8b4f5573161713fd23021`.
-Input release: private healthy-route `2026.11.16-v2`.
+Updated against upstream `70688bc`. The PR adds model functionality and local scientific-viewer outputs; it does not deploy the public website.
 
-## Results
+## Runnable handover
 
-- Registered Method: `healthy_route/wave_cvae@1.0.0`.
-- Private input preparation and a real mapped-crossing request completed through the standard runner, payload validator and retained Asset registration.
-- Successful run: `20261118T143330Z_88d376d88d`; separate private research workspace, no canonical London changes.
-- Healthy-route checks: 19 passed, including boundary-sample export, CPU enforcement, candidate budgets, time-dependent branching, vehicle sweeps, stationary vehicles, signal/gap conjunction, replay seams, waiting exposure and traffic-avoiding detours.
-- Full Python suite: **96 passed, zero failures/errors/skips**, in 20.921 seconds on Ubuntu 22.04 (WSL), Python 3.12.16, CPU PyTorch 2.15.0+cpu, NumPy 2.5.5, SciPy 1.18.1, pandas 3.1.1 and Shapely 2.2.0. The tracked source tree was copied to Linux temporary storage for the run.
-- The initial Windows run had nine environment errors. Installing SciPy and running outside the restricted sandbox resolved five; four remaining tests required Windows symlink privileges. All four pass unchanged on Linux, including in the full suite. No tests were disabled or skipped, and no model-code change was needed to resolve these errors.
-- Existing scientific viewer tests: 5 passed.
-- V1 contract fixture, repository checker and diff whitespace checks passed.
-- Python compilation and all retained healthy-route JavaScript module syntax checks passed.
-- Generated inventory refreshed: one curated London Scenario, nine registered Methods.
+- `healthy_route/breathing_cvae@1.0.0` includes checksum-verified tensor-only weights and fitted normalization. No participant observations, personal baseline, history timestamps, optimizer state or saved recurrent state are distributed.
+- `python model/tools/run_health_example.py --serve --open` runs explicitly fictional inputs and opens eight layers in the shared scientific viewer.
+- A clean Linux source copy without the private release completed inference and retained an output Asset (`20261122T000923Z_3877197709_physics@1`).
+- The built wheel was installed into an isolated target and successfully loaded its packaged assets and produced predictions.
+- Existing private `wave_cvae` results were re-exported and passed the payload validator with trajectory, breathing and four environmental layers. This checks export compatibility; it is not a new full-city solver validation.
 
-The run verifies execution, contract and retention for one crossing, not full-domain performance, all departures, running physiology, or clinical/road-safety accuracy. Interactive detailed presentation remains unwired; no public browser/deployment test is claimed.
+## Checks
 
-## Scope
+- Full Python suite: **101 passed, zero failures/errors/skips**, 21.442 seconds, Ubuntu 22.04 / Python 3.12.16 / CPU PyTorch 2.15.0+cpu. This includes the 19 routing tests and five new public-inference tests.
+- New inference checks cover packaged-file allowlisting, tensor-only checkpoint structure, determinism, exposure sensitivity, checksum rejection, cancellation, coordinate bounds, contract-valid output and no direct sunlight effect on breathing.
+- Headless Edge browser test: all eight layers and seven charts loaded without page/request errors; timeline seek to 1800 seconds, play/pause, visibility toggles and mobile layout passed. Command: `node visualizer/tests/browser_health.cjs`, with the local server running and `PUPPETEER_MODULE` / `CHROME_PATH` configured.
+- Existing scientific-viewer JavaScript tests: five passed.
+- Contract fixture, repository checker, wheel build and whitespace checks passed. Inventory contains one curated London Scenario and ten Methods.
+- Initial Windows environment failures were resolved for testing by installing SciPy and using Linux for symlink privileges; no tests were disabled.
 
-Shared routing code, an explicit experiment profile, private-bundle preparation, Method spec/adapter, research presentation modules, tests and documentation are included. Windows path serialization now uses portable forward slashes for retained manifests, Asset references and viewer URLs.
+## Review and limits
 
-Canonical London scenario.json, publication.json, locked data manifest and visualizer/site are byte-unchanged. The 13-hour horizon, repeated fields/traffic, estimated gaps and solar coupling belong solely to the opt-in healthy-route experiment. The integration does not publish a website or data snapshot.
+Self-review covered the diff, package content, model initialization, provenance, privacy boundary and shared-viewer lifecycle. The missing-assets handover and elapsed-time-only export were addressed. The narrow-screen scientific timeline/chart layout was adjusted and browser-verified. No independent review is claimed.
 
-Private model weights, participant observations, generated networks/fields, runtime distributions, logs and research outputs are excluded from the source changes. Retained source files are identified by SHA-256 in SOURCE.json. Any later publication of participant-derived outputs requires a separate data review.
+The public inference path uses explicit cold-start state and supplied exposures/trajectory. It evaluates a route and does not optimize one or reproduce participant-specific history. Its health index and thermal proxy use illustrative coefficients; latent spread is not calibrated total uncertainty. Model parameters are training-derived artifacts, not a differential-privacy guarantee.
 
-## Repeat checks
-
-```sh
-python -X utf8 -m unittest discover -s model/tests -v
-python -X utf8 model/tools/check_contract.py model/tests/fixtures/contract-v1/manifest.json
-python -X utf8 model/tools/check_repository.py
-node --test visualizer/tests/test_viewer.mjs
-git diff --check
-```
-
-See README.md for private-input setup and the complete execution command. The full-suite Linux/WSL setup is documented in README.md. Install both physics and healthy-route dependencies and permit temporary symlinks, hard links and local test sockets. Running from native Linux storage avoids slow repeated source-snapshot operations on Windows-mounted drives.
+Exact personalized routing still requires authorized local history and city inputs through the separate private workflow. Real input requests and resulting predictions stay in local workspaces and may themselves be sensitive. Do not publish them by default. The hosted city demo and canonical London declarations remain unchanged relative to upstream; its optional extended-replay profile stays separate.

@@ -69,5 +69,29 @@ class HealthyRoute(Method):
             'sampling':'linear','field':{'name':'journey_elapsed','unit':'s'},
             'display':{'widget':'time_series','capabilities':['pick']}}]
         m['artifacts']=[{'id':'healthy_route_result','asset':'route.json','sha256':digest(folder/'route.json'),'media_type':'application/json'}]
+        # Full research routes use the same standard layers as portable inference.
+        if selected.get('timeline'):
+            positions=[]
+            for t in times:
+                event=next((e for e in selected['timeline'] if e['start']<=t<e['end']),selected['timeline'][-1])
+                points=np.asarray(event['points'],dtype=float)
+                if event['kind']=='Waiting':point=points[0]
+                else:
+                    f=np.clip((t-event['start'])/(event['end']-event['start']),0,1)
+                    d=np.asarray(event['distance']);point=np.array([np.interp(f*d[-1],d,points[:,i]) for i in range(3)])
+                positions.append([point.tolist()])
+            write(folder/'trajectory.json',{'ids':['selected_route'],'positions':positions})
+            m['layers'].append({'id':'trajectory','kind':'trajectories','format':'json','asset':'trajectory.json','sampling':'linear','display':{'widget':'trajectories','capabilities':['pick','opacity']}})
+            for key,unit in [('temperature','degC'),('pollution','ug/m3'),('sunlight','W/m2'),('thermal_proxy','degC')]:
+                rows=selected['profile']
+                if not all(isinstance(row.get(key),(int,float)) and np.isfinite(row[key]) for row in rows):continue
+                values=np.interp(times,[row['seconds'] for row in rows],[row[key] for row in rows])
+                write(folder/(key+'.json'),{'labels':[key],'values':[[float(v)] for v in values]})
+                m['layers'].append({'id':key,'kind':'time_series','format':'json','asset':key+'.json','sampling':'linear','field':{'name':key,'unit':unit},'display':{'widget':'time_series','capabilities':['pick']}})
+            rows=selected.get('breathing_profile',[])
+            if rows:
+                values=[next((row['breathing'] for row in reversed(rows) if row['seconds']<=t),rows[0]['breathing']) for t in times]
+                write(folder/'breathing.json',{'labels':['breathing'],'values':[[float(v)] for v in values]})
+                m['layers'].append({'id':'breathing','kind':'time_series','format':'json','asset':'breathing.json','sampling':'step','field':{'name':'breathing','unit':'breaths/min'},'display':{'widget':'time_series','capabilities':['pick']}})
         write(folder/'manifest.json',m)
         return folder

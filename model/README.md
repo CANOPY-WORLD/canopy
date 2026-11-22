@@ -95,4 +95,4 @@ See the [verification record](docs/framework/verification.md) for checks and the
 
 ## Healthy-route research
 
-The [healthy-route model](healthy_route/README.md) executes a pinned private input bundle. Its extended London replay is an opt-in experiment, independent of the canonical public scene.
+The [health model](healthy_route/README.md) includes weights and a runnable, participant-free inference example with standard local-viewer layers. Personalized route optimization remains a separate private-input workflow; its extended London replay is opt-in.

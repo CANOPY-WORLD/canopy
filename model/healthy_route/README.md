@@ -1,4 +1,35 @@
-# Healthy-route research model
+# Health model and local visualization
+
+## Run from a fresh checkout
+
+The repository now includes the trained CVAE weights and fitted normalization parameters in `model/src/healthy_route/assets/`, and installs them in the Python wheel. No participant CSV, personal baseline, history timestamps or saved recurrent state is included. The runnable example needs neither the old private release nor the London dataset.
+
+```sh
+python -m pip install -e '.[healthy-route]'
+python model/tools/run_health_example.py --serve --open
+```
+
+The command runs the model first, retains its results, selects all eight layers and opens the existing shared local scientific viewer on port 8772. It creates a separate disposable workspace, leaving canonical London and the hosted web demo unchanged. Use `--port 8773` if necessary. Omit `--serve --open` for batch execution; the command prints the workspace and a `canopy serve` command. No solver runs just because a view is opened.
+
+The viewer displays breathing rate, latent spread, air temperature, pollution, irradiance, thermal proxy, experimental health score and a moving trajectory. Its shared timeline supports pause, play and seek; breathing and scores are held between five-minute samples. No new renderer or private HTTP planning API is required.
+
+## Inputs and interpretation
+
+`healthy_route/breathing_cvae@1.0.0` accepts explicit five-minute exposure/activity inputs and a supplied trajectory. Copy `model/tests/fixtures/canopy/health_inference.json`, edit it, and pass `--request /path/to/request.json` to the launcher. It evaluates that trajectory; it does not optimize a new route. Future environments must be supplied by the caller and are conditional scenarios, not predictions made by the CVAE.
+
+Each feature row contains PM2.5, air temperature, humidity, activity level, step count, walking indicator, hour sine and hour cosine, in that order. N intervals require N+1 trajectory and irradiance samples. The initial breathing value, particle count, random seed and score-reference parameters are explicit. Full parameter bounds and defaults are in the Method specification. The shipped example is fictional, including its reference range and initial state; it is not an anonymized participant trajectory or a reproduction of the personalized experiment.
+
+Cold-start inference uses zero recurrent memory and the supplied initial breathing value. It deliberately does not load observed participant history. Therefore its predictions are not equivalent to the earlier personalized run. The reference score is an illustrative index, not calibrated health risk. Air temperature enters the CVAE; sunlight changes only the heuristic thermal proxy and score for a fixed trajectory. Latent spread is not calibrated total uncertainty. Predictions outside physical validity cause an error rather than silent clipping.
+
+Weights are verified against SHA-256 before inference and loaded with `weights_only=True`. The checkpoint contains model tensors only; the scaler contains fitted aggregate model parameters. These are training-derived model artifacts, not a differential-privacy guarantee. The user's supplied request and resulting predictions are retained locally for provenance; treat outputs as private if supplying sensitive inputs. No observations should be committed or added to the public package.
+
+## Connect to a real Scenario
+
+The Method uses the standard `describe/validate/prepare/execute/export` lifecycle. Supply an actual same-frame trajectory and exposures in a request for an existing Scenario, run `canopy --root WORKSPACE run REQUEST.json`, then select returned Asset references with `canopy --root WORKSPACE view SCENARIO ASSET_REFERENCE`. Serve that workspace normally. Outputs use existing `time_series` and `trajectories` representations, so the local viewer reads the model's results directly.
+
+The original `wave_cvae` route optimizer remains available for authorized researchers with their private history and city bundle; it is not silently replaced by cold-start inference. Its export now includes trajectory, breathing and available environmental layers as well as the complete route artifact. Exact personalized replay still requires private inputs. The public runnable path above solves the repository-only handover without publishing them.
+
+# Private personalized route workflow
 
 Version `healthy_route/wave_cvae@1.0.0` adapts the 16 November V2 planner. It includes bounded destination-guided wave search, recurrent CVAE costs, walking/running timing, candidate-arrival environmental sampling, solar thermal proxy and recorded-vehicle crossing gaps. Source identities are in `SOURCE.json`.
 

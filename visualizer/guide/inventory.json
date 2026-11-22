@@ -987,6 +987,146 @@
           },
           "guide": "model/healthy_route/README.md",
           "example": "model/tests/fixtures/canopy/healthy_route.json"
+        },
+        {
+          "model_id": "healthy_route",
+          "method_id": "breathing_cvae",
+          "version": "1.0.0",
+          "title": "Portable breathing and health inference",
+          "description": "Bundled weights; explicit cold start and provided exposures; no participant records needed.",
+          "category": "physics",
+          "inputs": {},
+          "outputs": [
+            "time_series",
+            "trajectories"
+          ],
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "features": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 288,
+                "items": {
+                  "type": "array",
+                  "minItems": 8,
+                  "maxItems": 8,
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "description": "Five-minute interval features in scaler column order; last two entries are hour sine/cosine"
+              },
+              "positions_m": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 289,
+                "items": {
+                  "type": "array",
+                  "minItems": 3,
+                  "maxItems": 3,
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "description": "N+1 ENU route boundary positions; supplied route, not optimized",
+                "x-unit": "m"
+              },
+              "irradiance_w_m2": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 289,
+                "items": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 2000
+                },
+                "description": "N+1 incident irradiance boundary values",
+                "x-unit": "W/m2"
+              },
+              "input_label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "description": "Describe source and whether inputs are fictional or measured"
+              },
+              "initial_breathing_bpm": {
+                "type": "number",
+                "minimum": 1,
+                "maximum": 100,
+                "default": 16,
+                "description": "Explicit cold-start breathing value; no participant history is loaded",
+                "x-unit": "breaths/min"
+              },
+              "particles": {
+                "type": "integer",
+                "minimum": 2,
+                "maximum": 128,
+                "default": 16,
+                "description": "Latent samples"
+              },
+              "seed": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 2147483647,
+                "default": 42,
+                "description": "Reproducibility seed"
+              },
+              "reference_lower_bpm": {
+                "type": "number",
+                "minimum": 1,
+                "maximum": 100,
+                "default": 12,
+                "description": "Illustrative lower score reference, not a clinical threshold",
+                "x-unit": "breaths/min"
+              },
+              "reference_upper_bpm": {
+                "type": "number",
+                "minimum": 1,
+                "maximum": 100,
+                "default": 20,
+                "description": "Illustrative upper score reference, not a clinical threshold",
+                "x-unit": "breaths/min"
+              },
+              "reference_scale_bpm": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 100,
+                "default": 2,
+                "description": "Illustrative score scale",
+                "x-unit": "breaths/min"
+              },
+              "solar_warming_c_per_800": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 20,
+                "default": 6,
+                "description": "Heuristic warming coefficient, not calibrated thermal stress",
+                "x-unit": "degC"
+              }
+            },
+            "required": [
+              "features",
+              "positions_m",
+              "irradiance_w_m2",
+              "input_label",
+              "initial_breathing_bpm",
+              "particles",
+              "seed",
+              "reference_lower_bpm",
+              "reference_upper_bpm",
+              "reference_scale_bpm",
+              "solar_warming_c_per_800"
+            ]
+          },
+          "capabilities": {
+            "cancel": true,
+            "resume": false,
+            "progress": "steps"
+          },
+          "guide": "model/healthy_route/README.md",
+          "example": "model/tests/fixtures/canopy/health_inference.json"
         }
       ]
     }

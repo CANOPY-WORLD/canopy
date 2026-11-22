@@ -17,3 +17,6 @@ header .scenario-tabs{flex:1}
 header #fit{flex:0 0 auto}
 .scene-caption{font-size:12px;color:#a6bac7;padding:7px 20px;border-bottom:1px solid #304350;background:#182530}
 @media(max-width:700px){header{gap:8px;padding:8px 10px}.viewer-brand{font-size:12px}header #fit{padding:7px 8px;font-size:12px}.scene-caption{padding:6px 12px}}
+
+/* Keep multi-channel scientific results usable in narrow viewports. */
+#time{min-width:0}#charts{max-height:calc(100% - 20px);overflow-y:auto;min-width:0}.series{flex-shrink:0}

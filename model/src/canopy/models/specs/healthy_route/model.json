@@ -6,6 +6,10 @@
     "wave_cvae": {
       "version": "1.0.0",
       "spec": "wave_cvae.json"
+    },
+    "breathing_cvae": {
+      "version": "1.0.0",
+      "spec": "breathing_cvae.json"
     }
   }
 }

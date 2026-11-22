@@ -29,3 +29,5 @@ include = ["healthy_route*", "canopy*", "common*", "urban_flow*", "urban_geometr
 "canopy" = ["schemas/*.json"]
 "canopy.models" = ["specs/*/*.json"]
 "canopy.models.vendor.nn4pdes" = ["SOURCE.json", "README.md"]
+
+"healthy_route" = ["assets/*.pt", "assets/*.json"]
