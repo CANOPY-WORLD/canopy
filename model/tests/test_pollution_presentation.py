@@ -30,7 +30,11 @@ class PollutionPresentationTest(unittest.TestCase):
             self.assertEqual(layer['time_s'],[0,6]);self.assertTrue(layer['own_clock'])
             transport=scene['protocol_display']['npy_transport']
             part=transport['poll.npy']['parts'][0]
-            decoded=np.frombuffer(gzip.decompress((out/'physics'/part['file']).read_bytes()),dtype='<f2')
-            np.testing.assert_array_equal(decoded,data.ravel())
+            decoded=np.frombuffer(gzip.decompress((out/'physics'/part['file']).read_bytes()),dtype='u1')
+            q=transport['poll.npy']['meta']['quantization']
+            decoded=q['reference']*np.expm1(decoded.astype('f8')*q['scale'])
+            np.testing.assert_allclose(decoded,data.ravel(),rtol=0.04,atol=1e-7)
+            self.assertEqual(decoded[0],0)
+            self.assertEqual(scene['layers']['poll']['frames'],2)
             mask=transport['masks/poll_invalid.npy']['parts'][0]
             self.assertEqual(list(gzip.decompress((out/'physics'/mask['file']).read_bytes())),[0,1,0,0,0,0])

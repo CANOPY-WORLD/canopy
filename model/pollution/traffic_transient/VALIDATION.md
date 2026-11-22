@@ -36,3 +36,18 @@ Missing source contributions remain unknown, not zero. All displayed concentrati
 - Real result loaded in the shared scientific Viewer: 1/1 layers, seek to 600 s, desktop and tablet widths, no captured page/request errors. This checks loading/display, not independent numerical accuracy.
 
 The review video shows actual saved results with a fixed logarithmic colour scale, whole-domain and South Kensington views. Grey cells are solid; magenta marks indicate omitted sources. The result is local and has not replaced the production pollution layer. Full geometry reconciliation, emissions calibration, wind/dispersion validation and numerical grid sensitivity remain future work.
+
+
+## City presentation compression (22 November 2026)
+
+All 100 native 1,000 × 1,000 float32 slices were compared. No time samples,
+grid cells or mask values were removed. Gzip float16 used 76,278,801 frame bytes;
+lossless byte shuffling of float16 used 70,234,876 bytes. Log1p uint8 uses
+38,407,654 frame bytes (39,021,534 bytes including the snapshot's new metadata
+and mask). Log10/12/14-bit alternatives used 62.1/72.9/82.1 MB respectively.
+The chosen fixed global 8-bit transform has maximum absolute error 2.5849762
+µg/m³, RMS error 0.00585769 µg/m³ and maximum relative error 3.66321% at or
+above the display minimum 0.00023500917 µg/m³. Exact zero and the 80.4036484
+µg/m³ peak are preserved; no source values are clipped to the colour scale.
+Native scientific bundles remain unchanged. Publication of the compact
+100-frame replacement was authorized by the user after reviewing the city demo.

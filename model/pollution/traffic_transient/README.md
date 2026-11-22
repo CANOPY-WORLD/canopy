@@ -65,7 +65,7 @@ Tests cover mass conservation, solid-wall isolation, positivity timestep rejecti
 creates a presentation-only delta for the existing Pollution widget. The viewer shares the
 city renderer, buildings and bottom playback controls. Explicit layer dimensions and
 southwest offsets preserve the exact 8 km result inside the 8.192 km context. All recorded
-samples are retained with an independent playback clock. Float16 gzip transport records
+samples are retained with an independent playback clock. Fixed-range log1p uint8 gzip transport records
 its measured error against the native float32 slices; it does not modify the scientific
 result. The invalid mask stays exact, and units remain SUMO exhaust PMx increment in
 µg/m³. The 0–8 m slice is a voxel mean, not resolved breathing-height exposure.
@@ -74,3 +74,12 @@ The exporter preserves source hashes, timestamps, assumptions and solver diagnos
 The original scientific volume and wind faces are not part of the website download.
 Publication uses a separate Scenario data PR followed by a verified Canopy reference
 update; generating a snapshot does not publish it.
+
+
+The default presentation encoding uses codes 0–254 with a global log1p scale,
+reference concentration 1e-6 µg/m³, and code 255 reserved for missing samples.
+It preserves zero exactly, retains the full recorded peak without clipping,
+and decodes to float32 before rendering. The exact invalid mask remains separate.
+`--encoding float16` exports the higher-precision alternative. The web encoding
+is not suitable as a replacement input for scientific analysis or Health calculations.
+Keep the native result and record absolute, RMS and visible-range relative errors.

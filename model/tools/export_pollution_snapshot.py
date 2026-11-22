@@ -2,7 +2,7 @@
 """Export recorded ENU pollution slices into an immutable city presentation delta.
 
 No rerun, spatial resampling, time interpolation or scientific-volume upload.
-Float16 presentation slices and the exact invalid mask use per-frame gzip.
+Log-quantized presentation slices and the exact invalid mask use per-frame gzip.
 The native float32 result is preserved; encoding errors are recorded.
 """
 import argparse
@@ -23,7 +23,7 @@ def write(path, value):
     path.write_text(json.dumps(value, indent=2) + '\n')
 
 
-def export(run, source, output):
+def export(run, source, output, encoding="log8"):
     manifest = json.loads((run / 'manifest.json').read_text())
     layer, = manifest['layers']
     enc = layer['encoding']
@@ -35,6 +35,11 @@ def export(run, source, output):
     n, rows, cols = enc['shape']
     if n != len(times) or n != len(enc['frame_assets']):
         raise ValueError('Frame count mismatch')
+    if encoding not in ('log8', 'float16'):
+        raise ValueError('Unsupported presentation encoding')
+    peak = max(float(np.load(run / name).max()) for name in enc['frame_assets'])
+    reference = 1e-6
+    quantization = dict(transform='log1p', scale=float(np.log1p(peak / reference) / 254) if peak > 0 else 1.0, offset=0, reference=reference, invalid_code=255) if encoding == 'log8' else None
     old = json.loads((source / 'manifest.json').read_text())
     scene = json.loads((source / 'scene.json').read_text())
     output.mkdir(parents=True, exist_ok=False)
@@ -51,7 +56,7 @@ def export(run, source, output):
         if 'poll' in key:
             del transport[key]
     inputs = []
-    errors = dict(max_abs_ug_m3=0.0, squared_error=0.0, samples=0)
+    errors = dict(max_abs_ug_m3=0.0, squared_error=0.0, samples=0, max_relative_visible=0.0)
     def encode(key, arrays, dtype):
         parts = []
         block = rows * cols
@@ -60,11 +65,22 @@ def export(run, source, output):
         for i, (path, array) in enumerate(arrays):
             if array.size != block or not np.isfinite(array).all():
                 raise ValueError('Invalid recorded frame')
-            encoded = np.ascontiguousarray(array, dtype=dtype)
+            is_field = key == 'poll.npy'
+            if is_field and np.any(array < 0):
+                raise ValueError('Negative concentration')
+            if is_field and quantization:
+                encoded = np.rint(np.log1p(array.astype('f8') / reference) / quantization['scale']).astype('u1')
+                decoded = reference * np.expm1(encoded.astype('f8') * quantization['scale'])
+            else:
+                encoded = np.ascontiguousarray(array, dtype=dtype)
+                decoded = encoded.astype('f8')
             if not np.isfinite(encoded).all():
                 raise ValueError('Float16 overflow')
-            if dtype == '<f2':
-                error = encoded.astype('f8') - array.reshape(encoded.shape)
+            if is_field:
+                error = decoded - array.reshape(encoded.shape)
+                visible = array >= 0.00023500917
+                if visible.any():
+                    errors['max_relative_visible'] = max(errors['max_relative_visible'], float(np.max(np.abs(error[visible]) / array[visible])))
                 errors['max_abs_ug_m3'] = max(errors['max_abs_ug_m3'], float(np.abs(error).max()))
                 errors['squared_error'] += float(np.sum(error * error))
                 errors['samples'] += error.size
@@ -79,7 +95,10 @@ def export(run, source, output):
             inputs.append(dict(path=path.name, sha256=digest(path)))
             count += 1
         transport[key] = dict(meta=dict(descr=np.dtype(dtype).str, shape=[count, rows, cols], itemsize=itemsize, offset=0, block=block), total_bytes=count*block*itemsize, parts=parts)
-    encode('poll.npy', ((run / name, np.load(run / name)) for name in enc['frame_assets']), '<f2')
+    field_dtype = '|u1' if quantization else '<f2'
+    encode('poll.npy', ((run / name, np.load(run / name)) for name in enc['frame_assets']), field_dtype)
+    if quantization:
+        transport['poll.npy']['meta']['quantization'] = quantization
     mask = run / enc['mask_asset']
     encode('masks/poll_invalid.npy', [(mask, np.load(mask))], '|u1')
     cell = enc['spacing_m'][0]
@@ -90,11 +109,11 @@ def export(run, source, output):
         overlay_frame=n-1, y=origin[2], rate=5, preload_sequence=True,
         title='Traffic exhaust PMx increment', label='Traffic exhaust PMx increment · 8 m',
         unit_label='PMx increment · µg/m³', range=[0.00023500917, 2.3500917], quantitative=True, palette='warm')
-    scene['preview_fields_8m']['poll.npy'] = dict(frames=n, cell_m=cell, source_run=manifest['run_id'], method='Float16 gzip; original ENU cell centres and recorded samples')
+    scene['preview_fields_8m']['poll.npy'] = dict(frames=n, cell_m=cell, source_run=manifest['run_id'], method=encoding + ' gzip; original ENU cell centres and recorded samples')
     errors['rmse_ug_m3'] = (errors.pop('squared_error') / errors.pop('samples')) ** 0.5
     provenance = dict(source_run=manifest['run_id'], source_manifest_sha256=digest(run/'manifest.json'), source_frames=inputs,
         field=layer['field'], encoding=enc, time=manifest['time'], provenance=manifest['provenance'],
-        presentation=dict(compression='float16 gzip', errors=errors, spatial_resampling=False, temporal_resampling=False, slice='0–8 m voxel mean centred at 4 m; not pedestrian breathing height'))
+        presentation=dict(compression=encoding + ' gzip', quantization=quantization, errors=errors, spatial_resampling=False, temporal_resampling=False, slice='0–8 m voxel mean centred at 4 m; not pedestrian breathing height'))
     diagnostics = run / 'provenance/diagnostics.json'
     if diagnostics.is_file():
         provenance['diagnostics'] = json.loads(diagnostics.read_text())
@@ -102,7 +121,7 @@ def export(run, source, output):
     physics_record = next(r for r in old['files'] if r['path'] == 'physics/manifest.json')
     physics_base = source.parent / physics_record.get('source_snapshot', source.name)
     physics = json.loads((physics_base / 'physics/manifest.json').read_text())
-    physics['arrays']['poll.npy'] = dict(shape=[n, rows, cols], dtype='<f2', axes='TYX', unit='ug/m3', cell_m=cell, time_s=times, origin_m=origin, field=layer['field']['name'], presentation_errors=errors)
+    physics['arrays']['poll.npy'] = dict(shape=[n, rows, cols], dtype=field_dtype, quantization=quantization, axes='TYX', unit='ug/m3', cell_m=cell, time_s=times, origin_m=origin, field=layer['field']['name'], presentation_errors=errors)
     write(output/'physics/manifest.json', physics)
     write(output/'scene.json', scene)
     write(output/'derivation.json', dict(kind='traffic-wind-pollution-replacement', source_snapshot=old['snapshot'], source_manifest_sha256=digest(source/'manifest.json'), removed_from_selection=removed, source_run=manifest['run_id']))
@@ -120,5 +139,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('run', 'source', 'output'):
         parser.add_argument(name, type=Path)
+    parser.add_argument('--encoding', choices=['log8', 'float16'], default='log8')
     args = parser.parse_args()
-    export(args.run, args.source, args.output)
+    export(args.run, args.source, args.output, args.encoding)
