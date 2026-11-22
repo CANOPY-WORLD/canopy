@@ -1,7 +1,7 @@
 {
-  "version": "5a4577b380a57d357830",
+  "version": "a10384e0bc485d17036f",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 243914187,
+  "bytes": 243921908,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -130,8 +130,8 @@
     },
     {
       "path": "guide/inventory.json",
-      "bytes": 36941,
-      "sha256": "fb57f0b8d223ab26ea85070a77a84780cbe26704a85da7a2e959684e767aaf05"
+      "bytes": 37728,
+      "sha256": "afd0e95c30329dc318c490dfedbf0919e559113b1b8d6b727a656568330cdc41"
     },
     {
       "path": "guide/style.css",
@@ -7249,6 +7249,11 @@
       "sha256": "1d5c438acdc1fe5a52fb8ede2e417afd91fec91d22275c40f7b739591b24e4df"
     },
     {
+      "path": "viewer/3d/camera-journey.mjs",
+      "bytes": 1331,
+      "sha256": "fccf5476b1fac11be171af9d9cef28a0438d75d3a63a30a2042fc97907ae8b79"
+    },
+    {
       "path": "viewer/3d/canopy-birds-preview.js",
       "bytes": 6350,
       "sha256": "ee0fffa70d9195814df5b10406356690295df414d391d0768bf283d997fbb3b8"
@@ -7265,8 +7270,8 @@
     },
     {
       "path": "viewer/3d/complete-detail-tiles.js",
-      "bytes": 8936,
-      "sha256": "2a8571296a986ec7a87559a55e4dc55ecb2881e26247c8cffbab993a482f31f8"
+      "bytes": 9304,
+      "sha256": "9ab101efbe4e0da5c0a05a3ed9e7ba6a73a892db6e1739f508f99f7fb88136b4"
     },
     {
       "path": "viewer/3d/corridor-context.js",
@@ -7329,9 +7334,14 @@
       "sha256": "007e1883ac33fab8420e3372679f84b749a3e3628fcaf18c3438130acd7d1145"
     },
     {
+      "path": "viewer/3d/interior.js",
+      "bytes": 2368,
+      "sha256": "49e2a42dd86aed627cc53a4490ff9b422731a0c76d6f7ae926ce42ef47b81d14"
+    },
+    {
       "path": "viewer/3d/main.js",
-      "bytes": 126993,
-      "sha256": "deab7b90df6afd4258f885f3078cb74036ab42c309e9b8eb8c8686dd4c763af3"
+      "bytes": 129726,
+      "sha256": "c71a89b9f4cea008c22f0ad6e48cd736991345e4ee5ee1f0e7f9a491b2545a66"
     },
     {
       "path": "viewer/3d/native-road-surface.js",
@@ -7445,8 +7455,8 @@
     },
     {
       "path": "viewer/3d/wind-uav-layer.js",
-      "bytes": 13132,
-      "sha256": "ee238b3aa7b4bd375c299eea9f828236451011a2a2a04f5c18784b35f767bfb6"
+      "bytes": 13266,
+      "sha256": "8bd79f644168ea647034410c024d05b6aed6b7a5777158eee4f893938f49b37c"
     },
     {
       "path": "viewer/3d/wind-uav-route.mjs",

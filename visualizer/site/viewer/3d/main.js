@@ -1,3 +1,4 @@
+import {createInteriorLayer} from './interior.js';
 import {daylightWindow} from '../daylight-window.mjs';
 import { unpackShadow } from './shadow-codec.mjs';
 import { solarLight } from './solar-light.mjs';
@@ -235,7 +236,7 @@ function setupSceneUI() {
       ]
     : [
         ['overview', 'Overview'],
-        ...(SCENE.id === 'imperial_corridor_8km' ? [['whiteCity', 'White City campus'], ['traffic', 'Traffic'], ['birds', 'Birds']] : []),
+        ...(SCENE.id === 'imperial_corridor_8km' ? [['whiteCity', 'White City campus'], ...(SCENE.interior ? [['interior', 'I-HUB Interior']] : []), ['traffic', 'Traffic'], ['birds', 'Birds']] : []),
         ...(HAS_UAV_LAYER ? [['uavs', 'UAVs']] : []),
         ...(SCENE.traffic ? [['trafficMap', 'Traffic map']] : []),
       ]; // the close-up traffic and transport orbits stay reachable by ?shot=traffic|transport
@@ -1440,6 +1441,7 @@ ui.play.addEventListener('click', () => {
   }
   if(section==='campus'&&tour.shot==='birds'&&window.canopyBirds){window.canopyBirds.toggle();return;}
   if (section === 'campus' && tour.shot === 'traffic' && corridorContext) {corridorContext.setPlaying(!corridorContext.playing);return;}
+  if(section==='campus'&&tour.shot==='interior'&&interiorLayer?.journey){interiorLayer.journey.toggle();applyInteriorPose();return;}
   if(section==='campus'&&tour.shot==='uavs'&&uavLayer?.flightSelection){if(!uavLayer.playing&&uavLayer.t>=uavLayer.duration)uavLayer.update(0);uavLayer.playing=!uavLayer.playing;return;}
   if (section === 'campus' && replayLayer) {
     replayLayer.playing = !replayLayer.playing;
@@ -1455,6 +1457,7 @@ ui.play.addEventListener('click', () => {
   }
 });
 ui.rate.addEventListener('change', () => {
+  if(section==='campus'&&tour.shot==='interior'&&interiorLayer?.journey){interiorLayer.journey.speed=+ui.rate.value;return;}
   if(section==='campus'&&tour.shot==='birds'&&window.canopyBirds){window.canopyBirds.setRate(ui.rate.value);return;}
   if (section === 'campus' && tour.shot === 'traffic' && corridorContext) {document.querySelector('#corridor-traffic-rate').value=ui.rate.value;return;}
   if (section === 'fields' && seqMode()) fieldRateOverrides[state.phase] = +ui.rate.value;
@@ -1467,6 +1470,7 @@ ui.rate.addEventListener('change', () => {
   else if (state.playing) setPlaying(true);
 });
 ui.step.addEventListener('input', () => {
+  if(section==='campus'&&tour.shot==='interior'&&interiorLayer?.journey){interiorLayer.journey.seek(+ui.step.value);applyInteriorPose();return;}
   if (isOrbitWidget()) {
     tour.elapsed = +ui.step.value;
     tour.az = THREE.MathUtils.degToRad(-150) + tour.elapsed * orbitSpeed();
@@ -1817,12 +1821,17 @@ const TOUR_SHOTS = {
     label: () => 'Imperial College · White City campus',
     time: () => 'White City campus · drag to explore',
   },
+  interior: {
+    fixed: () => interiorLayer?.pose ?? TOUR_SHOTS.whiteCity.fixed(),
+    dur: Infinity,
+    label: () => 'White City · I-HUB concept interior',
+    time: () => 'Concept office · drag to explore',
+  },
   uavs: {
     fixed: () => {
-      if(uavLayer?.flightSelection)return uavLayer.viewPose;
-      const d = fitDistance();
+      const d = fitDistance() * 1.2; // Keep the whole domain clear of the top and bottom controls.
       const target = domainCentre.clone();
-      return { pos: target.clone().add(new THREE.Vector3(0, d * 0.866, d * 0.5)), target };
+      return { pos: target.clone().add(new THREE.Vector3(0, d, d * 0.00001)), target };
     },
     dur: 20000,
     label: () => `${SCENE.title} · ${SCENE.uav?.label ?? 'Wave PDE UAV flights'}`,
@@ -1899,7 +1908,7 @@ function syncPlaybackUI() {
     available &&= LAYERS[state.phase]?.frames > 1;
     playing = state.playing;
   } else if (section === 'campus') {
-    if (tour.shot === 'birds' && window.canopyBirds) {
+    if(tour.shot==='interior'&&interiorLayer?.journey){const j=interiorLayer.journey;range(0,j.duration,.1,j.time);playing=j.playing;label=`Office tour ${j.time.toFixed(1)} / ${j.duration} s`;} else if (tour.shot === 'birds' && window.canopyBirds) {
       const birds = window.canopyBirds;
       range(0, birds.manifest.last_frame_t_s, 1.5, birds.time); playing = birds.playing;
     } else if (tour.shot === 'traffic' && corridorContext) {
@@ -1916,7 +1925,7 @@ function syncPlaybackUI() {
       label = `Camera orbit ${tour.elapsed.toFixed(1)} seconds`;
     } else {
       range(0, 1, 1, 0); available = false;
-      label = tour.shot === 'whiteCity' ? 'Static camera view' : 'Loading recorded playback';
+      label = ['whiteCity', 'interior'].includes(tour.shot) ? 'Static camera view' : 'Loading recorded playback';
     }
   }
   available &&= ui.loading.classList.contains('hide');
@@ -1924,7 +1933,7 @@ function syncPlaybackUI() {
   ui.step.disabled = !available;
   ui.play.textContent = playing && available ? '❚❚' : '▶';
   ui.play.setAttribute('aria-label', playing && available ? 'Pause' : 'Play');
-  ui.step.setAttribute('aria-label', isOrbitWidget() ? 'Camera orbit progress' : 'Recorded playback progress');
+  ui.step.setAttribute('aria-label', tour.shot==='interior'&&section==='campus' ? 'Office camera journey progress' : isOrbitWidget() ? 'Camera orbit progress' : 'Recorded playback progress');
   ui.step.setAttribute('aria-valuetext', label);
 }
 function tourPose(az, shot = tour.shot) {
@@ -1968,7 +1977,12 @@ function startTour(shot = 'overview') {
   applyTransportLayers();
   if (shot === 'traffic') traffic?.highlightRoads(true);
   const p = tourPose(tour.az);
-  if (camera.position.distanceTo(p.pos) > 50) {
+  if (shot === 'interior') {
+    flight=null;
+    const j=interiorLayer?.journey;
+    if(j){j.start(camera.position.toArray(),controls.target.toArray(),matchMedia('(prefers-reduced-motion: reduce)').matches);applyInteriorPose();}
+    else {camera.position.copy(p.pos);controls.target.copy(p.target);controls.update();}
+  } else if (camera.position.distanceTo(p.pos) > 50) {
     flyTo(p, 2600, () => {
       controls.enabled = shot==='uavs'&&uavLayer?.flightSelection;
       tour.t0 = performance.now();
@@ -1990,7 +2004,14 @@ function startTour(shot = 'overview') {
   }
   setSectionUI();
 }
+function applyInteriorPose(){
+  const j=interiorLayer?.journey,p=j?.pose;if(!p)return;
+  controls.enabled=false;camera.position.fromArray(p.position);controls.target.fromArray(p.target);camera.lookAt(controls.target);
+  if(!j.playing){controls.enabled=true;controls.update();}
+  invalidate();
+}
 function updateTour(now, dt) {
+  if(tour.shot==='interior'){const j=interiorLayer?.journey;if(j?.playing){j.tick(dt);applyInteriorPose();}return;}
   if(SCENE.id==='imperial_corridor_8km'&&(tour.shot==='birds'||tour.shot==='uavs'&&uavLayer?.flightSelection))return;
   if (!tour.active || flight) return;
   if (!tour.paused && !TOUR_SHOTS[tour.shot].fixed) {
@@ -2065,7 +2086,7 @@ function runCampus(shot = 'overview') {
   ui.lTrees.checked = savedLandscapeDisplay.trees;
   applyLayers();
   if (uavLayer) {
-    uavLayer.setVisible(true);
+    uavLayer.setVisible(shot === 'uavs');
     uavLayer.playing = shot === 'uavs';
   }
   if (replayLayer) {
@@ -2401,6 +2422,7 @@ renderer.domElement.addEventListener('pointerleave', () => {
 // ------------------------------------------------------------------ render loop
 let last = performance.now(),
   lastTrafficStats = -Infinity;
+let interiorLayer = null;
 let corridorContext = null;
 let contextStarted = false;
 let contextReady = null;
@@ -2427,7 +2449,13 @@ function startCityLayers() {
 let nativeTrafficActive=false;
 function syncNativeTrafficView(){
   const active=Boolean(corridorContext?.nativeTraffic && section==='campus' && tour.shot==='traffic');
-  currentTerrain()?.setEnabled(section !== 'fields' && !active);
+  const indoor=Boolean(interiorLayer && section==='campus' && tour.shot==='interior');
+  interiorLayer?.setVisible(indoor);
+  if(!indoor&&interiorLayer?.journey)interiorLayer.journey.playing=false;
+  detailTiles?.setSourceVisible(SCENE.interior?.replace_asset, !indoor);
+  const near=indoor ? 0.1 : 5;
+  if(camera.near!==near){camera.near=near;camera.updateProjectionMatrix();invalidate();}
+  currentTerrain()?.setEnabled(section !== 'fields' && !active && !indoor);
   corridorContext?.setNativeActive?.(active);
   if(active!==nativeTrafficActive)invalidate();
   nativeTrafficActive=active;
@@ -2454,6 +2482,7 @@ function animate(now) {
   const dt = Math.min(0.05, elapsed / 1000);
   last = now;
   const moving = Boolean(
+    (interiorLayer?.group.visible && interiorLayer.journey?.playing) ||
     (uavLayer?.group.visible && uavLayer.playing) ||
     flight ||
     (section === 'campus' && (replayLayer ? replayLayer.playing : tour.active && !tour.paused)) ||
@@ -2484,7 +2513,7 @@ function animate(now) {
         else replayLayer.startShot('overview');
       }
     }
-  } else if (section === 'campus') updateTour(now, dt);
+  } else if (section === 'campus') updateTour(now, tour.shot==='interior' ? elapsed/1000 : dt);
   if (traffic && !replayLayer && section !== 'fields' && traffic.group.visible) {
     traffic.tick(now, elapsed / 1000);
     if (now - lastTrafficStats > 250) {
@@ -2493,7 +2522,7 @@ function animate(now) {
     }
   }
   if (uavLayer) {
-    uavLayer.setVisible(section !== 'fields' && !window.cityTools?.current && (!uavLayer.flightSelection||tour.shot==='uavs'));
+    uavLayer.setVisible(section === 'campus' && tour.shot === 'uavs' && !window.cityTools?.current);
     if (uavLayer.group.visible) { uavLayer.tick(elapsed / 1000); if(uavLayer.flightSelection){invalidate();ui.step.value=uavLayer.t;ui.step.max=uavLayer.duration;ui.timeLabel.textContent=`Flight ${uavLayer.t.toFixed(1)} / ${uavLayer.duration.toFixed(1)} s`;ui.stats.textContent=uavLayer.stats;ui.play.textContent=uavLayer.playing?'❚❚':'▶';} }
   }
   syncPlaybackUI();
@@ -2509,6 +2538,9 @@ function animate(now) {
     renderDirty = false;
   }
 }
+renderer.domElement.addEventListener('pointerdown', () => {
+  if(section==='campus'&&tour.shot==='interior'&&interiorLayer?.journey){interiorLayer.journey.playing=false;controls.enabled=true;}
+}, {capture:true});
 renderer.domElement.addEventListener('pointerdown', () => {
   if (section === 'campus') {
     if (flight) {
@@ -2911,6 +2943,11 @@ async function boot() {
         throw e;
       });
     releaseBatchedGeometry();
+  }
+  if (SCENE.interior) {
+    setLoadingStatus('White City I-HUB interior…');
+    interiorLayer = await createInteriorLayer({scene, renderer, config:SCENE.interior, url:SCENE.url});
+    window.ihubInterior = interiorLayer;
   }
   if (HAS_UAV_LAYER) {
     setLoadingStatus(`${SCENE.title} UAV routes…`);
