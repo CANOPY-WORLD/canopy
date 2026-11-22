@@ -1,4 +1,5 @@
-import {SCENE_PREVIEWS, createExternalPreview} from './external-preview.mjs';
+import {TUBE_PRESETS} from './tube-preset.mjs';
+import {createTubeLayer} from './tube-layer.js';
 import {createInteriorLayer} from './interior.js';
 import {daylightWindow} from '../daylight-window.mjs';
 import { unpackShadow } from './shadow-codec.mjs';
@@ -45,9 +46,9 @@ import { recordedFrame } from '../scene-run.js';
 // the masks, the field layers (files, frame counts, clocks, display ranges) and the camera focus. South Kensington also
 // switches on the traffic / UAV / bird replay, the station tile, the OSM supplement and the building refinements.
 const SCENE = await loadScene();
-const externalPreviews = SCENE_PREVIEWS[SCENE.id] ?? [];
-const externalPreview = createExternalPreview(document.getElementById("tabs"));
-let selectedPreview = null;
+const tubeConfig = TUBE_PRESETS[SCENE.id];
+let tubeLayer=null, tubeLoading=null, tubeController=null;
+function cancelTubeLoad(){tubeController?.abort();tubeController=null;tubeLoading=null;}
 if (SCENE.corridor_context) await loadCorridorTerrain(SCENE.url);
 if (SCENE.wind_history) {
   SCENE.layers.wind = SCENE.wind_history;
@@ -244,7 +245,7 @@ function setupSceneUI() {
         ...(HAS_UAV_LAYER ? [['uavs', 'UAVs']] : []),
         ...(SCENE.traffic ? [['trafficMap', 'Traffic map']] : []),
       ]; // the close-up traffic and transport orbits stay reachable by ?shot=traffic|transport
-  for (const preview of externalPreviews) {
+  for (const preview of tubeConfig ? [tubeConfig] : []) {
     const index = shots.findIndex(([id]) => id === preview.after);
     shots.splice(index < 0 ? shots.length : index + 1, 0, [preview.id, preview.label]);
   }
@@ -1449,7 +1450,7 @@ ui.play.addEventListener('click', () => {
   }
   if(section==='campus'&&tour.shot==='birds'&&window.canopyBirds){window.canopyBirds.toggle();return;}
   if (section === 'campus' && tour.shot === 'traffic' && corridorContext) {corridorContext.setPlaying(!corridorContext.playing);return;}
-  if(section==='campus'&&tour.shot==='interior'&&interiorLayer?.journey){interiorLayer.journey.toggle();applyInteriorPose();return;}
+  if(section==='campus'&&activeJourney()){activeJourney().toggle();applyInteriorPose();return;}
   if(section==='campus'&&tour.shot==='uavs'&&uavLayer?.flightSelection){if(!uavLayer.playing&&uavLayer.t>=uavLayer.duration)uavLayer.update(0);uavLayer.playing=!uavLayer.playing;return;}
   if (section === 'campus' && replayLayer) {
     replayLayer.playing = !replayLayer.playing;
@@ -1465,7 +1466,7 @@ ui.play.addEventListener('click', () => {
   }
 });
 ui.rate.addEventListener('change', () => {
-  if(section==='campus'&&tour.shot==='interior'&&interiorLayer?.journey){interiorLayer.journey.speed=+ui.rate.value;return;}
+  if(section==='campus'&&activeJourney()){activeJourney().speed=+ui.rate.value;return;}
   if(section==='campus'&&tour.shot==='birds'&&window.canopyBirds){window.canopyBirds.setRate(ui.rate.value);return;}
   if (section === 'campus' && tour.shot === 'traffic' && corridorContext) {document.querySelector('#corridor-traffic-rate').value=ui.rate.value;return;}
   if (section === 'fields' && seqMode()) fieldRateOverrides[state.phase] = +ui.rate.value;
@@ -1478,7 +1479,7 @@ ui.rate.addEventListener('change', () => {
   else if (state.playing) setPlaying(true);
 });
 ui.step.addEventListener('input', () => {
-  if(section==='campus'&&tour.shot==='interior'&&interiorLayer?.journey){interiorLayer.journey.seek(+ui.step.value);applyInteriorPose();return;}
+  if(section==='campus'&&activeJourney()){activeJourney().seek(+ui.step.value);applyInteriorPose();return;}
   if (isOrbitWidget()) {
     tour.elapsed = +ui.step.value;
     tour.az = THREE.MathUtils.degToRad(-150) + tour.elapsed * orbitSpeed();
@@ -1829,6 +1830,11 @@ const TOUR_SHOTS = {
     label: () => 'Imperial College · White City campus',
     time: () => 'White City campus · drag to explore',
   },
+  londonTube: {
+    fixed: () => tubeLayer?.pose ?? campusPoseDeg(-150),
+    dur: Infinity, label: () => 'South Kensington · representative underground platform',
+    time: () => 'Static concept geometry · drag to explore',
+  },
   interior: {
     fixed: () => interiorLayer?.pose ?? TOUR_SHOTS.whiteCity.fixed(),
     dur: Infinity,
@@ -1916,7 +1922,7 @@ function syncPlaybackUI() {
     available &&= LAYERS[state.phase]?.frames > 1;
     playing = state.playing;
   } else if (section === 'campus') {
-    if(tour.shot==='interior'&&interiorLayer?.journey){const j=interiorLayer.journey;range(0,j.duration,.1,j.time);playing=j.playing;label=`Office tour ${j.time.toFixed(1)} / ${j.duration} s`;} else if (tour.shot === 'birds' && window.canopyBirds) {
+    if(activeJourney()){const j=activeJourney();range(0,j.duration,.1,j.time);playing=j.playing;label=`Camera journey ${j.time.toFixed(1)} / ${j.duration} s`;} else if (tour.shot === 'birds' && window.canopyBirds) {
       const birds = window.canopyBirds;
       range(0, birds.manifest.last_frame_t_s, 1.5, birds.time); playing = birds.playing;
     } else if (tour.shot === 'traffic' && corridorContext) {
@@ -1941,7 +1947,7 @@ function syncPlaybackUI() {
   ui.step.disabled = !available;
   ui.play.textContent = playing && available ? '❚❚' : '▶';
   ui.play.setAttribute('aria-label', playing && available ? 'Pause' : 'Play');
-  ui.step.setAttribute('aria-label', tour.shot==='interior'&&section==='campus' ? 'Office camera journey progress' : isOrbitWidget() ? 'Camera orbit progress' : 'Recorded playback progress');
+  ui.step.setAttribute('aria-label', activeJourney()&&section==='campus' ? 'Interior camera journey progress' : isOrbitWidget() ? 'Camera orbit progress' : 'Recorded playback progress');
   ui.step.setAttribute('aria-valuetext', label);
 }
 function tourPose(az, shot = tour.shot) {
@@ -1985,10 +1991,10 @@ function startTour(shot = 'overview') {
   applyTransportLayers();
   if (shot === 'traffic') traffic?.highlightRoads(true);
   const p = tourPose(tour.az);
-  if (shot === 'interior') {
+  if (['interior','londonTube'].includes(shot)) {
     flight=null;
-    const j=interiorLayer?.journey;
-    if(j){j.start(camera.position.toArray(),controls.target.toArray(),matchMedia('(prefers-reduced-motion: reduce)').matches);applyInteriorPose();}
+    const j=activeJourney();
+    if(j){j.speed=1;j.start(camera.position.toArray(),controls.target.toArray(),matchMedia('(prefers-reduced-motion: reduce)').matches);applyInteriorPose();}
     else {camera.position.copy(p.pos);controls.target.copy(p.target);controls.update();}
   } else if (camera.position.distanceTo(p.pos) > 50) {
     flyTo(p, 2600, () => {
@@ -2012,14 +2018,15 @@ function startTour(shot = 'overview') {
   }
   setSectionUI();
 }
+function activeJourney(){return tour.shot==='interior'?interiorLayer?.journey:tour.shot==='londonTube'?tubeLayer?.journey:null;}
 function applyInteriorPose(){
-  const j=interiorLayer?.journey,p=j?.pose;if(!p)return;
-  controls.enabled=false;camera.position.fromArray(p.position);controls.target.fromArray(p.target);camera.lookAt(controls.target);
+  const j=activeJourney(),p=j?.pose;if(!p)return;
+  controls.enabled=false;const damping=controls.enableDamping;controls.enableDamping=false;controls.update();controls.enableDamping=damping;camera.position.fromArray(p.position);controls.target.fromArray(p.target);camera.lookAt(controls.target);
   if(!j.playing){controls.enabled=true;controls.update();}
   invalidate();
 }
 function updateTour(now, dt) {
-  if(tour.shot==='interior'){const j=interiorLayer?.journey;if(j?.playing){j.tick(dt);applyInteriorPose();}return;}
+  if(['interior','londonTube'].includes(tour.shot)){const j=activeJourney();tour.paused=!j?.playing;if(j?.playing){j.tick(dt);applyInteriorPose();}return;}
   if(SCENE.id==='imperial_corridor_8km'&&(tour.shot==='birds'||tour.shot==='uavs'&&uavLayer?.flightSelection))return;
   if (!tour.active || flight) return;
   if (!tour.paused && !TOUR_SHOTS[tour.shot].fixed) {
@@ -2049,11 +2056,9 @@ function updateTour(now, dt) {
   }
 }
 function setSectionUI() {
-  if (section !== "external") { externalPreview.hide(); selectedPreview = null; }
   shotButtons.forEach((b) =>
     b.classList.toggle(
       'active',
-      (section === 'external' && selectedPreview?.id === b.dataset.shot) ||
       section === 'campus' &&
         (replayLayer
           ? replayLayer.shot === b.dataset.shot
@@ -2083,18 +2088,28 @@ async function showCanopyBirds(){
 }
 
 function runCampus(shot = 'overview') {
-  const preview = externalPreviews.find(item => item.id === shot);
-  if (preview) {
-    viewIntent++; section = 'external'; selectedPreview = preview;
-    setPlaying(false); tour.active = false; tour.paused = true; flight = null;
-    ui.auto.checked = false;
-    corridorContext?.setPlaying(false); window.canopyBirds?.setActive(false);
-    if (interiorLayer?.journey) interiorLayer.journey.playing = false;
-    if (uavLayer) uavLayer.playing = false;
-    if (replayLayer) replayLayer.playing = false;
-    if (traffic) traffic.playing = false;
-    externalPreview.show(preview); setSectionUI(); return;
+  if(shot==='londonTube'&&!tubeConfig)shot='overview';
+  // Lazy-load geometry without moving the camera until the latest selection is ready.
+  if(shot==='londonTube' && !tubeLayer){
+    const intent=++viewIntent;
+    const button=document.querySelector('[data-shot="londonTube"]');
+    button.textContent='Loading Tube…'; button.setAttribute('aria-busy','true');
+    if(!tubeLoading){
+      const controller=new AbortController();tubeController=controller;
+      tubeLoading=createTubeLayer({scene,config:tubeConfig,signal:controller.signal}).then(layer=>{
+        tubeLayer=layer;window.canopyTube=layer;
+        const note=document.createElement('p');note.textContent='Representative South Kensington platform and depths; static geometry, not live service. ';
+        const link=document.createElement('a');link.href=tubeConfig.attribution;link.textContent='Source and attribution';note.append(link);document.getElementById('viewer-details').append(note);
+        return layer;
+      }).finally(()=>{if(tubeController===controller){tubeController=null;tubeLoading=null;}});
+    }
+    tubeLoading.then(()=>{if(viewIntent===intent)runCampus(shot);}).catch(error=>{
+      if(error.name!=='AbortError'){console.error(error);if(viewIntent===intent)button.textContent='Tube unavailable · retry';}
+    }).finally(()=>{if(viewIntent===intent||!tubeLoading){button.removeAttribute('aria-busy');if(tubeLayer||viewIntent!==intent)button.textContent='London Tube';}});
+
+    return;
   }
+  if(shot!=='londonTube')cancelTubeLoad();
   if(shot === 'birds' && SCENE.birds_enabled === false)shot='overview';
   viewIntent++;
   corridorContext?.setPlaying(shot === 'traffic');
@@ -2126,7 +2141,7 @@ function runCampus(shot = 'overview') {
     ui.step.disabled = false;
     ui.rate.disabled = false;
   } else if (traffic) {
-    traffic.playing = true;
+    traffic.playing = !['interior','londonTube'].includes(shot);
     ui.step.min = traffic.start ?? 0;
     ui.step.max = traffic.duration;
     ui.step.step = 0.1;
@@ -2275,6 +2290,7 @@ function setupTransportUI() {
 }
 /** Fields section: climb to the overhead view, hide ground / trees / replay, play the fields in sequence. */
 async function runFields(phase = PHASE_ORDER[0]) {
+  cancelTubeLoad();
   const intent=++viewIntent;
   if(fieldPreparation){ui.stage.textContent='Loading physics field masks…';await fieldPreparation;}
   if(intent!==viewIntent)return;
@@ -2475,16 +2491,19 @@ function syncNativeTrafficView(){
   interiorLayer?.setVisible(indoor);
   if(!indoor&&interiorLayer?.journey)interiorLayer.journey.playing=false;
   detailTiles?.setSourceVisible(SCENE.interior?.replace_asset, !indoor);
-  const near=indoor ? 0.1 : 5;
+  const underground=Boolean(tubeLayer && section==='campus' && tour.shot==='londonTube');
+  tubeLayer?.setVisible(underground);
+  if(!underground&&tubeLayer)tubeLayer.journey.playing=false;
+  controls.maxPolarAngle=indoor||underground ? Math.PI-.02 : Math.PI/2-.02;
+  const near=indoor||underground ? 0.1 : 5;
   if(camera.near!==near){camera.near=near;camera.updateProjectionMatrix();invalidate();}
-  currentTerrain()?.setEnabled(section !== 'fields' && !active && !indoor);
+  currentTerrain()?.setEnabled(section !== 'fields' && !active);
   corridorContext?.setNativeActive?.(active);
   if(active!==nativeTrafficActive)invalidate();
   nativeTrafficActive=active;
 }
 function animate(now) {
   requestAnimationFrame(animate);
-  if (section === "external") { last = now; return; }
   startCityLayers();
   detailTiles?.update(now);
   if (document.hidden) {
@@ -2536,7 +2555,7 @@ function animate(now) {
         else replayLayer.startShot('overview');
       }
     }
-  } else if (section === 'campus') updateTour(now, tour.shot==='interior' ? elapsed/1000 : dt);
+  } else if (section === 'campus') updateTour(now, activeJourney() ? elapsed/1000 : dt);
   if (traffic && !replayLayer && section !== 'fields' && traffic.group.visible) {
     traffic.tick(now, elapsed / 1000);
     if (now - lastTrafficStats > 250) {
@@ -2561,9 +2580,9 @@ function animate(now) {
     renderDirty = false;
   }
 }
-renderer.domElement.addEventListener('pointerdown', () => {
-  if(section==='campus'&&tour.shot==='interior'&&interiorLayer?.journey){interiorLayer.journey.playing=false;controls.enabled=true;}
-}, {capture:true});
+const cancelInteriorCamera=()=>{if(section==='campus'&&activeJourney()){activeJourney().playing=false;controls.enabled=true;invalidate();}};
+renderer.domElement.addEventListener('pointerdown',cancelInteriorCamera,{capture:true});
+renderer.domElement.addEventListener('wheel',cancelInteriorCamera,{capture:true,passive:true});
 renderer.domElement.addEventListener('pointerdown', () => {
   if (section === 'campus') {
     if (flight) {
@@ -3077,7 +3096,7 @@ async function boot() {
     }
     if (qs.has('shot')) {
       if (replayLayer) replayLayer.startShot(qs.get('shot'));
-      else if (TOUR_SHOTS[qs.get('shot')] || externalPreviews.some(item => item.id === qs.get('shot')) || qs.get('shot') === 'birds') runCampus(qs.get('shot'));
+      else if (TOUR_SHOTS[qs.get('shot')] || qs.get('shot') === 'birds') runCampus(qs.get('shot'));
     }
     if (qs.get('hold') === '1') {
       if (replayLayer) replayLayer.shotUntil = Infinity;

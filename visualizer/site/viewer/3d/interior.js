@@ -1,3 +1,4 @@
+import {currentTerrain} from './corridor-terrain.js';
 import {createCameraJourney} from './camera-journey.mjs';
 // Presentation adapter for an already aligned, static concept interior.
 import * as THREE from 'three';
@@ -25,6 +26,9 @@ export async function createInteriorLayer({scene,renderer,config,url}) {
     ceiling.name='Retained v10 continuous ceiling';ceiling.rotation.x=-Math.PI/2;ceiling.position.y=c.height_m;group.add(ceiling);
   }
   group.add(building,office);scene.add(group);
-  const pose={target:new THREE.Vector3(...config.camera.target),pos:new THREE.Vector3(...config.camera.position)};
-  return {group,building,office,pose,journey:config.journey?createCameraJourney(config.journey.keyframes):null,setVisible(on){group.visible=on;},dispose(){group.removeFromParent();const resources=new Set();group.traverse(o=>{if(o.geometry)resources.add(o.geometry);for(const m of o.material?(Array.isArray(o.material)?o.material:[o.material]):[]){resources.add(m);for(const v of Object.values(m))if(v?.isTexture)resources.add(v);}});for(const r of resources)r.dispose();}};
+  const height=currentTerrain()?.sample(config.camera.position[0],config.camera.position[2]) ?? 0;
+  group.position.y=height;
+  const raised=v=>[v[0],v[1]+height,v[2]];
+  const pose={target:new THREE.Vector3(...raised(config.camera.target)),pos:new THREE.Vector3(...raised(config.camera.position))};
+  return {group,building,office,pose,journey:config.journey?createCameraJourney(config.journey.keyframes.map(f=>({...f,position:raised(f.position),target:raised(f.target)})),{safeApproach:true}):null,setVisible(on){group.visible=on;},dispose(){group.removeFromParent();const resources=new Set();group.traverse(o=>{if(o.geometry)resources.add(o.geometry);for(const m of o.material?(Array.isArray(o.material)?o.material:[o.material]):[]){resources.add(m);for(const v of Object.values(m))if(v?.isTexture)resources.add(v);}});for(const r of resources)r.dispose();}};
 }

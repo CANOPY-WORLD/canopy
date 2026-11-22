@@ -1,7 +1,7 @@
 {
-  "version": "ae936c0b16ba3b48fe4b",
+  "version": "7f33ac3a3cb96ed63360",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 281737279,
+  "bytes": 281732625,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -7665,8 +7665,8 @@
     },
     {
       "path": "viewer/3d/camera-journey.mjs",
-      "bytes": 1331,
-      "sha256": "fccf5476b1fac11be171af9d9cef28a0438d75d3a63a30a2042fc97907ae8b79"
+      "bytes": 2035,
+      "sha256": "408e8b57b2b0fa8cae178453c51ef072b34dade9fb124c477afbff28bbceb274"
     },
     {
       "path": "viewer/3d/canopy-birds-preview.js",
@@ -7719,11 +7719,6 @@
       "sha256": "705da295ebd09bf3119bd55b9062bd91b39814b19f564a99bff999b1d95ad8bc"
     },
     {
-      "path": "viewer/3d/external-preview.mjs",
-      "bytes": 4603,
-      "sha256": "955cb76a35f5f1a9fad8e28fe5942bf58e715c7d988859dc3db1fe99c807b06d"
-    },
-    {
       "path": "viewer/3d/field-colorbar.mjs",
       "bytes": 6895,
       "sha256": "7e7baf28638a9ccf6efbc85d7b2a44de613ae649335e3cb5720a7de9f3cfab9b"
@@ -7755,13 +7750,13 @@
     },
     {
       "path": "viewer/3d/interior.js",
-      "bytes": 2368,
-      "sha256": "49e2a42dd86aed627cc53a4490ff9b422731a0c76d6f7ae926ce42ef47b81d14"
+      "bytes": 2696,
+      "sha256": "7ec0bd6a7baa8cfd967b45f7357f7905371ecde3e83abddc1291fe9152819afe"
     },
     {
       "path": "viewer/3d/main.js",
-      "bytes": 131250,
-      "sha256": "d1f7237b9730b2bfa354d5075f6081bbba810458f7168616f584bca70edc9b1e"
+      "bytes": 132765,
+      "sha256": "f6ee5563c980133b9940614504161dcbf56c555fe8198823b9b5377f0a409b1b"
     },
     {
       "path": "viewer/3d/native-road-surface.js",
@@ -7830,8 +7825,8 @@
     },
     {
       "path": "viewer/3d/style.css",
-      "bytes": 15612,
-      "sha256": "dbd3728b3cd165ebede086a102b569b263691f8207104654d1cf76bf7b0c10df"
+      "bytes": 14769,
+      "sha256": "63d5b8006818d66f32856ef836a4376ae0ede516ccad5d025f5309db12d2d2db"
     },
     {
       "path": "viewer/3d/tile.js",
@@ -7864,9 +7859,14 @@
       "sha256": "08177f89cc58c99dca305db6300feeb253988e7a7472b94a49c792eb2e013974"
     },
     {
-      "path": "viewer/3d/tube-intro.js",
-      "bytes": 5708,
-      "sha256": "fbc23006133f5bf1c34dd7678a2f0076e2d2e9a775a0984d7fe28806a9c7981f"
+      "path": "viewer/3d/tube-layer.js",
+      "bytes": 3381,
+      "sha256": "70a142c91f54b82fbc15aeb25aed7db5d6bbe54f0ed3ab9d0990687828360adc"
+    },
+    {
+      "path": "viewer/3d/tube-preset.mjs",
+      "bytes": 572,
+      "sha256": "08f089cd49a57adc7f5ca17be30ac77ab24aad50fc630476bf808bf81e944718"
     },
     {
       "path": "viewer/3d/uav-layer.js",
