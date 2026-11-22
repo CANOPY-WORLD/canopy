@@ -1,7 +1,7 @@
 {
-  "version": "1c1d1d9915c16e151b38",
+  "version": "8f9c9d074b9beebaf528",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 233129623,
+  "bytes": 233130518,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -6730,8 +6730,8 @@
     },
     {
       "path": "viewer/3d/corridor-context.js",
-      "bytes": 11869,
-      "sha256": "20fadb264383f6fe305d0ad146d8ad26da13171ea3f3acc09fced3effaf818f8"
+      "bytes": 12014,
+      "sha256": "9cca48b7cc2b4856d48a3e480eb48031fb9b7b290ddaa43dd09997613ef3b880"
     },
     {
       "path": "viewer/3d/corridor-signals.js",
@@ -6950,8 +6950,8 @@
     },
     {
       "path": "viewer/traffic-interpolation.mjs",
-      "bytes": 485,
-      "sha256": "13e0a82af103faf403e437b316fff515c8b7b6cbc06bdc19cf586acad315bf9f"
+      "bytes": 1235,
+      "sha256": "6b2b3e30f91a3d9fdae14ba66e672ba5caa8ed234250e81c19025890f4485a92"
     }
   ]
 }
