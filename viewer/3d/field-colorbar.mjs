@@ -34,7 +34,7 @@ export function installColorbars({layers,repaint}) {
     details.addEventListener('toggle',()=>{if(details.open)repaint()});
     const q=k=>details.querySelector(`[data-cb="${k}"]`) || c.display?.querySelector(`[data-cb="${k}"]`);
     c.display=document.createElement('div');c.display.hidden=true;c.display.append(q('bar'),q('ticks'));details.before(c.display);
-    function sync(){for(const k of ['lo','hi','scale','palette','threshold'])if(q(k))q(k).value=c[k];q('enabled').checked=c.enabled;q('bar').style.background=`linear-gradient(to right,${palettes[c.palette].join(',')})`;q('ticks').textContent=`${fmt(c.lo)} → ${fmt(c.hi)} ${units[key]} · ${c.scale}`;}
+    function sync(){for(const k of ['lo','hi','scale','palette','threshold'])if(q(k))q(k).value=c[k];q('enabled').checked=c.enabled;q('bar').style.background=`linear-gradient(to right,${palettes[c.palette].join(',')})`;q('ticks').textContent=`${fmt(c.lo)} → ${fmt(c.hi)} ${layers[key].unit_label ?? units[key]} · ${c.scale}`;}
     function update(){const lo=Number(q('lo').value),hi=Number(q('hi').value),scale=q('scale').value,threshold=q('threshold')?Number(q('threshold').value):null;
       if(q('lo').value===''||q('hi').value===''||!Number.isFinite(lo)||!Number.isFinite(hi)||hi<=lo||(scale==='log'&&lo<=0)||(threshold!==null&&(!Number.isFinite(threshold)||threshold<0))){q('status').textContent='Invalid range: max must exceed min; logarithmic min must be positive.';return}
       Object.assign(c,{lo,hi,scale,threshold,palette:q('palette').value,enabled:true});c.lut=lut(c.palette);sync();repaint();}
