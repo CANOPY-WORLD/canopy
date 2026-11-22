@@ -36,5 +36,11 @@
     "examples/": "model/tests/fixtures/",
     "tools/": "model/tools/"
   },
-  "path_resolution": "Inventory and modified_after_import paths identify the original source snapshot. Apply the longest matching path_relocations prefix to locate the current checkout file; original hashes are unchanged."
+  "path_resolution": "Inventory and modified_after_import paths identify the original source snapshot. Apply the longest matching path_relocations prefix to locate the current checkout file; original hashes are unchanged.",
+  "traffic_junction_review": {
+    "source": "/src/traffic/corridor_reservations.py in retained imperial-corridor-web worktree",
+    "source_sha256": "da76b4ff1c82b9f113c00556bb33cf154e58dd36e2b48cecaa105bc720bc5ac3",
+    "destination": "model/src/traffic/junction_reservations.py",
+    "adaptation": "Require an explicit guarded-junction list; validate IDs; limit reservations to those junction groups. Experimental diagnostic control, not a registered Method or actual London timing."
+  }
 }

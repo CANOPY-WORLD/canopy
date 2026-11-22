@@ -1,7 +1,7 @@
 {
-  "version": "8f9c9d074b9beebaf528",
+  "version": "9becc52e3a21f785af91",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 233130518,
+  "bytes": 233132351,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -6730,8 +6730,8 @@
     },
     {
       "path": "viewer/3d/corridor-context.js",
-      "bytes": 12014,
-      "sha256": "9cca48b7cc2b4856d48a3e480eb48031fb9b7b290ddaa43dd09997613ef3b880"
+      "bytes": 12021,
+      "sha256": "cf040d98b2000202bac77cb0798523a04920558dde4e2c90f0d39bf290256811"
     },
     {
       "path": "viewer/3d/corridor-signals.js",
@@ -6745,8 +6745,8 @@
     },
     {
       "path": "viewer/3d/corridor-vehicles.js",
-      "bytes": 3078,
-      "sha256": "c9553f9ce52f9927d79f7d9787368c10271992037651faacd38c6fbb3d9c7a2b"
+      "bytes": 3986,
+      "sha256": "bb05774fd64243ff99856422d12ce32a42f12e44c8dbd47695c78c75f835bc4e"
     },
     {
       "path": "viewer/3d/detail-tiles.js",
@@ -6952,6 +6952,11 @@
       "path": "viewer/traffic-interpolation.mjs",
       "bytes": 1235,
       "sha256": "6b2b3e30f91a3d9fdae14ba66e672ba5caa8ed234250e81c19025890f4485a92"
+    },
+    {
+      "path": "viewer/vehicle-types.mjs",
+      "bytes": 918,
+      "sha256": "13e7070e5b0694022d4700344f6160be86ffbe60f50bb62843a07e73a2eb06bc"
     }
   ]
 }
