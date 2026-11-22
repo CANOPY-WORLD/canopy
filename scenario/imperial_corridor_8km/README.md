@@ -48,3 +48,19 @@ The retained `solar_day_20260621_100_20261122_physics@1` Asset contains 100 newl
 The new Asset is separately retained; historical summer and winter assets remain unchanged. The full-day experiment is not the prescribed-direction registered Method. See the [run and export guide](../../model/solar/shadow/full-day.md). The public candidate replaces both old solar date selections with summer only, restores irradiance, and reuses all unchanged city resources through publication manifest 1.1. Its selected payload total is 249,886,035 bytes, including 30,509,013 newly stored bytes. The candidate requires reviewed PR approval before merge and deployment; a local build does not establish deployment.
 
 Local validation: 103 Python tests passed with one optional SUMO skip; all four new solar numerical tests ran. All 39 JavaScript tests and 11 publication-boundary tests passed. The scientific two-layer export passes the V1.1 validator. A full-detail browser loaded all 64 detail tiles, read all 100 irradiance frames, verified night zeros and the noon peak, switched shadows, and checked the 1024×768 viewport without page/network errors. The new fixed colour scale remains 0–950 W/m² throughout playback. Remote deployment verification has not run because upload is on hold.
+
+### White City I-HUB indoor presentation
+
+The retained `ihub_interior_v10_corridor_20261122_geometry@1` Asset contains the
+aligned building shell and concept office from v10. The public
+`london-ihub-interior-20261122` snapshot adds lossless gzip copies and the
+[presentation preset](presentation/ihub-interior.json), while reusing the latest
+traffic, 100-frame pollution and summer-solstice data unchanged. The shared
+Viewer inserts I-HUB Interior after White City campus, enters the office in four
+seconds, and offers guided camera movement, pause, seek and manual inspection.
+
+This is a concept layout, not a measured as-built interior. The retained fit has
+a 1.58 m median residual. The original authored relative heights and explicit
+geographic transformation are preserved; the interior view uses the flat city
+datum and restores terrain on exit. Only the existing I-HUB landmark is replaced
+while indoors; surrounding detailed city geometry remains visible.

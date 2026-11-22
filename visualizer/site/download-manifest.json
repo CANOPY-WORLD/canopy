@@ -1,7 +1,7 @@
 {
-  "version": "5a74f8148b3e6ef45485",
+  "version": "745beb507791193b3b18",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 278215794,
+  "bytes": 281724799,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -86,12 +86,12 @@
     {
       "path": "asset-router.js",
       "bytes": 6285,
-      "sha256": "842bd26864b2555aa2f591ea6643855ec44128f648d544873b5492051ce7c308"
+      "sha256": "bee3b8d741c905fb83b525b8cd0b0b98268102f2e2609522a1e1c49ce0ea6509"
     },
     {
       "path": "asset-sources.json",
-      "bytes": 354720,
-      "sha256": "70fc87fe63089a15120e246d6d3cb1af1512f2c0a7d9527a9f953e0491127f2e"
+      "bytes": 355486,
+      "sha256": "ccf46711f394d9854d7107805a2448df74e4d49c50cb4aaefc2412136f4fb0b1"
     },
     {
       "path": "assets/uav-wavepde-4m-20261111/config.json",
@@ -130,8 +130,8 @@
     },
     {
       "path": "guide/inventory.json",
-      "bytes": 39759,
-      "sha256": "aa3650a32b1a68a97f86e27e28b0efb6798e196ac608e4beb121fc63414f3b51"
+      "bytes": 40546,
+      "sha256": "e1c5a3da411f8340474867bcbfb0f75db86ba3d51b66067ca7cbede139621b63"
     },
     {
       "path": "guide/style.css",
@@ -150,18 +150,18 @@
     },
     {
       "path": "scenario-index.json",
-      "bytes": 978,
-      "sha256": "63667b5a8f51b3fe5406230db5e5a54d7cc421272c35aa4b6b0ef6c02ecf02b0"
+      "bytes": 976,
+      "sha256": "a0165509ebe2f71d065e78759aad2ac4b2c9a38d2e913ded6627f55a3eb7832d"
     },
     {
       "path": "scenario/imperial_corridor_8km/data/manifest.json",
-      "bytes": 494517,
-      "sha256": "5d9547eb2ed5176c9d9203e1b3597f817a91bb2c77854c7470ad6d31507f1302"
+      "bytes": 501428,
+      "sha256": "95fbcb9cff7d92097c754f62a9b0ded837017f6adbb63d5ab5f9a8380c2778b8"
     },
     {
       "path": "scenario/imperial_corridor_8km/publication.json",
-      "bytes": 661,
-      "sha256": "05cba424a79bbb36ce1d85489c8b3e7966370505f7d6aab94cd404172bd63366"
+      "bytes": 659,
+      "sha256": "0a016700191a09705d9bba56da354ad20c5559aba73543da8900616715130910"
     },
     {
       "path": "scenes/imperial_corridor_8km/compact-provenance/fields-8m-report.json",
@@ -427,6 +427,21 @@
       "path": "scenes/imperial_corridor_8km/derivation.json",
       "bytes": 1371,
       "sha256": "97053afc4aa739d40ecf194d3da6dfcd7fdbb12d2afab119a9e75331d00c664b"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/interiors/ihub-v10/building.glb.gz",
+      "bytes": 684724,
+      "sha256": "37511b5bbee057da6651c5448a30ad8882b6403545a569c4c3054eef9fc1bf29"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/interiors/ihub-v10/office.glb.gz",
+      "bytes": 2801428,
+      "sha256": "26ad1b7df71de7f101a8f49b6fea600398289f0f07e4b4606dddaab32ca25dd5"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/interiors/ihub-v10/provenance.json",
+      "bytes": 3211,
+      "sha256": "550990a1f4f97876e6a4d056a55ce3c8c7c1dc69221621e225464d783d160aa4"
     },
     {
       "path": "scenes/imperial_corridor_8km/models/buildings.glb.gz",
@@ -3065,8 +3080,8 @@
     },
     {
       "path": "scenes/imperial_corridor_8km/scene.json",
-      "bytes": 125800,
-      "sha256": "51d0630770fa637cecb45da693e32729e7ba6f20dfa28342e4ec3061d1a68f21"
+      "bytes": 130048,
+      "sha256": "737534b187497a69a50f1ee0671f11a24e41de944d200ee7236fc2e8a7acedda"
     },
     {
       "path": "scenes/index.json",
@@ -7649,6 +7664,11 @@
       "sha256": "1d5c438acdc1fe5a52fb8ede2e417afd91fec91d22275c40f7b739591b24e4df"
     },
     {
+      "path": "viewer/3d/camera-journey.mjs",
+      "bytes": 1331,
+      "sha256": "fccf5476b1fac11be171af9d9cef28a0438d75d3a63a30a2042fc97907ae8b79"
+    },
+    {
       "path": "viewer/3d/canopy-birds-preview.js",
       "bytes": 6350,
       "sha256": "ee0fffa70d9195814df5b10406356690295df414d391d0768bf283d997fbb3b8"
@@ -7665,8 +7685,8 @@
     },
     {
       "path": "viewer/3d/complete-detail-tiles.js",
-      "bytes": 8936,
-      "sha256": "2a8571296a986ec7a87559a55e4dc55ecb2881e26247c8cffbab993a482f31f8"
+      "bytes": 9304,
+      "sha256": "9ab101efbe4e0da5c0a05a3ed9e7ba6a73a892db6e1739f508f99f7fb88136b4"
     },
     {
       "path": "viewer/3d/corridor-context.js",
@@ -7729,9 +7749,14 @@
       "sha256": "007e1883ac33fab8420e3372679f84b749a3e3628fcaf18c3438130acd7d1145"
     },
     {
+      "path": "viewer/3d/interior.js",
+      "bytes": 2368,
+      "sha256": "49e2a42dd86aed627cc53a4490ff9b422731a0c76d6f7ae926ce42ef47b81d14"
+    },
+    {
       "path": "viewer/3d/main.js",
-      "bytes": 127191,
-      "sha256": "360282c27c343be87b588705f48719f3aace4c2ebfc77fa5f3c860693a861217"
+      "bytes": 129924,
+      "sha256": "2b1f4eb99845ed19ab7c5e8fe5e2caa1a06e5f9dae42d7d62e392b097cde560d"
     },
     {
       "path": "viewer/3d/native-road-surface.js",
@@ -7845,8 +7870,8 @@
     },
     {
       "path": "viewer/3d/wind-uav-layer.js",
-      "bytes": 13132,
-      "sha256": "ee238b3aa7b4bd375c299eea9f828236451011a2a2a04f5c18784b35f767bfb6"
+      "bytes": 13266,
+      "sha256": "8bd79f644168ea647034410c024d05b6aed6b7a5777158eee4f893938f49b37c"
     },
     {
       "path": "viewer/3d/wind-uav-route.mjs",

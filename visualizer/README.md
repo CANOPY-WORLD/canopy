@@ -107,3 +107,28 @@ The Traffic widget selects the recorded South Kensington demonstration used in t
 Run `node visualizer/tests/browser_traffic_city.cjs <built-site-base-url>` with `PUPPETEER_MODULE` and `CHROME_PATH` configured for real-data checks of city visibility, replay controls, terrain restoration, daylight bounds and tablet layout. Screenshots and the result report go to `cache/traffic-city/` (override with `CANOPY_QA_OUTPUT`).
 
 Sunlight defaults to recorded samples with solar altitude above the horizon (frames 21–88 for this day). Original indices, times, all 100 payloads and quantitative values are unchanged. `solar_day=full` explicitly restores the full-day playback bounds. Both irradiance and shadow share those bounds; restarting playback returns to the first daylight sample.
+
+The optional `scene.interior` preset adds **I-HUB Interior** immediately after
+**White City campus** in the shared city viewer. It loads aligned `building` and
+`office` GLB resources (optionally lossless gzip), preserves the full building shell,
+and supports a timed exterior-to-interior camera journey. The optional
+`journey.keyframes` uses presentation seconds and aligned camera positions and
+targets; `camera.target` and `camera.position` remain the static fallback. Only `replace_asset`
+is hidden while inspecting the interior; other city geometry remains visible.
+The interior uses the original flat city datum, restoring terrain on exit.
+The current journey approaches the office for 4 seconds and then explores the
+common room until 30 seconds. Pause, seek and replay use the bottom controls;
+dragging pauses the journey for manual inspection. Reduced motion opens at the
+final indoor pose without automatic movement.
+This retained v10 office is a concept layout, not a measured as-built interior;
+its recorded geographic fit has a 1.58 m median residual. Payloads require a
+separately approved Scenario snapshot; the code alone does not publish them.
+
+Selecting **UAVs** frames the entire 8 km × 8 km domain from above using the current
+viewport aspect ratio. UAV layers are hidden outside that widget. The network
+uses 2.5 px lines and the selected route uses 5 px lines; recorded route coordinates
+remain unchanged.
+The published interior preset is recorded in
+[`scenario/imperial_corridor_8km/presentation/ihub-interior.json`](../scenario/imperial_corridor_8km/presentation/ihub-interior.json).
+The `london-ihub-interior-20261122` snapshot includes this object as `scene.interior`
+and declares both losslessly compressed GLBs in its checksum inventory.

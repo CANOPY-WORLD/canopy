@@ -279,7 +279,36 @@
           "selected": false
         }
       ]
+    },
+    {
+      "reference": "ihub_interior_v10_corridor_20261122_geometry@1",
+      "kind": "geometry",
+      "run_id": "ihub_interior_v10_corridor_20261122",
+      "simulation": "geometry",
+      "scope": "verification",
+      "derived_from": [],
+      "manifest_sha256": "402f192ac27b517f9e9a86416526a97207f6f4395a619b129f4685ee63e16159",
+      "bundle_bytes": 31104860,
+      "bundle_files": 10,
+      "sample_count": 0,
+      "time_range_s": null,
+      "layers": [
+        {
+          "id": "building",
+          "kind": "mesh",
+          "format": "glb",
+          "unit": null,
+          "selected": false
+        },
+        {
+          "id": "office",
+          "kind": "mesh",
+          "format": "glb",
+          "unit": null,
+          "selected": false
+        }
+      ]
     }
   ],
-  "unique_bundle_bytes": 1228886868
+  "unique_bundle_bytes": 1259991728
 }
