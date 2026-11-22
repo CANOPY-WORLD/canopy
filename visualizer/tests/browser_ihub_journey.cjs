@@ -2,7 +2,7 @@ const fs=require('fs'),assert=require('assert/strict');
 fs.mkdirSync('cache/white-city-interior',{recursive:true});
 (async()=>{
  const {default:p}=await import(process.env.PUPPETEER_MODULE||'puppeteer-core');
- const b=await p.launch({executablePath:process.env.CHROME_PATH||'/usr/bin/google-chrome',headless:true,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+ const b=await p.launch({executablePath:process.env.CHROME_PATH||'/usr/bin/google-chrome',headless:true,args:['--no-sandbox',...(process.env.CANOPY_QA_VULKAN==='1'?['--use-angle=vulkan','--enable-features=Vulkan','--disable-vulkan-surface']:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader'])]});
  try{
  const page=await b.newPage(),errors=[];await page.setViewport({width:960,height:640});
  await page.evaluateOnNewDocument(()=>Object.defineProperty(window,'devicePixelRatio',{get:()=>0.6}));
