@@ -1,6 +1,6 @@
 # Integration validation
 
-Verified on 22 November 2026. Executable revision: `c416fa2342c8ce243af7348cdef097fdee5f4750`, merged against upstream `abd774b24d065d421022ef5251f596cb7ffa7d6c`. This report is a documentation-only follow-up to that revision. The final submitted head and its confirmation checks are recorded in the PR description.
+Verified on 22 November 2026. Executable revision: `37ef45e20e7c21c794c0ab11d6c592a3614dfd5e`, merged against upstream `abd774b24d065d421022ef5251f596cb7ffa7d6c`. This report is a documentation-only follow-up to that revision. The final submitted head and its confirmation checks are recorded in the PR description.
 
 ## Correction to earlier evidence
 
@@ -17,7 +17,7 @@ The Linux checks used a fresh Git clone and detached checkout, not a file copy: 
 ```sh
 git clone --no-hardlinks --no-checkout /path/to/source-checkout /tmp/canopy-health-review
 cd /tmp/canopy-health-review
-git -c core.autocrlf=false checkout --detach c416fa2342c8ce243af7348cdef097fdee5f4750
+git -c core.autocrlf=false checkout --detach 37ef45e20e7c21c794c0ab11d6c592a3614dfd5e
 # With the dependencies listed above installed in the active environment:
 python -m pip install --no-deps --no-build-isolation -e '.[physics,healthy-route]'
 python -m unittest discover -s model/tests -v
@@ -54,14 +54,14 @@ PY
 
 | Check | Observed result |
 | --- | --- |
-| Unmodified Python discovery command | 139 tests run in 22.836 s; 138 passed, one optional dependency skip, no failures/errors |
+| Unmodified Python discovery command | 141 tests run in 22.554 s; 140 passed, one optional dependency skip, no failures/errors |
 | Optional skip | `test_review_facilities.FacilitiesTests.test_only_explicit_markings_are_painted_and_clipped`: missing optional projection dependency; test was not changed or disabled |
-| Scientific-viewer unit tests | Five passed |
+| Scientific-viewer unit tests | Six passed |
 | Contract fixture | Valid, five layers and declared assets checked |
 | Repository and inventory | One London Scenario, 11 Assets, 11 Methods, schema mirrors and 77 English documents; regeneration produced no inventory diff |
-| Fresh Linux checkout example | Complete, retained `20261122T183841Z_c7d2fe9286_physics@1`; eight layers, no private inputs |
+| Fresh Linux checkout example | Complete, retained `20261122T185037Z_9e4a173639_physics@1`; eight layers, no private inputs |
 | Installed wheel | Hash checks and inference passed; two predictions `[16.0, 16.51461927428889]` from the installation target |
-| Fresh Windows checkout | `git -c core.autocrlf=true clone --no-hardlinks --single-branch . cache/windows-review-checkout`; example completed as `20261122T183828Z_a5658b65fe_physics@1` with LF packaged JSON |
+| Fresh Windows checkout | `git -c core.autocrlf=true clone --no-hardlinks --single-branch . cache/windows-audit-verified`; example completed as `20261122T185057Z_34c4152ead_physics@1` with LF packaged JSON |
 | Health browser behavior | Passed at 1440×1000 and 390×844, eight layers/seven charts, no page/request/HTTP errors |
 | Guide browser | 11 Methods and 11 Assets at desktop/mobile widths; no captured errors |
 | Diff and privacy review | Whitespace checks passed; no participant records, baseline, private histories, extra checkpoint state or local run artifacts added |
@@ -78,6 +78,14 @@ canopy --root . serve --port 8775
 node visualizer/tests/browser_guide.cjs http://127.0.0.1:8775/guide/
 git diff --check
 ```
+
+## Completeness and overlap audit
+
+The follow-up audit found and corrected three interface gaps: the retained compatibility UI imported a missing half-float decoder path, the private Method did not declare its trajectory output, and the private export's sample axis omitted some exact route vertices and breathing-update times. It now reuses the shared decoder, declares both output kinds and retains route turns, wait boundaries and breathing transitions. A synthetic route regression checks their actual exported values; no participant data is needed. Browser checks also import the retained module tree without activating its private planning interface.
+
+The launcher now honors `Storage.cache_root`. A runtime-snapshot regression verifies that weights, scaler and manifest are included byte-for-byte with matching hashes. The repeated audit found no unresolved relative imports in the retained health UI and no new files byte-identical to existing upstream files. The two health Methods have different responsibilities: supplied-route inference versus private personalized optimization; they share the same CVAE architecture and scientific Viewer, and introduce no new curated city or renderer.
+
+Compared with upstream `abd774b`, the canonical London configuration, publication reference, distribution manifest and public site have no diff. The extended replay remains an opt-in experiment. The changed-file allowlist contains no participant records, private baselines, local results or agent artifacts. The Windows clone initially hit a process-sandbox restriction; an unrestricted fresh clone and example passed without changing any tests.
 
 ## Review scope and unrun checks
 
