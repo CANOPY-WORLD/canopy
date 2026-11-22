@@ -29,6 +29,12 @@ The Method uses the standard `describe/validate/prepare/execute/export` lifecycl
 
 The original `wave_cvae` route optimizer remains available for authorized researchers with their private history and city bundle; it is not silently replaced by cold-start inference. Its export now includes trajectory, breathing and available environmental layers as well as the complete route artifact. Exact personalized replay still requires private inputs. The public runnable path above solves the repository-only handover without publishing them.
 
+## Future city presentation
+
+This PR delivers the local model handover, not a hosted city health widget or live sensing. A future city integration must use the shared Canopy renderer and surrounding buildings, a declarative Scenario preset, exact retained result Asset references and the selected-widget timeline. Opening that widget must only load recorded results. Keep the public widget/canvas/playback layout minimal and scientific inspection in the local Viewer or supported details host.
+
+That integration needs pinned current city geometry and environmental/traffic inputs, verified coordinate transforms and actual recorded time coverage. The private 16 November release and repeated 600-second fields are historical experimental inputs, not the latest measured city run. Record any resampling or extrapolation as a derived transformation with explicit provenance and limits. Engineering tests do not establish physiological accuracy; stronger claims require an authorized held-out evaluation, baseline comparison and reported errors.
+
 # Private personalized route workflow
 
 Version `healthy_route/wave_cvae@1.0.0` adapts the 16 November V2 planner. It includes bounded destination-guided wave search, recurrent CVAE costs, walking/running timing, candidate-arrival environmental sampling, solar thermal proxy and recorded-vehicle crossing gaps. Source identities are in `SOURCE.json`.

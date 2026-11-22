@@ -1,3 +1,5 @@
+import {createTrafficContextMask} from './traffic-context-mask.js';
+import {createNativeTraffic} from './native-traffic.js';
 import {createRoadCrossings} from './road-crossings.js';
 import {interpolateVehicle} from '../traffic-interpolation.mjs';
 // Ground and exact recorded SUMO frames in the scene's flattened ENU frame.
@@ -12,7 +14,7 @@ export async function createCorridorContext({scene, config, url, onChange}) {
   const group = new THREE.Group(); group.name='corridor_context'; scene.add(group);
   const panel=document.createElement('details'); panel.open=true;
   panel.style.cssText='padding:10px;border-top:1px solid #567;color:inherit;font:12px sans-serif';
-  panel.innerHTML=`<summary style="cursor:pointer;font-weight:bold">Ground & recorded traffic</summary><p>3D terrain · original 10 m heights</p><p id="corridor-terrain-status">Terrain aligned display. Physics views use the original flat simulation geometry. Bridge heights include source estimates; tunnel depths unavailable.</p><label>Ground <select id="corridor-ground"><option value="surface">Roads / green / water</option><option value="elevation">Terrain elevation colour</option></select></label><p id="corridor-ground-key">Grey roads · green vegetation · blue water</p>${config.roads_mesh?'<p><label><input id="corridor-roads-visible" type="checkbox" checked> Vector road surfaces</label></p><p><label><input id="corridor-lane-boundaries" type="checkbox"> Lane-width boundaries (schematic)</label></p><p id="corridor-roads-status">Loading vector roads…</p>':''}<label><input id="corridor-traffic-visible" type="checkbox" checked> SUMO AM peak · saved subset</label><p><button id="corridor-traffic-play">Play traffic</button> <select id="corridor-traffic-rate" aria-label="Traffic playback speed"><option value="0.5">0.5×</option><option value="1">1×</option><option value="2">2×</option><option value="4">4×</option><option value="8">8×</option><option value="10">10×</option></select> <span id="corridor-traffic-time">Loading…</span></p><input id="corridor-traffic-step" type="range" min="0" value="0" style="width:100%"><p>Independent traffic clock · 1 s saved frames with display interpolation · not observed traffic. Generic car / coach styling; original trajectories unchanged.</p><p>Wind speed magnitude · 16 m averaged grid · 100 sampled frames · float16. Original times retained (75–100 s gaps).</p>${config.temperature_hidden?'':'<p>Temperature: 32 m grid, sampled 8 m above ground.</p>'}`;
+  panel.innerHTML=`<summary style="cursor:pointer;font-weight:bold">Ground & recorded traffic</summary><p>3D terrain · original 10 m heights</p><p id="corridor-terrain-status">Terrain aligned display. Physics views use the original flat simulation geometry. Bridge heights include source estimates; tunnel depths unavailable.</p><label>Ground <select id="corridor-ground"><option value="surface">Roads / green / water</option><option value="elevation">Terrain elevation colour</option></select></label><p id="corridor-ground-key">Grey roads · green vegetation · blue water</p>${config.roads_mesh?'<p><label><input id="corridor-roads-visible" type="checkbox" checked> Vector road surfaces</label></p><p><label><input id="corridor-lane-boundaries" type="checkbox"> Lane-width boundaries (schematic)</label></p><p id="corridor-roads-status">Loading vector roads…</p>':''}<label><input id="corridor-traffic-visible" type="checkbox" checked> SUMO AM peak · saved subset</label><p><button id="corridor-traffic-play">Play traffic</button> <select id="corridor-traffic-rate" aria-label="Traffic playback speed"><option value="0.5">0.5×</option><option value="1">1×</option><option value="2">2×</option><option value="4">4×</option><option value="8">8×</option><option value="10">10×</option></select> <span id="corridor-traffic-time">Loading…</span></p><input id="corridor-traffic-step" type="range" min="0" value="0" style="width:100%"><p>Independent traffic clock · 1 s saved frames with smooth display interpolation · not observed traffic. Generic type-specific styling; original trajectories unchanged.</p><p>Wind speed magnitude · 16 m averaged grid · 100 sampled frames · float16. Original times retained (75–100 s gaps).</p>${config.temperature_hidden?'':'<p>Temperature: 32 m grid, sampled 8 m above ground.</p>'}`;
   const container=document.querySelector('#l-ground').closest('aside, .panel, #panel') || document.querySelector('#geometry-quality').parentElement.parentElement;
   container.querySelector('.quality-note').after(panel);
   const [landscape,roadAsset]=await Promise.all([createVectorLandscape({url,onChange}),new GLTFLoader().loadAsync(url(config.roads_mesh))]);
@@ -42,14 +44,37 @@ export async function createCorridorContext({scene, config, url, onChange}) {
     if(terrainMode!==mode){terrainMode=mode;crossings?.setTerrain(mode);ground.children.forEach(m=>{m.geometry=mode?m.userData.terrainGeometry:m.userData.flatGeometry});elevateInstances(landscape.vegetation,mode);elevateInstances(signals,mode);onChange();}
     const visible=groundToggle.checked,roadVisible=visible&&(roadsToggle?.checked??true),landVisible=visible&&surfaceToggle.checked,vegVisible=treesToggle.checked&&vegetationToggle.checked;if(ground.visible!==landVisible||roads&&roads.visible!==roadVisible||landscape.vegetation.visible!==vegVisible)onChange();ground.visible=landVisible;if(crossings)crossings.visible=roadVisible;if(roads)roads.visible=roadVisible&&!mode;elevatedRoads.visible=roadVisible&&mode;landscape.vegetation.visible=vegVisible;const furnitureVisible=mode&&visible&&detailControls.querySelector('input').checked;if(furniture.visible!==furnitureVisible)onChange();furniture.visible=furnitureVisible;}
   syncGround();
+  if(config.native_traffic){
+    const native=await createNativeTraffic({url:url(config.native_traffic),panel,onChange});
+    group.add(native.group);
+    panel.querySelector('#corridor-traffic-visible').closest('label').lastChild.textContent=' Recorded South Kensington SUMO demo';
+    for(const note of panel.querySelectorAll('p'))if(note.textContent.startsWith('Independent traffic clock'))note.textContent='Native 0.1 s recorded trajectories and synchronized signals. Synthetic low-load demonstration; not observed traffic or validated citywide capacity.';
+    let active=false;
+    const contextMask=createTrafficContextMask(native.coverage);
+    // Replace only overlapping road/fixture presentation, preserving buildings,
+    // land, vegetation and the rest of the city's road network.
+    for(const root of [roads,elevatedRoads,signals,crossings])if(root)contextMask.add(root,'outside');
+    for(const root of [native.roads,native.facilities.group])contextMask.add(root,'inside');
+    function setNativeActive(value){
+      if(active===value)return;
+      active=value;native.group.visible=value;
+      contextMask.setActive(value);syncGround();
+      onChange();
+    }
+    panel.querySelector('#corridor-terrain-status').textContent='Traffic shares the city buildings and landscape in their original flat datum. Recorded relative road and vehicle heights are preserved; terrain relief returns outside Traffic.';
+    panel.querySelector('#corridor-signals-status').textContent='Recorded SUMO signal states are synchronized to the traffic clock.';
+    return {group,ground,roads,elevatedRoads,terrain,signals,furniture,vegetation:landscape.vegetation,landscapeMeta:landscape.meta,cars:native.cars,meta:native.meta,frames:native.frames,
+      nativeTraffic:true,setNativeActive,get frame(){return native.frame},get position(){return native.position},get playing(){return native.playing},show:native.show,setPlaying:native.setPlaying,
+      tick(dt){syncGround();if(active)native.tick(dt);}};
+  }
   const [meta,response]=await Promise.all([fetch(url(config.traffic_meta)).then(r=>{if(!r.ok)throw Error('Traffic metadata unavailable');return r.json()}),fetch(url(config.traffic_binary))]);
   if(!response.ok)throw Error('Traffic frames unavailable');
   const buffer=await response.arrayBuffer(), bytes=new DataView(buffer), frames=[];let offset=0,maxCount=0;
   for(let f=0;f<meta.frames;f++){if(offset+4>buffer.byteLength)throw Error('Truncated traffic frame');const count=bytes.getUint32(offset,true);offset+=4;frames.push({offset,count});offset+=count*16;if(offset>buffer.byteLength)throw Error('Truncated traffic records');maxCount=Math.max(maxCount,count)}
   if(offset!==buffer.byteLength)throw Error('Unexpected traffic bytes');
-  const vehicles=createCorridorVehicles(maxCount),cars=vehicles.group;group.add(cars);
+  const vehicles=createCorridorVehicles(maxCount,meta),cars=vehicles.group;group.add(cars);
   let frame=-1,playing=false,elapsed=0;
-  const rate=panel.querySelector('#corridor-traffic-rate');rate.value=String(config.traffic_speed ?? 4);
+  const rate=panel.querySelector('#corridor-traffic-rate');rate.value=String(config.traffic_speed ?? 1);
   const slider=panel.querySelector('#corridor-traffic-step'), clock=panel.querySelector('#corridor-traffic-time'),button=panel.querySelector('#corridor-traffic-play');slider.max=frames.length-1;
   let lastElevationMode=null;
   const decoded=new Map();let lastPosition=-1;
@@ -72,10 +97,12 @@ export async function createCorridorContext({scene, config, url, onChange}) {
     const index=Math.floor(position),alpha=position-index;
     if(lastElevationMode!==terrain.enabled||index<frame||index>frame+1){decoded.clear();terrain.clearMatches();}
     lastElevationMode=terrain.enabled;lastPosition=position;frame=index;
-    const current=samples(index),next=alpha>0?samples(Math.min(index+1,frames.length-1)):current;
-    for(const key of decoded.keys())if(key<index||key>index+1)decoded.delete(key);
+    const previous=index>0?samples(index-1):null;
+    const current=samples(index),next=samples(Math.min(index+1,frames.length-1));
+    const following=index+2<frames.length?samples(index+2):null;
+    for(const key of decoded.keys())if(key<index-1||key>index+2)decoded.delete(key);
     vehicles.begin();
-    for(const [id,a] of current){const v=interpolateVehicle(a,next.get(id),alpha);vehicles.set(id,v.kind,v.x,v.north,v.heading,v.height,v.pitch);}
+    for(const [id,a] of current){const v=interpolateVehicle(a,next.get(id),alpha,previous?.get(id),following?.get(id));vehicles.set(id,v.kind,v.x,v.north,v.heading,v.height,v.pitch);}
     vehicles.finish();slider.value=position;const t=meta.t0+position*meta.dt;
     clock.textContent=`${String(Math.floor(t/3600)).padStart(2,'0')}:${String(Math.floor(t/60)%60).padStart(2,'0')}:${String(Math.floor(t)%60).padStart(2,'0')} · ${current.size} vehicles`;onChange();
   }

@@ -25,8 +25,8 @@ export function installColorbars({layers,repaint}) {
     if(!layers[key])continue;
     const legend=document.querySelector(`.legend[data-layer="${key}"]`);if(!legend)continue;
     const range=layers[key].range||[0,1000];
-    const initial={lo:range[0],hi:range[1],scale:key==='poll'?'log':'linear',palette:'viridis',threshold:key==='flood'?0.02:null};
-    const c=configs[key]={...initial,enabled:false,lut:lut('viridis')};
+    const initial={lo:range[0],hi:range[1],scale:key==='poll'?'log':'linear',palette:palettes[layers[key].palette]?layers[key].palette:'viridis',enabled:layers[key].quantitative===true,threshold:key==='flood'?0.02:null};
+    const c=configs[key]={...initial,lut:lut(initial.palette)};
     const details=document.createElement('details');details.className='field-colorbar';details.style.cssText='font:12px sans-serif;padding:6px 0;';
     details.innerHTML=`<summary>Adjust colour scale</summary><label><input data-cb="enabled" type="checkbox"> Quantitative colour map</label><div style="display:flex;gap:6px;margin:6px 0"><label>Min <input data-cb="lo" type="number" step="any" style="width:78px"></label><label>Max <input data-cb="hi" type="number" step="any" style="width:78px"></label></div><select data-cb="scale"><option value="linear">Linear</option><option value="log">Logarithmic (positive values)</option></select> <select data-cb="palette"><option value="viridis">Viridis</option><option value="blue">Blues</option><option value="warm">Warm</option></select>${key==='flood'?'<p>Hide water depth ≤ <input data-cb="threshold" type="number" min="0" step="any" style="width:65px"> m</p>':''}<p><button data-cb="fit">Fit current frame</button> <button data-cb="reset">Reset</button></p><div data-cb="bar" style="height:9px"></div><p data-cb="ticks"></p><p data-cb="status" aria-live="polite">Load this field to inspect its range.</p><small>Range stays fixed during playback. Out-of-range values use endpoint colours. Missing cells are transparent; log mode also hides nonpositive values. Layer opacity uses the slider above. Applies to heat maps; contour/shadow modes retain their own scales.</small>`;
     legend.after(details);c.element=details;c.legend=legend;
@@ -34,14 +34,14 @@ export function installColorbars({layers,repaint}) {
     details.addEventListener('toggle',()=>{if(details.open)repaint()});
     const q=k=>details.querySelector(`[data-cb="${k}"]`) || c.display?.querySelector(`[data-cb="${k}"]`);
     c.display=document.createElement('div');c.display.hidden=true;c.display.append(q('bar'),q('ticks'));details.before(c.display);
-    function sync(){for(const k of ['lo','hi','scale','palette','threshold'])if(q(k))q(k).value=c[k];q('enabled').checked=c.enabled;q('bar').style.background=`linear-gradient(to right,${palettes[c.palette].join(',')})`;q('ticks').textContent=`${fmt(c.lo)} → ${fmt(c.hi)} ${units[key]} · ${c.scale}`;}
+    function sync(){for(const k of ['lo','hi','scale','palette','threshold'])if(q(k))q(k).value=c[k];q('enabled').checked=c.enabled;q('bar').style.background=`linear-gradient(to right,${palettes[c.palette].join(',')})`;q('ticks').textContent=`${fmt(c.lo)} → ${fmt(c.hi)} ${layers[key].unit_label ?? units[key]} · ${c.scale}`;}
     function update(){const lo=Number(q('lo').value),hi=Number(q('hi').value),scale=q('scale').value,threshold=q('threshold')?Number(q('threshold').value):null;
       if(q('lo').value===''||q('hi').value===''||!Number.isFinite(lo)||!Number.isFinite(hi)||hi<=lo||(scale==='log'&&lo<=0)||(threshold!==null&&(!Number.isFinite(threshold)||threshold<0))){q('status').textContent='Invalid range: max must exceed min; logarithmic min must be positive.';return}
       Object.assign(c,{lo,hi,scale,threshold,palette:q('palette').value,enabled:true});c.lut=lut(c.palette);sync();repaint();}
     for(const k of ['lo','hi','scale','palette','threshold'])if(q(k))q(k).onchange=update;
     q('enabled').onchange=()=>{c.enabled=q('enabled').checked;repaint()};
     q('fit').onclick=()=>{const s=cache[key]?.stats;if(!s?.count){q('status').textContent='No valid loaded cells.';return}const low=c.scale==='log'?s.positive:s.min;if(!Number.isFinite(low)){q('status').textContent='No positive values for logarithmic scale.';return}c.lo=low;c.hi=s.max;if(c.hi<=c.lo)c.hi=c.lo+Math.max(Math.abs(c.lo)*.01,1e-6);c.enabled=true;sync();repaint()};
-    q('reset').onclick=()=>{Object.assign(c,initial,{enabled:false,lut:lut(initial.palette)});sync();repaint()};sync();
+    q('reset').onclick=()=>{Object.assign(c,initial,{lut:lut(initial.palette)});sync();repaint()};sync();
   }
   return {configs,resetLegends(){for(const c of Object.values(configs)){c.legend.style.display='';c.display.hidden=true;}},paint(key,array,plane,n,value,valid) {
     const c=configs[key];if(!c)return false;

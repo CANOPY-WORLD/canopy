@@ -1,4 +1,4 @@
-import json,tempfile,unittest
+import hashlib,json,tempfile,unittest
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -8,6 +8,12 @@ from canopy.models.registry import describe,implementation
 from common.contract import validate
 
 class PublicInferenceTests(unittest.TestCase):
+    def test_packaged_json_uses_checksum_stable_lf_bytes(self):
+        manifest=json.loads((ASSETS/'manifest.json').read_bytes())
+        for name in ('manifest.json','scaler.json'):
+            self.assertNotIn(b'\r', (ASSETS/name).read_bytes(), name)
+        for name,expected in manifest['files'].items():
+            self.assertEqual(hashlib.sha256((ASSETS/name).read_bytes()).hexdigest(),expected,name)
     def test_assets_contain_only_model_parameters(self):
         import torch
         self.assertEqual({p.name for p in ASSETS.iterdir()},{'state_cvae.pt','scaler.json','manifest.json'})
@@ -27,11 +33,13 @@ class PublicInferenceTests(unittest.TestCase):
         with self.assertRaises(InterruptedError):predict([[10,22,50,.03,0,1,0,1]],16,2,42,cancel)
     def test_bad_checksum_rejected(self):
         import shutil
-        with tempfile.TemporaryDirectory() as d:
-            copy=Path(d)/'assets';shutil.copytree(ASSETS,copy)
-            with (copy/'state_cvae.pt').open('ab') as f:f.write(b'x')
-            with patch('healthy_route.inference.ASSETS',copy):
-                with self.assertRaisesRegex(ValueError,'checksum'):load_model()
+        for name in ('state_cvae.pt','scaler.json'):
+            with self.subTest(asset=name),tempfile.TemporaryDirectory() as d:
+                copy=Path(d)/'assets';shutil.copytree(ASSETS,copy)
+                target=copy/name
+                target.write_bytes(target.read_bytes().replace(b'\n',b'\r\n') if name.endswith('.json') else target.read_bytes()+b'x')
+                with patch('healthy_route.inference.ASSETS',copy):
+                    with self.assertRaisesRegex(ValueError,'checksum'):load_model()
     def test_export_all_layers_and_solar_does_not_change_breathing(self):
         root=Path(__file__).resolve().parents[2]
         request=json.loads((root/'model/tests/fixtures/canopy/health_inference.json').read_text())

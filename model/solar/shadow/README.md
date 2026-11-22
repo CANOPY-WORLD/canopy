@@ -53,3 +53,5 @@ Use `canopy cancel demo solar RUN_ID` or Ctrl-C to request cancellation. Resume 
 Missing torch: install the physics extra. Missing asset: check the exact reference in the same Scenario. Missing heightfield: use a compatible geometry tool; GLB cannot automatically replace it. Nonconvergence: check boundaries, grid and timestep, then inspect diagnostics and event logs. Do not hide failure states to bypass errors.
 
 The asset provenance retains a source snapshot, input hashes and complete parameters. Device-dependent floating-point behavior may change results. Original imported-file checksums are in model/docs/framework/physics4d-import.json.
+
+For a streamed, full-local-day experiment with retained native inputs and a separate scientific export, see [Full-day solar experiment](full-day.md). This is distinct from the registered prescribed-direction Method above.

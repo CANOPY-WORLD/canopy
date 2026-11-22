@@ -247,7 +247,68 @@
           "selected": false
         }
       ]
+    },
+    {
+      "reference": "solar_day_20260621_100_20261122_physics@1",
+      "kind": "physics",
+      "run_id": "solar_day_20260621_100_20261122",
+      "simulation": "solar",
+      "scope": "verification",
+      "derived_from": [],
+      "manifest_sha256": "8fa604683decc995649e57d0ee0d768851b49648eb8d678ce6697ddb91105fec",
+      "bundle_bytes": 450042950,
+      "bundle_files": 217,
+      "sample_count": 100,
+      "time_range_s": [
+        0.0,
+        86400.0
+      ],
+      "layers": [
+        {
+          "id": "irradiance",
+          "kind": "scalar_field",
+          "format": "npy_frames",
+          "unit": "W/m2",
+          "selected": false
+        },
+        {
+          "id": "shadow",
+          "kind": "scalar_field",
+          "format": "npy_frames",
+          "unit": "1",
+          "selected": false
+        }
+      ]
+    },
+    {
+      "reference": "ihub_interior_v10_corridor_20261122_geometry@1",
+      "kind": "geometry",
+      "run_id": "ihub_interior_v10_corridor_20261122",
+      "simulation": "geometry",
+      "scope": "verification",
+      "derived_from": [],
+      "manifest_sha256": "402f192ac27b517f9e9a86416526a97207f6f4395a619b129f4685ee63e16159",
+      "bundle_bytes": 31104860,
+      "bundle_files": 10,
+      "sample_count": 0,
+      "time_range_s": null,
+      "layers": [
+        {
+          "id": "building",
+          "kind": "mesh",
+          "format": "glb",
+          "unit": null,
+          "selected": false
+        },
+        {
+          "id": "office",
+          "kind": "mesh",
+          "format": "glb",
+          "unit": null,
+          "selected": false
+        }
+      ]
     }
   ],
-  "unique_bundle_bytes": 778843918
+  "unique_bundle_bytes": 1259991728
 }

@@ -1,0 +1,30 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {signalStateAt,signalLamps} from '../site/viewer/traffic-signal-state.mjs';
+const signals={recorded_interval:[5,10],timeline:{s:[{time:0,state:'r'},{time:7,state:'G'}]}};
+test('signals hold actual state and switch at exact timestamps only',()=>{
+ assert.equal(signalStateAt(signals,'s',5),'r');assert.equal(signalStateAt(signals,'s',6.999),'r');assert.equal(signalStateAt(signals,'s',7),'G');
+ for(const t of [4.9,10,NaN])assert.equal(signalStateAt(signals,'s',t),null);
+ assert.equal(signalStateAt(signals,'absent',6),null);
+ assert.deepEqual(signalLamps('u'),{red:true,amber:true,green:false});
+ assert.deepEqual(signalLamps(undefined),{red:false,amber:false,green:false});
+});
+test('native fixtures update actual lamps and clear them outside recording',async()=>{
+ const three=new URL('../site/vendor/three/build/three.module.js',import.meta.url).href;
+ const states=new URL('../site/viewer/traffic-signal-state.mjs',import.meta.url).href;
+ const code=(await readFile(new URL('../site/viewer/3d/traffic-facilities.js',import.meta.url),'utf8')).replace("from 'three'",`from '${three}'`).replace("from '../traffic-signal-state.mjs'",`from '${states}'`);
+ const {createTrafficFacilities}=await import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));
+ const facilities=createTrafficFacilities({signals:{...signals,heads:[{tls:'s',lane:'a',link_index:0,position:[10,20,2],heading:0,lane_width:3}]},crossings:[]});
+ assert.equal(facilities.headCount,1);
+ const lamps=facilities.group.children[0].children.slice(2).map(l=>l.material);
+ facilities.setTime(6);assert.deepEqual(lamps.map(m=>m.emissiveIntensity),[2.5,0,0]);
+ facilities.setTime(7);assert.deepEqual(lamps.map(m=>m.emissiveIntensity),[0,0,2.5]);
+ facilities.setTime(10);assert.deepEqual(lamps.map(m=>m.emissiveIntensity),[0,0,0]);
+ facilities.dispose();
+ const head=(lane,index,y)=>({tls:'s',lane,link_index:index,position:[10,y,2],heading:0,lane_width:3});
+ const shared={recorded_interval:[5,10],timeline:{s:[{time:0,state:'rr'},{time:7,state:'GG'}]},heads:[head('edge_0',0,20),head('edge_1',1,23)]};
+ const grouped=createTrafficFacilities({signals:shared});assert.equal(grouped.headCount,1);
+ assert.equal(grouped.group.children[0].position.z,-25);grouped.dispose();
+ const separate=createTrafficFacilities({signals:{...shared,timeline:{s:[{time:0,state:'rG'},{time:7,state:'Gr'}]}}});assert.equal(separate.headCount,2);separate.dispose();
+});

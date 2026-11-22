@@ -1,0 +1,157 @@
+{
+  "status": "experimental_not_accepted_for_production",
+  "source": "Geofabrik Greater London 2026-11-20",
+  "network_sha256": "ccbc42e04aef68d143a5bd716249fea06eca47775dfded03a0fb9e49be07af97",
+  "signal_audit": {
+    "signal_controllers": 369,
+    "conflicting_protected_greens": [],
+    "scope": "Native foe matrix consistency only; does not certify geometric conflict detection or real signal plans"
+  },
+  "runs": [
+    {
+      "run": "run-clearance",
+      "diagnostic": {
+        "collisions": 0,
+        "teleports": 0,
+        "emergency_stops": 0,
+        "emergency_braking": 3,
+        "invalid_route_warnings": [],
+        "invalid_departure_warnings": [],
+        "requested_interval_complete": true,
+        "signal_detector_warnings": [],
+        "final_summary": {
+          "time": "2399.900",
+          "loaded": "1000",
+          "inserted": "1000",
+          "running": "0",
+          "waiting": "0",
+          "ended": "1000",
+          "arrived": "1000",
+          "collisions": "0",
+          "teleports": "0",
+          "halting": "0",
+          "stopped": "0",
+          "meanWaitingTime": "0.0000",
+          "meanTravelTime": "740.8316",
+          "meanSpeed": "-1.0000",
+          "meanSpeedRelative": "-1.0000",
+          "discarded": "0",
+          "duration": "0"
+        },
+        "diagnostic_pass": true,
+        "failed_checks": [],
+        "traffic_system_validated": false
+      },
+      "peak_concurrent": 919,
+      "mean_concurrent_300_900_s": 758.0373333333333,
+      "peak_insertion_backlog": 0,
+      "peak_halting": 203,
+      "arrivals": 1000,
+      "last_arrival_s": 2206.6,
+      "mean_trip_duration_s": 740.8316,
+      "mean_trip_waiting_s": 124.48360000000001,
+      "mean_route_length_m": 5363.6533125,
+      "scope": "Synthetic demo diagnostics; no claim of calibrated real-world capacity"
+    },
+    {
+      "run": "run-seed43",
+      "diagnostic": {
+        "collisions": 0,
+        "teleports": 0,
+        "emergency_stops": 0,
+        "emergency_braking": 3,
+        "invalid_route_warnings": [],
+        "invalid_departure_warnings": [],
+        "requested_interval_complete": true,
+        "signal_detector_warnings": [],
+        "final_summary": {
+          "time": "3599.900",
+          "loaded": "1000",
+          "inserted": "1000",
+          "running": "0",
+          "waiting": "0",
+          "ended": "1000",
+          "arrived": "1000",
+          "collisions": "0",
+          "teleports": "0",
+          "halting": "0",
+          "stopped": "0",
+          "meanWaitingTime": "0.1124",
+          "meanTravelTime": "726.6762",
+          "meanSpeed": "-1.0000",
+          "meanSpeedRelative": "-1.0000",
+          "discarded": "0",
+          "duration": "0"
+        },
+        "diagnostic_pass": true,
+        "failed_checks": [],
+        "traffic_system_validated": false
+      },
+      "peak_concurrent": 907,
+      "mean_concurrent_300_900_s": 752.5638333333334,
+      "peak_insertion_backlog": 1,
+      "peak_halting": 185,
+      "arrivals": 1000,
+      "last_arrival_s": 2340.6,
+      "mean_trip_duration_s": 726.6762,
+      "mean_trip_waiting_s": 122.9807,
+      "mean_route_length_m": 5243.2661442,
+      "scope": "Synthetic demo diagnostics; no claim of calibrated real-world capacity"
+    },
+    {
+      "run": "run-3000",
+      "diagnostic": {
+        "collisions": 4,
+        "teleports": 0,
+        "emergency_stops": 0,
+        "emergency_braking": 11,
+        "invalid_route_warnings": [],
+        "invalid_departure_warnings": [],
+        "requested_interval_complete": true,
+        "signal_detector_warnings": [],
+        "final_summary": {
+          "time": "3599.900",
+          "loaded": "3000",
+          "inserted": "3000",
+          "running": "0",
+          "waiting": "0",
+          "ended": "3000",
+          "arrived": "3000",
+          "collisions": "4",
+          "teleports": "0",
+          "halting": "0",
+          "stopped": "0",
+          "meanWaitingTime": "0.1243",
+          "meanTravelTime": "860.5889",
+          "meanSpeed": "-1.0000",
+          "meanSpeedRelative": "-1.0000",
+          "discarded": "0",
+          "duration": "0"
+        },
+        "diagnostic_pass": false,
+        "failed_checks": [
+          {
+            "check": "collisions",
+            "count": 4
+          }
+        ],
+        "traffic_system_validated": false
+      },
+      "peak_concurrent": 2760,
+      "mean_concurrent_300_900_s": 2314.605,
+      "peak_insertion_backlog": 2,
+      "peak_halting": 689,
+      "arrivals": 3000,
+      "last_arrival_s": 3311.3,
+      "mean_trip_duration_s": 860.5889333333332,
+      "mean_trip_waiting_s": 203.32639999999998,
+      "mean_route_length_m": 5359.350977233334,
+      "scope": "Synthetic demo diagnostics; no claim of calibrated real-world capacity"
+    }
+  ],
+  "remaining_issues": [
+    "Four junction collisions at 3000 departures despite completion of all trips",
+    "Bulk short-link consolidation crashes SUMO 1.28 netconvert (native and plain XML routes)",
+    "No claim that the whole traffic system is validated; low-load video is diagnostic only"
+  ]
+}

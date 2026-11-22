@@ -93,6 +93,12 @@ The wheel contains shared Python implementations, Method specifications and sche
 
 See the [verification record](docs/framework/verification.md) for checks and their limits.
 
+For explicit retained-input SUMO collision experiments, see the [diagnostic guide](traffic/diagnostic/README.md). This tool is experimental and is not a registered Method.
+
+The [native traffic demo guide](traffic/demo/README.md) documents reproducible OSM/SUMO preparation, retained inputs and bounded acceptance checks.
+
+The [transient traffic pollution Method](pollution/traffic_transient/README.md) couples explicit SUMO PMx mass emissions to a pressure-projected frozen wind volume. It exports a conditional concentration increment, not calibrated total PM2.5.
+
 ## Healthy-route research
 
 The [health model](healthy_route/README.md) includes weights and a runnable, participant-free inference example with standard local-viewer layers. Personalized route optimization remains a separate private-input workflow; its extended London replay is opt-in.

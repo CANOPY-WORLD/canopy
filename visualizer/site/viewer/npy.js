@@ -1,5 +1,6 @@
 /* Minimal .npy reader over HTTP Range requests (ES module), used by the 3-D page. Paths are relative to the scene's
    physics/ folder (DATA, set by main.js from scene.json before any read). */
+import { decodeQuantized } from './quantized-field.mjs';
 import { readCompressedRange } from './compressed-assets.js';
 export let DATA = '';
 let transport = null;
@@ -86,14 +87,7 @@ export class Npy {
   async _fetch(m, start, end) {
     if (transport?.[this.path]) {
       const buf = await readCompressedRange(DATA, transport[this.path], start, end);
-      if (m.quantization) {
-        const codes = new Uint8Array(buf);
-        const out = new Float32Array(codes.length);
-        const { scale, offset } = m.quantization;
-        for (let index = 0; index < codes.length; index++)
-          out[index] = codes[index] === 255 ? NaN : offset + codes[index] * scale;
-        return out;
-      }
+      if (m.quantization) return decodeQuantized(buf, m.quantization);
       if (m.itemsize === 2) return new Uint16Array(buf);
       if (m.itemsize === 1) return new Uint8Array(buf);
       return new Float32Array(buf);

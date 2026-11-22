@@ -12,6 +12,8 @@ The public presentation uses a minimal widget player: the original Overview / Tr
 
 Both the homepage download flow and the direct Viewer show a simple loading page: the Canopy wordmark, the selected Scenario title and short description, and a progress bar. Read the introduction from the public catalog. Show measured geometry-transfer progress when available and an indeterminate bar during preparation. The page uses no preview renderer and disappears when initialization completes.
 
+The London compatibility presentation also offers **London Tube** immediately after **I-HUB Interior**. It embeds the explicitly declared [external Tube preview](https://srst-by722.github.io/london-tube-walk-preview/) on selection and unloads it on exit. The city render loop and replay clocks pause while the preview is selected. The preview uses a Canopy-styled play/pause button and progress slider bound to its original timetable; network, buildings, speed and timetable options remain under Show controls. The last Canopy Overview frame stays visible while loading, then crossfades to the ready network view over 0.8 seconds (immediate with reduced motion). The preview owns its controls and timetable; Canopy does not synchronize its clock, import its data as a scientific Asset, or include its remote files in offline downloads. Reopening starts a fresh preview. The Tube opening shows the existing 8 km corridor network for three seconds, then approaches the South Kensington eastbound platform over seven seconds. It is not a map of the entire London Underground. Camera motion stops on pointer, wheel or keyboard input; reduced-motion users remain at the network overview. The host fetches the source HTML with CORS and adds a presentation-only script inside an opaque-origin sandbox, preserving the source asset URLs and preventing source scripts from accessing Canopy storage or DOM. The source must retain its public `pilot` camera API for this opening to work. An external link remains available if embedding fails. The external site retains its own presentation layout and illustrative-station/source notices.
+
 ## Internal structure
 
 ```mermaid
@@ -72,3 +74,63 @@ Optional zebra crossing data declares OSM way identities, ENU paths and attribut
 Ordinary roads use terrain DEM elevations for display, with lane spans resampled at most every 5 m and a 2.5 cm depth offset. Crossing paint and vehicle placement use the same terrain matching policy. Road display seams connect ordinary lane edges and junction boundaries to the terrain DEM. Explicit bridge, positive-level, tunnel and covered edges and their connected junctions are excluded. These seams are presentation geometry, not surveyed embankments or inferred bridge classifications; original lane elevations and recorded vehicle samples remain unchanged.
 
 Crossing stripes retain continuous spacing across source polyline vertices and sit 15 mm above elevated lane surfaces. Their dimensions remain illustrative. Traffic signal lenses are unlit because this recording contains no signal phases; displayed vehicles replay the saved SUMO subset and do not respond to these static signal models.
+
+Traffic replay uses monotone cubic display interpolation over adjacent recorded samples to smooth changes in speed and heading. It passes through every saved sample, bounds each coordinate to its interval endpoints, follows the shortest heading turn, and never extrapolates missing vehicles. This improves replay presentation; it does not rerun SUMO or establish the true path between one-second samples. Rendering performance remains device-dependent.
+
+Vehicle bodies distinguish cars, taxis, buses, light/heavy goods vehicles and motorcycles. Replay metadata may supply `vehicle_types` dimensions in metres and `position_reference: "front_bumper"`; these take precedence over illustrative fallback dimensions. Legacy replays without a position reference retain their existing center placement. SUMO front-bumper positions are shifted to body centers only for rendering. No simulation coordinates are rewritten.
+
+The experimental offline native-SUMO review uses
+`site/viewer/3d/traffic-facilities.js` to display native stop lines, recorded
+signal lamps and explicitly mapped OSM crossing markings. Its clock holds
+actual switch states inside the recorded interval; missing/out-of-range states
+stay dark. Zebra stripes and dotted/line boundaries retain distinct mapped
+styles; fixture dimensions are illustrative. This presentation adapter is not
+a registered Asset widget and does not replace the published London dataset.
+See the [demo run guide](../model/traffic/demo/README.md) for source and export
+requirements.
+
+Native demo review groups lamps by incoming edge and identical recorded state
+history, placing a representative fixture outside the leftmost lane. Different
+state histories stay separate; this is schematic placement, not surveyed poles.
+`native-road-surface.js` joins curved lane strip vertices and matches junction
+boundary heights to explicitly connected lane ends. Markings follow the displayed
+surface. This presentation correction preserves native samples and does not
+repair the underlying SUMO elevation assumptions or certify network geometry.
+
+The corridor Traffic focus opens at Exhibition Road near its Thurloe Place
+junction in South Kensington (ENU east 1,876 m, north -1,248 m, relative to the
+Scenario origin). The fixed camera stays there until the user navigates away.
+This camera choice does not alter demand, recorded samples or vehicle routing.
+
+### Native traffic and daylight playback
+
+The Traffic widget selects the recorded South Kensington demonstration used in the review video: 410 native 0.1 s samples, native road heights, front-bumper geometry and synchronized recorded signals. It uses the shared renderer, camera and timeline. Surrounding buildings, mapped vegetation and the wider road network remain visible. Traffic uses the city's original flat datum because this recording contains relative OSM road heights, not DEM elevations; terrain relief returns on leaving Traffic. Within the recorded 350 m region, native roads and synchronized fixtures replace the older road and static-signal presentation using a world-space mask. The mask does not alter source geometry or trajectory samples. Overview remains the default. This is a local synthetic low-load demonstration, not an accepted full-city traffic model or capacity estimate. The public presentation adapter explicitly supports `experimental-offline-sumo-review-1`; it does not register this JSON as a V2 scientific Asset. The Traffic camera is raised to keep the junction readable between the surrounding facades. Native asphalt uses a depth bias against coplanar mapped paths, without changing recorded heights.
+
+Run `node visualizer/tests/browser_traffic_city.cjs <built-site-base-url>` with `PUPPETEER_MODULE` and `CHROME_PATH` configured for real-data checks of city visibility, replay controls, terrain restoration, daylight bounds and tablet layout. Screenshots and the result report go to `cache/traffic-city/` (override with `CANOPY_QA_OUTPUT`).
+
+Sunlight defaults to recorded samples with solar altitude above the horizon (frames 21–88 for this day). Original indices, times, all 100 payloads and quantitative values are unchanged. `solar_day=full` explicitly restores the full-day playback bounds. Both irradiance and shadow share those bounds; restarting playback returns to the first daylight sample.
+
+The optional `scene.interior` preset adds **I-HUB Interior** immediately after
+**White City campus** in the shared city viewer. It loads aligned `building` and
+`office` GLB resources (optionally lossless gzip), preserves the full building shell,
+and supports a timed exterior-to-interior camera journey. The optional
+`journey.keyframes` uses presentation seconds and aligned camera positions and
+targets; `camera.target` and `camera.position` remain the static fallback. Only `replace_asset`
+is hidden while inspecting the interior; other city geometry remains visible.
+The interior uses the original flat city datum, restoring terrain on exit.
+The current journey approaches the office for 4 seconds and then explores the
+common room until 30 seconds. Pause, seek and replay use the bottom controls;
+dragging pauses the journey for manual inspection. Reduced motion opens at the
+final indoor pose without automatic movement.
+This retained v10 office is a concept layout, not a measured as-built interior;
+its recorded geographic fit has a 1.58 m median residual. Payloads require a
+separately approved Scenario snapshot; the code alone does not publish them.
+
+Selecting **UAVs** frames the entire 8 km × 8 km domain from above using the current
+viewport aspect ratio. UAV layers are hidden outside that widget. The network
+uses 2.5 px lines and the selected route uses 5 px lines; recorded route coordinates
+remain unchanged.
+The published interior preset is recorded in
+[`scenario/imperial_corridor_8km/presentation/ihub-interior.json`](../scenario/imperial_corridor_8km/presentation/ihub-interior.json).
+The `london-ihub-interior-20261122` snapshot includes this object as `scene.interior`
+and declares both losslessly compressed GLBs in its checksum inventory.

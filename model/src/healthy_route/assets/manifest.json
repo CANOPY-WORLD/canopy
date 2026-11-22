@@ -8,7 +8,7 @@
   },
   "files": {
     "state_cvae.pt": "1cdbc16e611e2c5ff52d23b8b4615cb6b08547fd08faef2fba1ee0e2476793f6",
-    "scaler.json": "f39996f76cc9a9a912d26c236c938a045fb8f4975b97dcd9ac8596b29402d2d6"
+    "scaler.json": "c109bb0cc70c9db1028f9bcf8c5097d14770fb11fb38cd65b00ee7a4281cb289"
   },
   "contents": "Model tensors and fitted normalization only; no observations, participant baseline, recurrent state, timestamps, optimizer state or training logs.",
   "limitations": "Research checkpoint; training-derived parameters are not a differential-privacy guarantee. No patient-specific initialization or clinical calibration is supplied."

@@ -160,3 +160,9 @@ The independently hosted London snapshot has 1,477 payloads and 558,073,283 byte
 The main working tree and website no longer include London's bulk files. Earlier commits retain their binary history; this migration does not rewrite history or immediately shrink a full Git clone. Use a shallow clone when only current source is needed.
 
 The detailed public presentation is static. The unified V2 scientific Viewer still uses its local Python API and retained research Assets; no solver or API is deployed by this change. See [GitHub project sites](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages), [Pages limits](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits) and [large-file guidance](https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-large-files-on-github), checked 18 November 2026.
+
+## Reusing immutable payloads
+
+Publication manifest 1.1 optionally adds `source_snapshot` to a file record. The field is a bounded snapshot identifier in the same data repository. Its `path`, `viewer_path`, `bytes` and `sha256` must match an original, non-reused record in that earlier snapshot; the data checker rejects transitive references. The new snapshot stores only changed payloads. Its manifest and catalog byte totals still describe the complete selected download, while the data site's capacity check counts physically stored payloads once.
+
+The shared builder accepts 1.0 and 1.1, resolves reused files to their exact older snapshot directories, and declares those directories in the resource router's allowed roots. It does not broaden access to an entire host. The locked new manifest pins every reused file hash. Remote payload verification still hashes every selected resource. Never remove an earlier snapshot that a current or historical manifest references.

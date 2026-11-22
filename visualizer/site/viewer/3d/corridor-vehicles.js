@@ -1,32 +1,49 @@
 import * as THREE from 'three';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
+import {vehicleDimensions,vehicleCenter} from '../vehicle-types.mjs';
 
-// Display-only generic bodies; vehicle positions, headings and timestamps remain
-// the saved SUMO records. Colours and vehicle styling are illustrative.
-export function createCorridorVehicles(capacity) {
-  const group=new THREE.Group();group.name='Detailed recorded traffic';group.count=0;
-  const material=(color)=>new THREE.MeshStandardMaterial({color,roughness:.65});
-  const paint=material(0xffffff),glass=material('#25404b'),rubber=material('#25282b'),white=new THREE.MeshBasicMaterial({color:'#fff1c9'}),red=new THREE.MeshBasicMaterial({color:'#ae201b'});
-  function model(bus){
-    const buckets=new Map(),add=(g,m)=>{if(!buckets.has(m))buckets.set(m,[]);buckets.get(m).push(g)},box=(x,y,z,w,h,d,m)=>add(new THREE.BoxGeometry(w,h,d).translate(x,y,z),m);
-    const length=bus?11.5:4.5,width=bus?2.5:1.85;
-    box(0,bus?1.25:.66,0,length,bus?1.8:.72,width,paint);
-    // Inset glazing, roof cap, bonnet and boot produce a readable silhouette.
-    box(bus?0:-.18,bus?2.2:1.16,0,bus?10.9:2.35,bus?1.05:.58,width-.12,glass);
-    box(bus?0:-.24,bus?2.79:1.49,0,bus?11.3:2.25,.12,width-.04,paint);
-    if(bus){for(let x=-4.8;x<5.4;x+=1.15)box(x,2.2,0,.075,1.08,width-.08,paint)}
-    else {for(const x of [-1.3,-.12,.98])box(x,1.16,0,.10,.6,width-.08,paint)}
-    const radius=bus?.48:.32,axle=bus?3.65:1.42;
-    for(const x of [-axle,axle])for(const z of [-width/2,width/2]){
-      add(new THREE.CylinderGeometry(radius,radius,.20,10).rotateX(Math.PI/2).translate(x,radius,z),rubber);
-      add(new THREE.CylinderGeometry(radius*.48,radius*.48,.215,8).rotateX(Math.PI/2).translate(x,radius,z),glass);
-    }
-    for(const z of [-width*.33,width*.33]){box(length/2+.012,bus?.8:.66,z,.035,.16,.30,white);box(-length/2-.012,bus?.8:.66,z,.035,.17,.26,red)}
-    const meshes=[];
-    for(const [m,gs] of buckets){const g=mergeGeometries(gs,false);gs.forEach(g=>g.dispose());const mesh=new THREE.InstancedMesh(g,m,capacity);mesh.count=0;mesh.frustumCulled=false;mesh.name=bus?'Coach detail':'Car detail';group.add(mesh);meshes.push(mesh)}
-    return {meshes,count:0};
+// Generic type-specific bodies. Recorded kinematics and explicit dimensions are authoritative.
+export function createCorridorVehicles(capacity,metadata={}){
+ const group=new THREE.Group();group.name='Detailed recorded traffic';
+ const paint=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.65});
+ const glass=new THREE.MeshStandardMaterial({color:'#25404b',roughness:.65});
+ const rubber=new THREE.MeshStandardMaterial({color:'#25282b',roughness:.8});
+ const headlights=new THREE.MeshBasicMaterial({color:'#fff1c9'}),taillights=new THREE.MeshBasicMaterial({color:'#ae201b'});
+ const batches=new Map(),dummy=new THREE.Object3D(),color=new THREE.Color();
+ const palette=[0xd45139,0xe5e8e5,0x647c8c,0x363d47,0x8c9d91,0xc6b89a];
+ function model(kind){
+  const dimensions=vehicleDimensions(kind,metadata.vehicle_types),{length:L,width:W,height:H}=dimensions;
+  const buckets=new Map(),add=(g,m)=>{if(!buckets.has(m))buckets.set(m,[]);buckets.get(m).push(g)};
+  const box=(x,y,z,w,h,d,m)=>add(new THREE.BoxGeometry(w,h,d).translate(x,y,z),m);
+  const radius=Math.min(H*.21,kind==='motorcycle'?.32:.48),axle=L*.32;
+  if(kind==='motorcycle'){
+   box(0,H*.43,0,L*.5,H*.28,W*.65,paint);box(-L*.08,H*.62,0,L*.35,H*.1,W*.5,rubber);
+   box(L*.24,H*.9,0,L*.08,H*.2,W,glass);
+   for(const x of [-axle,axle])add(new THREE.CylinderGeometry(radius,radius,W*.22,12).rotateX(Math.PI/2).translate(x,radius,0),rubber);
+  }else{
+   box(0,radius+.12,0,L,.24,W,paint);
+   if(kind==='bus'){
+    box(0,H*.43,0,L,H*.5,W,paint);box(0,H*.79,0,L*.94,H*.35,W*.97,glass);box(0,H*.98,0,L,H*.04,W,paint);
+    for(let x=-L*.42;x<L*.45;x+=1.1)box(x,H*.79,0,.08,H*.36,W,paint);
+   }else if(kind==='hgv'){
+    box(-L*.13,H*.57,0,L*.7,H*.86,W,paint);box(L*.37,H*.43,0,L*.26,H*.6,W,paint);box(L*.4,H*.7,0,L*.19,H*.23,W*.97,glass);
+   }else if(kind==='lgv'){
+    box(-L*.13,H*.56,0,L*.72,H*.88,W,paint);box(L*.34,H*.4,0,L*.3,H*.55,W,paint);box(L*.29,H*.72,0,L*.25,H*.3,W*.95,glass);
+   }else{
+    box(0,H*.4,0,L,H*.4,W,paint);box(-L*.04,H*.76,0,L*.52,H*.44,W*.94,glass);box(-L*.04,H*.99,0,L*.5,H*.02,W,paint);
+   }
+   for(const x of [-axle,axle])for(const z of [-W/2+.1,W/2-.1])add(new THREE.CylinderGeometry(radius,radius,.2,12).rotateX(Math.PI/2).translate(x,radius,z),rubber);
+   for(const z of [-W*.32,W*.32]){box(L/2-.02,H*.4,z,.04,.12,W*.13,headlights);box(-L/2+.02,H*.4,z,.04,.12,W*.13,taillights)}
   }
-  const car=model(false),bus=model(true),dummy=new THREE.Object3D(),color=new THREE.Color();
-  const palette=[0xd45139,0xe5e8e5,0x647c8c,0x363d47,0x8c9d91,0xc6b89a];
-  return {group,begin(){car.count=bus.count=0},set(id,kind,x,north,heading,height=0,pitch=0){const batch=kind==='bus'?bus:car,i=batch.count++;dummy.position.set(x,height,-north);dummy.rotation.set(0,heading,pitch,'YXZ');dummy.updateMatrix();for(const mesh of batch.meshes){mesh.setMatrixAt(i,dummy.matrix);if(mesh.material===paint)mesh.setColorAt(i,color.set(kind==='bus'?0xe6b13c:palette[id%palette.length]))}},finish(){for(const b of [car,bus])for(const m of b.meshes){m.count=b.count;m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true}group.count=car.count+bus.count;group.userData={cars:car.count,buses:bus.count,styling:'Generic illustrative car/coach bodies; original trajectories unchanged'}}};
+  const meshes=[];
+  for(const [material,parts] of buckets){const g=mergeGeometries(parts,false);parts.forEach(p=>p.dispose());const mesh=new THREE.InstancedMesh(g,material,capacity);mesh.count=0;mesh.frustumCulled=false;mesh.name=`${kind} body`;group.add(mesh);meshes.push(mesh)}
+  const batch={meshes,dimensions,count:0};batches.set(kind,batch);return batch;
+ }
+ return {group,begin(){for(const b of batches.values())b.count=0},set(id,kind,x,north,heading,height=0,pitch=0){
+  const b=batches.get(kind)??model(kind),i=b.count++;
+  const reference=metadata.position_reference??'center',center=vehicleCenter(x,north,heading,b.dimensions.length,reference,pitch);
+  const centerHeight=reference==='front_bumper'?height-Math.sin(pitch)*b.dimensions.length/2:height;
+  dummy.position.set(center[0],centerHeight,-center[1]);dummy.rotation.set(0,heading,pitch,'YXZ');dummy.updateMatrix();
+  for(const mesh of b.meshes){mesh.setMatrixAt(i,dummy.matrix);if(mesh.material===paint)mesh.setColorAt(i,color.set(kind==='bus'?0xe6b13c:palette[id%palette.length]))}
+ },finish(){let count=0;const counts={};for(const [kind,b] of batches){counts[kind]=b.count;count+=b.count;for(const m of b.meshes){m.count=b.count;m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true}}group.count=count;group.userData={counts,styling:'Generic type-specific bodies; explicit run dimensions and position reference respected'}}};
 }

@@ -10,6 +10,7 @@ export function createDetailTiles({scene,camera,coarse,indexUrl,priorityCentre=n
  let completeResolve,completeReject,indexLoaded=false;
  const complete=new Promise((resolve,reject)=>{completeResolve=resolve;completeReject=reject;});
  complete.catch(()=>{}); // Startup observes failures after the index is ready.
+ const sourceVisibility=new Map();
  const texturePool=new Map(),materialPool=new Map(),records=new Map();
  let tiles=[],enabled=true,active=0,last=-Infinity,anchor=priorityCentre,routePins=new Set(),pinUntil=0;
  let occupancy,extent,grid;const patched=new Set();
@@ -56,6 +57,7 @@ export function createDetailTiles({scene,camera,coarse,indexUrl,priorityCentre=n
     if(token.cancelled||!tile._wanted)break;
     const url=new URL(file,indexUrl).href,gltf=await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(url),dispose=share(gltf,url);
     if(token.cancelled||!tile._wanted){dispose();break;}
+    gltf.scene.userData.sourceAsset=file;gltf.scene.visible=sourceVisibility.get(file)??true;
     r.disposers.push(dispose);root.add(gltf.scene);drapeBuildings(gltf.scene);group.updateWorldMatrix(true,false);root.updateWorldMatrix(true,false);gltf.scene.updateWorldMatrix(true,true);gltf.scene.traverse(o=>{o.matrixAutoUpdate=false;o.matrixWorldAutoUpdate=false;});
    }
    if(!token.cancelled&&tile._wanted){r.complete=true;root.visible=true;}else if(records.get(tile.id)===r)evict(r);
@@ -75,5 +77,5 @@ export function createDetailTiles({scene,camera,coarse,indexUrl,priorityCentre=n
   occupancy=new THREE.DataTexture(new Uint8Array(grid[0]*grid[1]),...grid,THREE.RedFormat);occupancy.minFilter=occupancy.magFilter=THREE.NearestFilter;occupancy.generateMipmaps=false;
   for(const t of tiles)t._cell=xs.indexOf(t.centre_xz[0])+grid[0]*zs.indexOf(t.centre_xz[1]);indexLoaded=true;update();return tiles.length;
  })().catch(e=>{progress.errors.push(String(e));completeReject(e);console.error(e);return 0;});
- return {ready,complete,group,progress,stats,update,setEnabled(on){enabled=on;last=-Infinity;update();refresh();},get loaded(){return [...records.values()].filter(r=>r.complete).map(r=>r.tile.id);},hasPoints(points){const needed=new Set();for(const p of points){const t=tiles.find(t=>Math.abs(p[0]-t.centre_xz[0])<=t.half_m&&Math.abs(p[2]-t.centre_xz[1])<=t.half_m);if(!t)return false;needed.add(t.id);}routePins=needed;pinUntil=performance.now()+2000;return [...needed].every(id=>records.get(id)?.complete);}};
+ return {ready,complete,group,progress,stats,update,setSourceVisible(file,on){if(!file||sourceVisibility.get(file)===on)return;sourceVisibility.set(file,on);for(const r of records.values())for(const child of r.root.children)if(child.userData.sourceAsset===file)child.visible=on;onChange();},setEnabled(on){enabled=on;last=-Infinity;update();refresh();},get loaded(){return [...records.values()].filter(r=>r.complete).map(r=>r.tile.id);},hasPoints(points){const needed=new Set();for(const p of points){const t=tiles.find(t=>Math.abs(p[0]-t.centre_xz[0])<=t.half_m&&Math.abs(p[2]-t.centre_xz[1])<=t.half_m);if(!t)return false;needed.add(t.id);}routePins=needed;pinUntil=performance.now()+2000;return [...needed].every(id=>records.get(id)?.complete);}};
 }
