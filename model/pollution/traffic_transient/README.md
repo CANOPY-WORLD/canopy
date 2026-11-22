@@ -58,3 +58,19 @@ python model/tools/check_repository.py
 ```
 
 Tests cover mass conservation, solid-wall isolation, positivity timestep rejection and pressure projection. Full-city completion and calibrated accuracy must be reported separately. Publication is a separate authorized operation.
+
+### Main city presentation
+
+`model/tools/export_pollution_snapshot.py RUN_PAYLOAD SOURCE_SNAPSHOT OUTPUT_SNAPSHOT`
+creates a presentation-only delta for the existing Pollution widget. The viewer shares the
+city renderer, buildings and bottom playback controls. Explicit layer dimensions and
+southwest offsets preserve the exact 8 km result inside the 8.192 km context. All recorded
+samples are retained with an independent playback clock. Float16 gzip transport records
+its measured error against the native float32 slices; it does not modify the scientific
+result. The invalid mask stays exact, and units remain SUMO exhaust PMx increment in
+µg/m³. The 0–8 m slice is a voxel mean, not resolved breathing-height exposure.
+
+The exporter preserves source hashes, timestamps, assumptions and solver diagnostics.
+The original scientific volume and wind faces are not part of the website download.
+Publication uses a separate Scenario data PR followed by a verified Canopy reference
+update; generating a snapshot does not publish it.
