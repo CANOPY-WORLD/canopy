@@ -7,6 +7,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import xml.etree.ElementTree as ET
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 from traffic.diagnostic_validation import assess_run
@@ -24,6 +25,7 @@ def main():
     p.add_argument('--begin',type=float,required=True)
     p.add_argument('--end',type=float,required=True)
     p.add_argument('--seed',type=int,default=42)
+    p.add_argument('--record-signals',action='store_true',help='Record actual native TLS state changes for synchronized review')
     p.add_argument('--lane-mode',choices=['sublane','continuous'],default='sublane',help='Sublane lateral freedom or lane-based 2 s continuous lane changes')
     p.add_argument('--guard-junctions',type=Path,help='JSON array of explicitly guarded junction IDs; omitted means native SUMO')
     a=p.parse_args()
@@ -46,6 +48,13 @@ def main():
       '--summary-output',str(output/'summary.xml'),'--collision-output',str(output/'collisions.xml'),
       '--tripinfo-output',str(output/'trips.xml'),'--no-step-log','--duration-log.statistics','true','--precision','4']
     command += ['--lateral-resolution','.4'] if a.lane_mode=='sublane' else ['--lanechange.duration','2']
+    if a.record_signals:
+        additional=output/'record-signals.add.xml'
+        root=ET.Element('additional')
+        ET.SubElement(root,'timedEvent',type='SaveTLSSwitchStates',dest=str(output/'signals.xml'))
+        ET.ElementTree(root).write(additional,encoding='utf-8',xml_declaration=True)
+        command += ['--additional-files',str(additional)]
+        inputs.append({'file':additional.name,'sha256':digest(additional)})
     controller=Path(__file__).resolve().parents[1]/'src/traffic/junction_reservations.py'
     config={'command':command,'guarded_junctions':guards,'inputs':inputs,
       'runner_sha256':digest(Path(__file__)),

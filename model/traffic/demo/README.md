@@ -47,6 +47,8 @@ accepted native bundles into private retained storage before removing cache.
 ```sh
 python3 -m venv cache/sumo-env
 cache/sumo-env/bin/pip install eclipse-sumo==1.28.0 sumo-data==1.28.0 traci==1.28.0 osmium==4.3.2
+# Optional mapped-crossing export dependencies:
+cache/sumo-env/bin/pip install pyproj==3.7.2 shapely==2.2.0
 # Download and retain the dated PBF separately; record its source URL and hash.
 cache/sumo-env/bin/python model/tools/extract_traffic_osm.py \
   cache/fresh-traffic-demo/source/greater-london.osm.pbf \
@@ -64,7 +66,7 @@ cache/sumo-env/bin/python model/tools/build_traffic_demo.py demand \
 cache/sumo-env/bin/python model/tools/run_sumo_diagnostic.py \
   --network cache/demo-protected/network.net.xml \
   --routes cache/demo-demand/routes.rou.xml --output cache/demo-run \
-  --begin 0 --end 3600 --seed 42 --lane-mode continuous
+  --begin 0 --end 3600 --seed 42 --lane-mode continuous --record-signals
 python3 model/tools/summarize_traffic_demo.py cache/demo-run
 ```
 
@@ -96,6 +98,29 @@ invent absent vehicles or signal states. This experimental JSON is not a public
 Asset encoding or registered widget. The older XY exporter refuses nonzero
 recorded elevation/slope rather than dropping those fields.
 
+For synchronized signals, pass `--record-signals` to the diagnostic runner. It
+retains native `SaveTLSSwitchStates` output in `signals.xml`, including actual
+actuated changes. The exporter maps each native connection's `linkIndex` to
+that recording; it never reconstructs colors from a nominal cycle. Missing
+recordings leave lamps dark. Replay holds the last recorded state only inside
+the exported interval.
+
+```sh
+cache/sumo-env/bin/python model/tools/export_traffic_demo_scene.py \
+  cache/demo-run cache/demo-review/scene.json \
+  --begin 550 --end 611 --center 600 3340 --radius 210 \
+  --osm cache/fresh-traffic-demo/source/extracted-roads.osm.xml
+```
+
+Explicit OSM crossing-way markings provide zebra, dotted or lined crossings.
+Unknown/unmarked ways receive no invented stripes. Projection and network
+offset are preserved; centerlines are clipped to native road surfaces and
+paint elevation follows nearby lanes. Fixture placement, stripe widths and
+pole dimensions are illustrative, not a survey. This does not add pedestrian
+simulation, infer priority from paint or change routes. The facilities rerun
+used the same 1,000-departure seed-42 inputs: all trip attributes matched the
+previous run, with zero collisions/teleports and three emergency brakes.
+
 The offline review video shows this native diagnostic geometry, not the existing
 city's terrain/buildings. Only its MP4/poster may be shared under the user's
 video-review request; publishing native payloads or replacing production requires
@@ -107,6 +132,7 @@ separate task authorization.
 - [Native connection parameters](https://sumo.dlr.de/docs/Networks/PlainXML.html)
 - [Vehicle junction parameters](https://sumo.dlr.de/docs/Definition_of_Vehicles,_Vehicle_Types,_and_Routes.html)
 - [Safety checks and limits](https://sumo.dlr.de/docs/Simulation/Safety.html)
+- [Recorded traffic-light states](https://sumo.dlr.de/docs/Simulation/Output/Traffic_Lights.html)
 - [FCD coordinates](https://sumo.dlr.de/docs/Simulation/Output/FCDOutput.html)
 - [Greater London extracts](https://download.geofabrik.de/europe/united-kingdom/england/greater-london/index.html)
 

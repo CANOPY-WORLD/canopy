@@ -1,7 +1,7 @@
 {
-  "version": "9becc52e3a21f785af91",
+  "version": "37f6f4c522464873492f",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 233132351,
+  "bytes": 233136784,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -6849,6 +6849,11 @@
       "sha256": "304cf852b26087b80ae5fbab6f46b4abd5a6a9f8936520b5b072bd74a0454bc0"
     },
     {
+      "path": "viewer/3d/traffic-facilities.js",
+      "bytes": 3766,
+      "sha256": "88976023ab4789eb6cf0216631ec257d1988b6fb144519d2104e1dba85976c2d"
+    },
+    {
       "path": "viewer/3d/traffic-signals-provenance.json",
       "bytes": 1045,
       "sha256": "d8bf5ccc037585eca553d1b3721a8230316c77a39c4adf448da5dca1be0348e5"
@@ -6952,6 +6957,11 @@
       "path": "viewer/traffic-interpolation.mjs",
       "bytes": 1235,
       "sha256": "6b2b3e30f91a3d9fdae14ba66e672ba5caa8ed234250e81c19025890f4485a92"
+    },
+    {
+      "path": "viewer/traffic-signal-state.mjs",
+      "bytes": 667,
+      "sha256": "2868411fac3f58150eaecbd09cb6dac924b8f0ab44d63ff75bdd69219a492e5f"
     },
     {
       "path": "viewer/vehicle-types.mjs",

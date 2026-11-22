@@ -9,9 +9,10 @@ import xml.etree.ElementTree as ET
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 from traffic.diagnostic_validation import assess_run
 from traffic.demo_network import digest
+from traffic.review_facilities import signal_facilities, crossing_facilities
 
 
-def export(run, output, begin, end, center, radius):
+def export(run, output, begin, end, center, radius, osm=None):
     if not all(math.isfinite(v) for v in (begin,end,*center,radius)) or end<=begin or radius<=0:
         raise ValueError('Invalid recording bounds')
     validation=assess_run(run)
@@ -49,7 +50,14 @@ def export(run, output, begin, end, center, radius):
             step.clear()
             if time>=end:break
     if not frames or abs(len(frames)*.1-(end-begin))>1e-6:raise ValueError('Incomplete recording interval')
-    data={'schema':'experimental-offline-sumo-review-1','position_reference':'front_bumper','coordinate_frame':'ENU','center':center,'radius':radius,'vehicle_types':types,'lanes':lanes,'junctions':junctions,'frames':frames,'record_layout':['id','type','east_m','north_m','z_m','heading_rad_ccw_east','slope_rad','speed_m_s'],'provenance':{'network_sha256':digest(network),'fcd_sha256':digest(run/'traffic.fcd.xml.gz'),'exporter_sha256':digest(__file__)},'limitations':['Synthetic demand and generated signals, not observed London operations','Heights derived from OSM layers, not terrain survey','Signal state not shown; no recorded phase output','Only vehicles present in adjacent samples may be interpolated']}
+    data={'schema':'experimental-offline-sumo-review-1','position_reference':'front_bumper','coordinate_frame':'ENU','center':center,'radius':radius,'vehicle_types':types,'lanes':lanes,'junctions':junctions,'frames':frames,'record_layout':['id','type','east_m','north_m','z_m','heading_rad_ccw_east','slope_rad','speed_m_s'],'provenance':{'network_sha256':digest(network),'fcd_sha256':digest(run/'traffic.fcd.xml.gz'),'exporter_sha256':digest(__file__),'facilities_reader_sha256':digest(Path(__file__).resolve().parents[1]/'src/traffic/review_facilities.py')},'limitations':['Synthetic demand and generated signals, not observed London operations','Heights derived from OSM layers, not terrain survey','Signal state not shown; no recorded phase output','Only vehicles present in adjacent samples may be interpolated']}
+    data['signals']=signal_facilities(root,run/'signals.xml',begin,end,nearby)
+    data['crossings']=crossing_facilities(osm,root,lanes,junctions,nearby) if osm else []
+    if osm:data['provenance']['crossings_osm_sha256']=digest(osm)
+    if (run/'signals.xml').exists():
+        data['provenance']['signals_sha256']=digest(run/'signals.xml')
+        data['limitations'].remove('Signal state not shown; no recorded phase output')
+    data['limitations'].append('Fixture dimensions and paint sizes are illustrative; positions reference OSM and states reference the recorded simulation')
     output.parent.mkdir(parents=True,exist_ok=True)
     with output.open('x') as f:json.dump(data,f,separators=(',',':'))
     return {'frames':len(frames),'lanes':len(lanes),'bytes':output.stat().st_size}
@@ -58,4 +66,5 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('run',type=Path);p.add_argument('output',type=Path)
     p.add_argument('--begin',type=float,required=True);p.add_argument('--end',type=float,required=True)
     p.add_argument('--center',type=float,nargs=2,required=True);p.add_argument('--radius',type=float,default=220)
-    a=p.parse_args();print(export(a.run,a.output,a.begin,a.end,a.center,a.radius))
+    p.add_argument('--osm',type=Path,help='Retained OSM XML for mapped crossing markings')
+    a=p.parse_args();print(export(a.run,a.output,a.begin,a.end,a.center,a.radius,a.osm))

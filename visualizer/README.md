@@ -76,3 +76,13 @@ Crossing stripes retain continuous spacing across source polyline vertices and s
 Traffic replay uses monotone cubic display interpolation over adjacent recorded samples to smooth changes in speed and heading. It passes through every saved sample, bounds each coordinate to its interval endpoints, follows the shortest heading turn, and never extrapolates missing vehicles. This improves replay presentation; it does not rerun SUMO or establish the true path between one-second samples. Rendering performance remains device-dependent.
 
 Vehicle bodies distinguish cars, taxis, buses, light/heavy goods vehicles and motorcycles. Replay metadata may supply `vehicle_types` dimensions in metres and `position_reference: "front_bumper"`; these take precedence over illustrative fallback dimensions. Legacy replays without a position reference retain their existing center placement. SUMO front-bumper positions are shifted to body centers only for rendering. No simulation coordinates are rewritten.
+
+The experimental offline native-SUMO review uses
+`site/viewer/3d/traffic-facilities.js` to display native stop lines, recorded
+signal lamps and explicitly mapped OSM crossing markings. Its clock holds
+actual switch states inside the recorded interval; missing/out-of-range states
+stay dark. Zebra stripes and dotted/line boundaries retain distinct mapped
+styles; fixture dimensions are illustrative. This presentation adapter is not
+a registered Asset widget and does not replace the published London dataset.
+See the [demo run guide](../model/traffic/demo/README.md) for source and export
+requirements.
