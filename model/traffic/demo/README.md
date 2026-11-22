@@ -136,7 +136,7 @@ separate task authorization.
 - [FCD coordinates](https://sumo.dlr.de/docs/Simulation/Output/FCDOutput.html)
 - [Greater London extracts](https://download.geofabrik.de/europe/united-kingdom/england/greater-london/index.html)
 
-## November 22 results and blocker
+## November 22 results and remaining limitations
 
 The retained source extract has SHA-256
 `3774937db3908111c24c26b9781bd399b67b5a978b5f4e67f1e58446c348b566`.
@@ -166,8 +166,9 @@ was not used, exported or published; the exact commands, XML inputs and a gdb
 backtrace remain in the private experiment bundle. Its exploratory join code
 is not included in the supported preparation utilities.
 
-The implementation PR remains a draft until the geometric/network failures can
-be repaired and higher-load, multiple-seed checks pass. The existing production
+These utilities and presentation changes are approved for experimental use.
+The geometric/network failures still require repair and higher-load, multiple-seed
+checks before any production traffic-data replacement. The existing production
 Scenario pin and public native datasets are unchanged. See the small
 [experiment results](../../../scenario/imperial_corridor_8km/experiments/traffic-demo-results.json)
 for the measured counters and explicit validation status.
