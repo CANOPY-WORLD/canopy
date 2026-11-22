@@ -1,3 +1,4 @@
+import {createNativeTraffic} from './native-traffic.js';
 import {createRoadCrossings} from './road-crossings.js';
 import {interpolateVehicle} from '../traffic-interpolation.mjs';
 // Ground and exact recorded SUMO frames in the scene's flattened ENU frame.
@@ -42,6 +43,26 @@ export async function createCorridorContext({scene, config, url, onChange}) {
     if(terrainMode!==mode){terrainMode=mode;crossings?.setTerrain(mode);ground.children.forEach(m=>{m.geometry=mode?m.userData.terrainGeometry:m.userData.flatGeometry});elevateInstances(landscape.vegetation,mode);elevateInstances(signals,mode);onChange();}
     const visible=groundToggle.checked,roadVisible=visible&&(roadsToggle?.checked??true),landVisible=visible&&surfaceToggle.checked,vegVisible=treesToggle.checked&&vegetationToggle.checked;if(ground.visible!==landVisible||roads&&roads.visible!==roadVisible||landscape.vegetation.visible!==vegVisible)onChange();ground.visible=landVisible;if(crossings)crossings.visible=roadVisible;if(roads)roads.visible=roadVisible&&!mode;elevatedRoads.visible=roadVisible&&mode;landscape.vegetation.visible=vegVisible;const furnitureVisible=mode&&visible&&detailControls.querySelector('input').checked;if(furniture.visible!==furnitureVisible)onChange();furniture.visible=furnitureVisible;}
   syncGround();
+  if(config.native_traffic){
+    const native=await createNativeTraffic({url:url(config.native_traffic),panel,onChange});
+    group.add(native.group);
+    panel.querySelector('#corridor-traffic-visible').closest('label').lastChild.textContent=' Recorded South Kensington SUMO demo';
+    for(const note of panel.querySelectorAll('p'))if(note.textContent.startsWith('Independent traffic clock'))note.textContent='Native 0.1 s recorded trajectories and synchronized signals. Synthetic low-load demonstration; not observed traffic or validated citywide capacity.';
+    let active=false;
+    const preserved=new Map();
+    function setNativeActive(value){
+      if(active===value)return;
+      active=value;native.group.visible=value;
+      if(value){for(const child of group.children)if(child!==native.group){preserved.set(child,child.visible);child.visible=false;}}
+      else{for(const [child,visible] of preserved)child.visible=visible;preserved.clear();syncGround();}
+      onChange();
+    }
+    panel.querySelector('#corridor-terrain-status').textContent='Traffic uses recorded native roads and heights, matching the reviewed SUMO clip. City context remains available in Overview.';
+    panel.querySelector('#corridor-signals-status').textContent='Recorded SUMO signal states are synchronized to the traffic clock.';
+    return {group,ground,roads,elevatedRoads,terrain,signals,furniture,vegetation:landscape.vegetation,landscapeMeta:landscape.meta,cars:native.cars,meta:native.meta,frames:native.frames,
+      nativeTraffic:true,setNativeActive,get frame(){return native.frame},get position(){return native.position},get playing(){return native.playing},show:native.show,setPlaying:native.setPlaying,
+      tick(dt){if(active)native.tick(dt);else syncGround();}};
+  }
   const [meta,response]=await Promise.all([fetch(url(config.traffic_meta)).then(r=>{if(!r.ok)throw Error('Traffic metadata unavailable');return r.json()}),fetch(url(config.traffic_binary))]);
   if(!response.ok)throw Error('Traffic frames unavailable');
   const buffer=await response.arrayBuffer(), bytes=new DataView(buffer), frames=[];let offset=0,maxCount=0;

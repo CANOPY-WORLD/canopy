@@ -133,3 +133,5 @@ self.addEventListener('fetch', event => {
     return await cached() || network();
   })());
 });
+
+// Publication routing: d17838303fec754b01425cd48dcda6c1086244a21f718d82cd82f692162111c1
