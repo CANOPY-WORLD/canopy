@@ -12,6 +12,8 @@ The public presentation uses a minimal widget player: the original Overview / Tr
 
 Both the homepage download flow and the direct Viewer show a simple loading page: the Canopy wordmark, the selected Scenario title and short description, and a progress bar. Read the introduction from the public catalog. Show measured geometry-transfer progress when available and an indeterminate bar during preparation. The page uses no preview renderer and disappears when initialization completes.
 
+The London compatibility presentation also offers **London Tube** immediately after **I-HUB Interior**. It embeds the explicitly declared [external Tube preview](https://srst-by722.github.io/london-tube-walk-preview/) on selection and unloads it on exit. The city render loop and replay clocks pause while the preview is selected. The preview owns its controls and timetable; Canopy does not synchronize its clock, import its data as a scientific Asset, or include its remote files in offline downloads. Reopening starts a fresh preview. An external link remains available if embedding fails. The external site retains its own presentation layout and illustrative-station/source notices.
+
 ## Internal structure
 
 ```mermaid
