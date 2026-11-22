@@ -1845,11 +1845,15 @@ const TOUR_SHOTS = {
     time: () => `Overview · orbiting ${FOCUS.label ?? SCENE.title}`,
   },
   traffic: {
-    ...(SCENE.corridor_context ? {fixed: () => ({target:new THREE.Vector3(-1710,1,-910),pos:new THREE.Vector3(-1800,100,-790)})} : {}),
+    ...(SCENE.corridor_context ? {fixed: () => {
+      // Exhibition Road / Thurloe Place; keep the focus above the displayed terrain.
+      const height=currentTerrain()?.sample(1876,1248)??0;
+      return {target:new THREE.Vector3(1876,height+3,1248),pos:new THREE.Vector3(1926,height+65,1298)};
+    }} : {}),
     dist: 0.55,
     elev: 48,
     dur: SCENE.corridor_context ? Infinity : 18000,
-    label: () => SCENE.corridor_context ? 'Traffic · recorded AM peak · illustrative vehicle bodies' : `${SCENE.traffic?.label ?? 'Traffic'} · cars and signal states of the SUMO run`,
+    label: () => SCENE.corridor_context ? 'Traffic · South Kensington · Exhibition Road' : `${SCENE.traffic?.label ?? 'Traffic'} · cars and signal states of the SUMO run`,
     time: () => (SCENE.corridor_context ? (document.querySelector('#corridor-traffic-time')?.textContent ?? 'Loading recorded traffic') : traffic ? `Replay ${trafficTime(traffic.t)} · ${traffic.speed}×` : 'Traffic'),
   },
   trafficMap: {

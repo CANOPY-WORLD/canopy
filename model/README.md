@@ -92,3 +92,7 @@ python -m pip wheel --no-deps . -w dist
 The wheel contains shared Python implementations, Method specifications and schemas. Use an explicit metadata checkout after installation: `canopy --root /path/to/canopy ...`. The checkout supplies Scenario configuration and browser resources. Package a Scenario and its retained Assets separately with `canopy pack`; see [Asset packaging](../asset/README.md#package-a-scenario).
 
 See the [verification record](docs/framework/verification.md) for checks and their limits.
+
+For explicit retained-input SUMO collision experiments, see the [diagnostic guide](traffic/diagnostic/README.md). This tool is experimental and is not a registered Method.
+
+The [native traffic demo guide](traffic/demo/README.md) documents reproducible OSM/SUMO preparation, retained inputs and bounded acceptance checks.

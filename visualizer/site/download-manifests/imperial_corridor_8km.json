@@ -1,7 +1,7 @@
 {
-  "version": "8f9c9d074b9beebaf528",
+  "version": "2e85bf8f1cd3ab956ef0",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 233130518,
+  "bytes": 233141640,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -6730,8 +6730,8 @@
     },
     {
       "path": "viewer/3d/corridor-context.js",
-      "bytes": 12014,
-      "sha256": "9cca48b7cc2b4856d48a3e480eb48031fb9b7b290ddaa43dd09997613ef3b880"
+      "bytes": 12021,
+      "sha256": "cf040d98b2000202bac77cb0798523a04920558dde4e2c90f0d39bf290256811"
     },
     {
       "path": "viewer/3d/corridor-signals.js",
@@ -6745,8 +6745,8 @@
     },
     {
       "path": "viewer/3d/corridor-vehicles.js",
-      "bytes": 3078,
-      "sha256": "c9553f9ce52f9927d79f7d9787368c10271992037651faacd38c6fbb3d9c7a2b"
+      "bytes": 3986,
+      "sha256": "bb05774fd64243ff99856422d12ce32a42f12e44c8dbd47695c78c75f835bc4e"
     },
     {
       "path": "viewer/3d/detail-tiles.js",
@@ -6790,8 +6790,13 @@
     },
     {
       "path": "viewer/3d/main.js",
-      "bytes": 126029,
-      "sha256": "9edfff4afafb177080691229f4053bec47732af078842348b3ba9fc997bf9355"
+      "bytes": 126193,
+      "sha256": "80e6f666f7656c5dfc806d632a3b5e8e74472cb075343beea6ce1f91f6333ec9"
+    },
+    {
+      "path": "viewer/3d/native-road-surface.js",
+      "bytes": 3553,
+      "sha256": "c51b744766b510d20d7313e26dd468589fa91f0348a54237950368ee4582bd90"
     },
     {
       "path": "viewer/3d/opening.css",
@@ -6847,6 +6852,11 @@
       "path": "viewer/3d/tile.js",
       "bytes": 7660,
       "sha256": "304cf852b26087b80ae5fbab6f46b4abd5a6a9f8936520b5b072bd74a0454bc0"
+    },
+    {
+      "path": "viewer/3d/traffic-facilities.js",
+      "bytes": 4905,
+      "sha256": "abaf971820231e9fee522ec10d6031f2ca132c33435787f250ad8765aef282d9"
     },
     {
       "path": "viewer/3d/traffic-signals-provenance.json",
@@ -6952,6 +6962,16 @@
       "path": "viewer/traffic-interpolation.mjs",
       "bytes": 1235,
       "sha256": "6b2b3e30f91a3d9fdae14ba66e672ba5caa8ed234250e81c19025890f4485a92"
+    },
+    {
+      "path": "viewer/traffic-signal-state.mjs",
+      "bytes": 667,
+      "sha256": "2868411fac3f58150eaecbd09cb6dac924b8f0ab44d63ff75bdd69219a492e5f"
+    },
+    {
+      "path": "viewer/vehicle-types.mjs",
+      "bytes": 918,
+      "sha256": "13e7070e5b0694022d4700344f6160be86ffbe60f50bb62843a07e73a2eb06bc"
     }
   ]
 }
