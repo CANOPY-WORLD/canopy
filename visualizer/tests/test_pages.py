@@ -156,6 +156,18 @@ class PublicationTests(unittest.TestCase):
             self.assertIn(f'scenes/{owner}/sample.bin', names)
             self.assertNotIn(f'scenes/{excluded}/sample.bin', names)
 
+    def test_routing_change_updates_service_worker(self):
+        self.frontend()
+        self.remote()
+        before=pages.generated(self.root)[1]['asset-router.js']
+        self.manifest['schema_version']='1.1.0'
+        self.manifest['files'][0]['source_snapshot']='previous-v1'
+        (self.data / 'sample.bin').write_bytes(b'public')
+        self.remote()
+        after=pages.generated(self.root)[1]['asset-router.js']
+        self.assertNotEqual(before,after)
+        self.assertEqual(after,pages.generated(self.root)[1]['asset-router.js'])
+
     def test_immutable_reuse_uses_bounded_same_repository_snapshot(self):
         self.manifest['schema_version']='1.1.0'
         self.manifest['files'][0]['source_snapshot']='previous-v1'
