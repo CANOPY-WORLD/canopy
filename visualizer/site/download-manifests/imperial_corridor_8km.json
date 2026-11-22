@@ -1,7 +1,7 @@
 {
-  "version": "fb992e9c5bac184c395c",
+  "version": "745beb507791193b3b18",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 278223515,
+  "bytes": 281724799,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -86,12 +86,12 @@
     {
       "path": "asset-router.js",
       "bytes": 6285,
-      "sha256": "842bd26864b2555aa2f591ea6643855ec44128f648d544873b5492051ce7c308"
+      "sha256": "bee3b8d741c905fb83b525b8cd0b0b98268102f2e2609522a1e1c49ce0ea6509"
     },
     {
       "path": "asset-sources.json",
-      "bytes": 354720,
-      "sha256": "70fc87fe63089a15120e246d6d3cb1af1512f2c0a7d9527a9f953e0491127f2e"
+      "bytes": 355486,
+      "sha256": "ccf46711f394d9854d7107805a2448df74e4d49c50cb4aaefc2412136f4fb0b1"
     },
     {
       "path": "assets/uav-wavepde-4m-20261111/config.json",
@@ -150,18 +150,18 @@
     },
     {
       "path": "scenario-index.json",
-      "bytes": 978,
-      "sha256": "63667b5a8f51b3fe5406230db5e5a54d7cc421272c35aa4b6b0ef6c02ecf02b0"
+      "bytes": 976,
+      "sha256": "a0165509ebe2f71d065e78759aad2ac4b2c9a38d2e913ded6627f55a3eb7832d"
     },
     {
       "path": "scenario/imperial_corridor_8km/data/manifest.json",
-      "bytes": 494517,
-      "sha256": "5d9547eb2ed5176c9d9203e1b3597f817a91bb2c77854c7470ad6d31507f1302"
+      "bytes": 501428,
+      "sha256": "95fbcb9cff7d92097c754f62a9b0ded837017f6adbb63d5ab5f9a8380c2778b8"
     },
     {
       "path": "scenario/imperial_corridor_8km/publication.json",
-      "bytes": 661,
-      "sha256": "05cba424a79bbb36ce1d85489c8b3e7966370505f7d6aab94cd404172bd63366"
+      "bytes": 659,
+      "sha256": "0a016700191a09705d9bba56da354ad20c5559aba73543da8900616715130910"
     },
     {
       "path": "scenes/imperial_corridor_8km/compact-provenance/fields-8m-report.json",
@@ -427,6 +427,21 @@
       "path": "scenes/imperial_corridor_8km/derivation.json",
       "bytes": 1371,
       "sha256": "97053afc4aa739d40ecf194d3da6dfcd7fdbb12d2afab119a9e75331d00c664b"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/interiors/ihub-v10/building.glb.gz",
+      "bytes": 684724,
+      "sha256": "37511b5bbee057da6651c5448a30ad8882b6403545a569c4c3054eef9fc1bf29"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/interiors/ihub-v10/office.glb.gz",
+      "bytes": 2801428,
+      "sha256": "26ad1b7df71de7f101a8f49b6fea600398289f0f07e4b4606dddaab32ca25dd5"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/interiors/ihub-v10/provenance.json",
+      "bytes": 3211,
+      "sha256": "550990a1f4f97876e6a4d056a55ce3c8c7c1dc69221621e225464d783d160aa4"
     },
     {
       "path": "scenes/imperial_corridor_8km/models/buildings.glb.gz",
@@ -3065,8 +3080,8 @@
     },
     {
       "path": "scenes/imperial_corridor_8km/scene.json",
-      "bytes": 125800,
-      "sha256": "51d0630770fa637cecb45da693e32729e7ba6f20dfa28342e4ec3061d1a68f21"
+      "bytes": 130048,
+      "sha256": "737534b187497a69a50f1ee0671f11a24e41de944d200ee7236fc2e8a7acedda"
     },
     {
       "path": "scenes/index.json",

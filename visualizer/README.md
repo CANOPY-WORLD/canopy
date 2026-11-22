@@ -128,7 +128,7 @@ Selecting **UAVs** frames the entire 8 km × 8 km domain from above using the cu
 viewport aspect ratio. UAV layers are hidden outside that widget. The network
 uses 2.5 px lines and the selected route uses 5 px lines; recorded route coordinates
 remain unchanged.
-The pending interior preset is recorded in
+The published interior preset is recorded in
 [`scenario/imperial_corridor_8km/presentation/ihub-interior.json`](../scenario/imperial_corridor_8km/presentation/ihub-interior.json).
-Copy that object into the next approved snapshot's `scene.json` as `interior`,
-and include the two declared gzip resources in its checksum inventory.
+The `london-ihub-interior-20261122` snapshot includes this object as `scene.interior`
+and declares both losslessly compressed GLBs in its checksum inventory.

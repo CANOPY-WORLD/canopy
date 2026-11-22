@@ -1,22 +1,21 @@
-# Pending I-HUB interior presentation
+# I-HUB interior presentation
 
 `ihub-interior.json` is the declarative preset for the retained White City I-HUB
-concept office v10 (`ihub_office_journey_20261117_v10`). It is not enabled in the
-published snapshot yet. The shared viewer inserts its widget directly after
+concept office v10 (`ihub_office_journey_20261117_v10`). It is enabled by the `london-ihub-interior-20261122` snapshot. The shared viewer inserts its widget directly after
 White City campus when the snapshot includes this object as `scene.interior`.
 
 Export the retained source with `model/tools/export_ihub_interior.py`, passing
-`--run` (the retained v10 directory), `--georef` (its retained White City fit),
-`--scenario scenario/imperial_corridor_8km/scenario.json`, and a new `--output`
+`run` (the retained v10 directory), `georef` (its retained White City fit),
+`scenario/imperial_corridor_8km/scenario.json`, and a new `output`
 directory. The exporter verifies source mesh hashes, preserves binary payloads,
 and adds a root transform. Validate the result with
 `python model/tools/check_contract.py <output>/manifest.json` before retaining it.
 
-The public payload candidates are lossless gzip copies of the aligned
+The public payloads are lossless gzip copies of the aligned
 `building.glb` (684,724 bytes compressed) and `office.glb` (2,801,428 bytes
 compressed). No geometry simplification or texture resizing was applied.
 Keep the retained originals and provenance bundle; include the aligned hashes,
-source hashes and alignment record in the next data snapshot's derivation.
+source hashes and alignment record in the data snapshot’s interior provenance.
 Publication requires approval of that snapshot and the website change.
 
 The authored office floor is 32.2677965163 m above the original model datum.

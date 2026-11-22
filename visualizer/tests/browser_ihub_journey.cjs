@@ -1,12 +1,14 @@
 const fs=require('fs'),assert=require('assert/strict');
+fs.mkdirSync('cache/white-city-interior',{recursive:true});
 (async()=>{
  const {default:p}=await import(process.env.PUPPETEER_MODULE||'puppeteer-core');
- const b=await p.launch({executablePath:'/usr/bin/google-chrome',headless:true,args:['--no-sandbox','--use-angle=vulkan','--enable-features=Vulkan','--disable-vulkan-surface']});
+ const b=await p.launch({executablePath:process.env.CHROME_PATH||'/usr/bin/google-chrome',headless:true,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
  try{
- const page=await b.newPage(),errors=[];await page.setViewport({width:1280,height:720});
+ const page=await b.newPage(),errors=[];await page.setViewport({width:960,height:640});
+ await page.evaluateOnNewDocument(()=>Object.defineProperty(window,'devicePixelRatio',{get:()=>0.6}));
  page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400&&!r.url().includes('favicon'))errors.push(`${r.status()} ${r.url()}`)});
- await page.goto('http://127.0.0.1:8823/canopy/viewer/3d/?scene=imperial_corridor_8km');
- await page.waitForFunction(()=>window.viewer&&document.querySelector('#loading').classList.contains('hide'),{timeout:240000});
+ await page.goto(process.argv[2]||'http://127.0.0.1:8823/canopy/viewer/3d/?scene=imperial_corridor_8km');
+ await page.waitForFunction(()=>window.viewer&&document.querySelector('#loading').classList.contains('hide'),{timeout:360000});
  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
  await page.click('[data-shot="whiteCity"]');await sleep(3000);
  const recorder=await page.screencast({path:'cache/white-city-interior/journey.webm',format:'webm',fps:24,ffmpegPath:process.env.FFMPEG_PATH});
@@ -20,7 +22,7 @@ const fs=require('fs'),assert=require('assert/strict');
  await page.waitForFunction(()=>ihubInterior.journey.time>=17,{timeout:45000});await page.screenshot({path:'cache/white-city-interior/journey-inside.png'});
  await page.waitForFunction(()=>!ihubInterior.journey.playing&&ihubInterior.journey.time===30,{timeout:45000});
  assert(await page.evaluate(()=>viewer.controls.enabled&&ihubInterior.group.getObjectByName('Retained v10 continuous ceiling').visible));
- await page.mouse.move(700,370);await page.mouse.down();await page.mouse.move(800,390,{steps:25});await page.mouse.up();await sleep(2000);
+ await page.mouse.move(500,330);await page.mouse.down();await page.mouse.move(600,350,{steps:25});await page.mouse.up();await sleep(2000);
  await page.click('[data-shot="overview"]');await sleep(3000);await recorder.stop();
  const samples=await page.evaluate(()=>{clearInterval(journeySampler);return journeySamples});
  assert(samples.some(s=>s.t>4&&s.t<28));

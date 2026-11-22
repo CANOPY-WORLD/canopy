@@ -1,14 +1,16 @@
-// Run against the local preview with the retained I-HUB preset and payloads.
+// Run against a built Pages preview or the deployed viewer URL.
 const fs=require('fs'),assert=require('assert/strict');
+fs.mkdirSync('cache/white-city-interior',{recursive:true});
 (async()=>{
  const {default:p}=await import(process.env.PUPPETEER_MODULE||'puppeteer-core');
- const b=await p.launch({executablePath:'/usr/bin/google-chrome',headless:true,args:['--no-sandbox','--use-angle=vulkan','--enable-features=Vulkan','--disable-vulkan-surface']});
+ const b=await p.launch({executablePath:process.env.CHROME_PATH||'/usr/bin/google-chrome',headless:true,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
  try{
-  const page=await b.newPage(),errors=[];await page.setViewport({width:1280,height:720});
+  const page=await b.newPage(),errors=[];await page.setViewport({width:960,height:640});
+ await page.evaluateOnNewDocument(()=>Object.defineProperty(window,'devicePixelRatio',{get:()=>0.6}));
   page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error'&&!m.text().includes('favicon'))errors.push(m.text())});
   page.on('response',r=>{if(r.status()>=400&&!r.url().includes('favicon'))errors.push(`${r.status()} ${r.url()}`)});
   await page.goto(process.argv[2]||'http://127.0.0.1:8823/canopy/viewer/3d/?scene=imperial_corridor_8km');
-  await page.waitForFunction(()=>window.viewer&&document.querySelector('#loading').classList.contains('hide'),{timeout:240000});
+  await page.waitForFunction(()=>window.viewer&&document.querySelector('#loading').classList.contains('hide'),{timeout:360000});
   const pause=ms=>new Promise(r=>setTimeout(r,ms));
   const choose=async name=>{await page.click(`[data-shot="${name}"]`);await pause(3200)};
   const targetVisible=()=>page.evaluate(()=>{let result;cityDetailTiles.group.traverse(o=>{if(o.userData.sourceAsset===viewer.SCENE.interior.replace_asset)result=o.visible});return result});
@@ -39,6 +41,9 @@ const fs=require('fs'),assert=require('assert/strict');
   assert(await page.evaluate(()=>{const d=viewer.camera.position.clone().sub(viewer.controls.target);return Math.hypot(d.x,d.z)/d.y<.001}));
   await choose('traffic');assert.equal(await page.evaluate(()=>viewer.uavs.group.visible),false);
   assert(await page.evaluate(()=>corridorContext.nativeTraffic&&corridorContext.playing&&cityDetailTiles.group.visible));
-  assert.deepEqual(errors,[]);fs.writeFileSync('cache/white-city-interior/verification.json',JSON.stringify({passed:true,shots,errors,checks:['default UAV hidden','widget order','interior loads','target shell replaced and restored','64 city tiles retained','interior presentation clock','UAV entire 8 km square top-down desktop/tablet','interior eye height and intact shell','UAV hidden on exit','terrain restored','traffic regression']},null,2));console.log('PASS');
+  await page.click('[data-field="poll"]');
+  await page.waitForFunction(()=>viewer.planes.poll.mesh.visible&&!viewer.state.loading&&!document.querySelector('#play').disabled,{timeout:180000});
+  assert(await page.evaluate(()=>viewer.LAYERS.poll.frames===100&&viewer.LG.poll.w===1000&&!ihubInterior.group.visible&&!viewer.uavs.group.visible));
+  assert.deepEqual(errors,[]);fs.writeFileSync('cache/white-city-interior/verification.json',JSON.stringify({passed:true,shots,errors,checks:['default UAV hidden','widget order','interior loads','target shell replaced and restored','64 city tiles retained','interior presentation clock','UAV entire 8 km square top-down desktop/tablet','interior eye height and intact shell','UAV hidden on exit','terrain restored','traffic regression','100-frame 8 m pollution after indoor exit']},null,2));console.log('PASS');
  }finally{await b.close()}
 })().catch(e=>{console.error(e);process.exit(1)});
