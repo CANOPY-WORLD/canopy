@@ -94,3 +94,8 @@ state histories stay separate; this is schematic placement, not surveyed poles.
 boundary heights to explicitly connected lane ends. Markings follow the displayed
 surface. This presentation correction preserves native samples and does not
 repair the underlying SUMO elevation assumptions or certify network geometry.
+
+The corridor Traffic focus opens at Exhibition Road near its Thurloe Place
+junction in South Kensington (ENU east 1,876 m, north -1,248 m, relative to the
+Scenario origin). The fixed camera stays there until the user navigates away.
+This camera choice does not alter demand, recorded samples or vehicle routing.
