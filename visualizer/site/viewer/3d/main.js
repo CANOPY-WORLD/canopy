@@ -71,7 +71,7 @@ const LAYERS = Object.fromEntries(Object.entries(SCENE.layers).filter(([key]) =>
   has = (k) => !!LAYERS[k];
 const gridOf = (cell) => ({ w: Math.round(SPAN_X / cell), h: Math.round(SPAN_Z / cell), cell });
 const LG = {}; // the grid of every layer (layers may be coarser or finer than the base grid)
-for (const k of Object.keys(LAYERS)) LG[k] = {...gridOf(LAYERS[k].cell_m ?? CELL), dx: LAYERS[k].offset_x_m ?? 0, dz: LAYERS[k].offset_z_m ?? 0};
+for (const k of Object.keys(LAYERS)) LG[k] = {...gridOf(LAYERS[k].cell_m ?? CELL), ...(LAYERS[k].cols ? {w: LAYERS[k].cols} : {}), ...(LAYERS[k].rows ? {h: LAYERS[k].rows} : {}), dx: LAYERS[k].offset_x_m ?? 0, dz: LAYERS[k].offset_z_m ?? 0};
 if (has('solar')) LG.shadow = gridOf(LAYERS.solar.shadow_cell_m ?? LAYERS.solar.cell_m ?? CELL);
 const TL = SCENE.timeline ?? { step_s: 25, steps: 100 },
   STEP_S = TL.step_s,
@@ -430,9 +430,9 @@ function makePlane(key, g, y, opacity, renderOrder, magFilter = THREE.LinearFilt
     depthWrite: false,
     side: THREE.DoubleSide,
   });
-  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(SPAN_X, SPAN_Z), mat);
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(g.w * g.cell, g.h * g.cell), mat);
   mesh.rotation.x = -Math.PI / 2;
-  mesh.position.set(CX + (g.dx ?? 0), y, CZ + (g.dz ?? 0));
+  mesh.position.set(X0 + (g.dx ?? 0) + g.w * g.cell / 2, y, ZS + (g.dz ?? 0) - g.h * g.cell / 2);
   mesh.renderOrder = renderOrder;
   mesh.visible = false;
   scene.add(mesh);
@@ -1021,7 +1021,7 @@ async function compactFrame(key, file, k) {
   return item.frames[k];
 }
 function frame(key, file, k, raw = false) {
-  if (SCENE.preview_fields_8m && state.introDone && seqMode() && (key === 'flood' || key.startsWith('solar_') || key.startsWith('shadow_'))) return compactFrame(key, file, k);
+  if (SCENE.preview_fields_8m && state.introDone && seqMode() && (key === 'flood' || (key === 'poll' && LAYERS.poll.preload_sequence) || key.startsWith('solar_') || key.startsWith('shadow_'))) return compactFrame(key, file, k);
   if (hasLayer(key)) return getFrameF32(key, k, true);
   return getFrame(file, k).then((a) =>
     raw

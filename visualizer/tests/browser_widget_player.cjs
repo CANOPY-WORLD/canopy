@@ -106,7 +106,9 @@ const puppeteer = require(process.env.PUPPETEER_MODULE || 'puppeteer-core');
       await clickWidget(`[data-field=${field}]`); await ready(); await pause();
       await page.waitForFunction(()=>!viewer.state.loading);
       const fieldStep=()=>viewer.state.step;
-      await seek(2); await page.waitForFunction(()=>!viewer.state.loading && viewer.state.step===2);
+      // Daylight-only fields may start after frame 1; seek within the declared UI range.
+      const sample = await page.$eval('#step', el => Math.min(Number(el.max), Number(el.min) + 1));
+      await seek(sample); await page.waitForFunction(sample=>!viewer.state.loading && viewer.state.step===sample,{},sample);
       await stationary(fieldStep); await advances(fieldStep);
       await seek(await page.$eval('#step',el=>el.max));
       await page.waitForFunction(()=>!viewer.state.loading);

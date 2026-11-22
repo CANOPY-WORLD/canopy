@@ -1,0 +1,16 @@
+{
+  "schema_version": "2.0.0",
+  "scenario_id": "imperial_corridor_8km",
+  "model_id": "pollution",
+  "method_id": "traffic_transient",
+  "method_version": "1.0.0",
+  "inputs": {
+    "wind": "REPLACE_WIND_ASSET@1",
+    "emissions": "REPLACE_EMISSIONS_ASSET@1"
+  },
+  "parameters": {},
+  "execution": {
+    "device": "cuda",
+    "threads": 4
+  }
+}

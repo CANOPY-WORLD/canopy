@@ -8,14 +8,14 @@
       "title": "Imperial Corridor 8 km · South Kensington + White City",
       "viewer_url": "viewer/3d/?scene=imperial_corridor_8km",
       "download_manifest": "download-manifests/imperial_corridor_8km.json",
-      "snapshot": "london-traffic-native-20261122",
-      "bytes": 239324744,
-      "files": 1405,
+      "snapshot": "london-pollution-log8-20261122",
+      "bytes": 273582403,
+      "files": 1485,
       "repository": "https://github.com/CANOPY-WORLD/canopy-scenario-imperial-corridor-8km",
-      "revision": "fdb840882a622837a8ffe727c40f2e875f146e70",
+      "revision": "5f1221d0b091ce5ad4601c4d09912750938ec9ec",
       "data_website": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/",
-      "manifest_url": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-traffic-native-20261122/manifest.json",
-      "manifest_sha256": "548f72f3fb3434bd968692de67bfa9836149304d28830070fcee856e95970b45"
+      "manifest_url": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-pollution-log8-20261122/manifest.json",
+      "manifest_sha256": "5d9547eb2ed5176c9d9203e1b3597f817a91bb2c77854c7470ad6d31507f1302"
     }
   ]
 }
