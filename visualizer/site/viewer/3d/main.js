@@ -1,3 +1,4 @@
+import {daylightWindow} from '../daylight-window.mjs';
 import { unpackShadow } from './shadow-codec.mjs';
 import { solarLight } from './solar-light.mjs';
 import { installColorbars } from './field-colorbar.mjs';
@@ -1109,7 +1110,8 @@ function solarPhaseSetup() {
   const S = LAYERS.solar,
     meta = solarMeta(),
     shadow = ui.solarMode.value === 'shadow';
-  PHASES.solar.end = meta?.shape?.[0] ?? layerMeta(solarKey())?.frames ?? PHASES.solar.end;
+  const count = meta?.shape?.[0] ?? layerMeta(solarKey())?.frames ?? LAYERS.solar.frames;
+  Object.assign(PHASES.solar, daylightWindow(meta?.altitude_deg, count, S.daylight_default !== true || qs0.get('solar_day') === 'full'));
   PHASES.solar.rate = shadow ? (S.shadow_rate ?? 2) : (S.ghi_rate ?? 12);
   syncFieldRate();
   PHASES.solar.label = `Sunlight · ${solarDayLabel()} · ${shadow ? (S.shadow_label ?? 'shadows') : (S.ghi_label ?? 'clear-sky irradiance')}`;
@@ -1837,7 +1839,7 @@ const TOUR_SHOTS = {
   traffic: {
     ...(SCENE.corridor_context ? {fixed: () => {
       // Exhibition Road / Thurloe Place; keep the focus above the displayed terrain.
-      const height=currentTerrain()?.sample(1876,1248)??0;
+      const height=SCENE.corridor_context?.native_traffic ? 0 : currentTerrain()?.sample(1876,1248)??0;
       return {target:new THREE.Vector3(1876,height+3,1248),pos:new THREE.Vector3(1926,height+65,1298)};
     }} : {}),
     dist: 0.55,
@@ -1901,7 +1903,7 @@ function syncPlaybackUI() {
       const birds = window.canopyBirds;
       range(0, birds.manifest.last_frame_t_s, 1.5, birds.time); playing = birds.playing;
     } else if (tour.shot === 'traffic' && corridorContext) {
-      range(0, corridorContext.frames.length - 1, 1, corridorContext.frame); playing = corridorContext.playing;
+      range(0, corridorContext.frames.length - 1, corridorContext.nativeTraffic ? 0.01 : 1, corridorContext.position ?? corridorContext.frame); playing = corridorContext.playing;
     } else if (tour.shot === 'uavs' && uavLayer) {
       range(0, uavLayer.duration, 0.1, uavLayer.t); playing = uavLayer.playing;
     } else if (replayLayer) {
@@ -2420,6 +2422,25 @@ function startCityLayers() {
     contextReady.catch(()=>{}); // Boot awaits this before revealing the city.
   }
 }
+// Native traffic is a layer in the shared scene, with its own recorded road heights.
+// Hide incompatible city context only while that widget is selected; restore on exit.
+const nativeHiddenObjects=new Map();
+let nativeTrafficActive=false;
+function syncNativeTrafficView(){
+  const active=Boolean(corridorContext?.nativeTraffic && section==='campus' && tour.shot==='traffic');
+  corridorContext?.setNativeActive?.(active);
+  if(active){
+    for(const object of scene.children)if(!object.isLight && object!==corridorContext.group){
+      if(!nativeHiddenObjects.has(object))nativeHiddenObjects.set(object,object.visible);
+      object.visible=false;
+    }
+  }else if(nativeTrafficActive){
+    for(const [object,visible] of nativeHiddenObjects)object.visible=visible;
+    nativeHiddenObjects.clear();applyLayers();
+  }
+  if(active!==nativeTrafficActive)invalidate();
+  nativeTrafficActive=active;
+}
 function animate(now) {
   requestAnimationFrame(animate);
   startCityLayers();
@@ -2429,13 +2450,14 @@ function animate(now) {
     return;
   }
   const elapsed = Math.max(0, now - last);
+  syncNativeTrafficView();
   currentTerrain()?.setEnabled(section !== 'fields');
   corridorContext?.tick(elapsed / 1000);
   if(section==='campus'&&tour.shot==='birds'&&window.canopyBirds){const b=window.canopyBirds;ui.play.textContent=b.playing?'❚❚':'▶';ui.step.value=b.time;ui.rate.value=b.rate;ui.timeLabel.textContent=`Birds · ${b.time.toFixed(1)} / ${b.manifest.last_frame_t_s.toFixed(0)} s`;}
 
   if (corridorContext && section === 'campus' && tour.shot === 'traffic') {
     ui.play.textContent=corridorContext.playing?'❚❚':'▶';
-    ui.step.disabled=false;ui.step.min=0;ui.step.max=corridorContext.frames.length-1;ui.step.step=1;ui.step.value=corridorContext.frame;
+    ui.step.disabled=false;ui.step.min=0;ui.step.max=corridorContext.frames.length-1;ui.step.step=corridorContext.nativeTraffic?0.01:1;ui.step.value=corridorContext.position??corridorContext.frame;
     ui.rate.disabled=false;ui.rate.value=document.querySelector('#corridor-traffic-rate').value;
     ui.timeLabel.textContent=document.querySelector('#corridor-traffic-time').textContent;
   }
@@ -3049,7 +3071,7 @@ async function boot() {
     for (const L of Object.values(planes)) L.fade = L.target;
     updateFades(0);
     if (qs.has('step')) setStep(+qs.get('step'));
-    else setStep(state.step);
+    else setStep(state.phase === 'solar' && seqMode() ? PHASES.solar.start : state.step);
     ui.stage.textContent =
       pose === 'overhead'
         ? 'Overhead view · ' + PHASE_ORDER.map((k) => (TAB_NAME[k] ?? k).toLowerCase()).join(' / ')

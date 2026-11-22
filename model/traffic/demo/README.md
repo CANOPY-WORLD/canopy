@@ -177,3 +177,7 @@ The larger-radius candidate (12 m radius / 30 m automatic join distance, native
 sublane motion) also failed: 1,000 departures, four collisions and 15 vehicles
 still halted at the end of 3,600 s. It is a rejected investigation, not a new
 default. The exposed geometry options support reproducible diagnostics only.
+
+### Website review-recording selection
+
+The native South Kensington interval is now a candidate replacement for the website Traffic widget. It is the same 680.0–720.9 s low-load recording shown in the video, with 410 samples at 0.1 s. `model/tools/export_native_traffic_snapshot.py` verifies retained network, FCD and signals hashes against the recording, checks the run acceptance, and packages unchanged recording bytes into a new public distribution snapshot. This presentation adapter does not establish that the full network or higher loads are accepted. The selected public clock remains simulation seconds, not a fabricated time of day.

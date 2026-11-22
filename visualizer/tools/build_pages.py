@@ -181,6 +181,8 @@ def generated(root):
     routing = encode({'schema_version': '2.0.0', 'remote_bases': sorted(set(remote_bases)),
                       'resources': dict(sorted(routes.items()))})
     files['asset-sources.json'] = routing
+    # A changed data pin must install a fresh router even when worker logic is unchanged.
+    files['asset-router.js'] += ('\n// Publication routing: ' + hashlib.sha256(routing).hexdigest() + '\n').encode()
     files['scenario-index.json'] = encode({'schema_version': '1.0.0', 'kind': 'canopy.scenario-index',
                                          'default': default, 'scenarios': scenarios})
     for name, path in manifests.items():

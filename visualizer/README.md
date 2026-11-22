@@ -99,3 +99,9 @@ The corridor Traffic focus opens at Exhibition Road near its Thurloe Place
 junction in South Kensington (ENU east 1,876 m, north -1,248 m, relative to the
 Scenario origin). The fixed camera stays there until the user navigates away.
 This camera choice does not alter demand, recorded samples or vehicle routing.
+
+### Native traffic and daylight playback
+
+The Traffic widget selects the recorded South Kensington demonstration used in the review video: 410 native 0.1 s samples, native road heights, front-bumper geometry and synchronized recorded signals. It uses the shared renderer, camera and timeline. Incompatible terrain/city context is hidden while this widget is active, and restored on leaving it. Overview remains the default. This is a local synthetic low-load demonstration, not an accepted full-city traffic model or capacity estimate. The public presentation adapter explicitly supports `experimental-offline-sumo-review-1`; it does not register this JSON as a V2 scientific Asset.
+
+Sunlight defaults to recorded samples with solar altitude above the horizon (frames 21–88 for this day). Original indices, times, all 100 payloads and quantitative values are unchanged. `solar_day=full` explicitly restores the full-day playback bounds. Both irradiance and shadow share those bounds; restarting playback returns to the first daylight sample.

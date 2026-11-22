@@ -2,7 +2,8 @@
   "schema_version": "2.0.0",
   "remote_bases": [
     "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/",
-    "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-solar-small-20261122/"
+    "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-solar-small-20261122/",
+    "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-traffic-native-20261122/"
   ],
   "resources": {
     "agents/demo_rev02/actors/pigeon.glb.gz": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/actors/demo_rev02/actors/pigeon.glb.gz",
@@ -39,8 +40,8 @@
     "scenes/imperial_corridor_8km/context/terrain/surface-manifest.json": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/context/terrain/surface-manifest.json",
     "scenes/imperial_corridor_8km/context/terrain/terrain.json": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/context/terrain/terrain.json",
     "scenes/imperial_corridor_8km/context/terrain/unclassified-base-exposed.f32.gz": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/context/terrain/unclassified-base-exposed.f32.gz",
-    "scenes/imperial_corridor_8km/context/traffic-am.bin": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/context/traffic-am.bin",
-    "scenes/imperial_corridor_8km/context/traffic-am.json": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/context/traffic-am.json",
+    "scenes/imperial_corridor_8km/context/traffic-native-validation.json": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-traffic-native-20261122/context/traffic-native-validation.json",
+    "scenes/imperial_corridor_8km/context/traffic-native.json": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-traffic-native-20261122/context/traffic-native.json",
     "scenes/imperial_corridor_8km/context/vector_landscape/00-wetland.f32": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/context/vector_landscape/00-wetland.f32",
     "scenes/imperial_corridor_8km/context/vector_landscape/01-track.f32": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/context/vector_landscape/01-track.f32",
     "scenes/imperial_corridor_8km/context/vector_landscape/02-sand.f32": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/context/vector_landscape/02-sand.f32",
@@ -65,7 +66,7 @@
     "scenes/imperial_corridor_8km/context/vector_roads_20261103/roads-audit.json": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/context/vector_roads_20261103/roads-audit.json",
     "scenes/imperial_corridor_8km/context/vector_roads_20261103/roads.glb.gz": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/context/vector_roads_20261103/roads.glb.gz",
     "scenes/imperial_corridor_8km/context/zebra-crossings.json": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/context/zebra-crossings.json",
-    "scenes/imperial_corridor_8km/derivation.json": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-solar-small-20261122/derivation.json",
+    "scenes/imperial_corridor_8km/derivation.json": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-traffic-native-20261122/derivation.json",
     "scenes/imperial_corridor_8km/models/buildings.glb.gz": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/models/buildings.glb.gz",
     "scenes/imperial_corridor_8km/native-resolution-audit.json": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/native-resolution-audit.json",
     "scenes/imperial_corridor_8km/physics/chunks/masks/lite_footprint/0000.gz": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/physics/chunks/masks/lite_footprint/0000.gz",
@@ -513,7 +514,7 @@
     "scenes/imperial_corridor_8km/physics/solar-day-provenance.json": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-solar-small-20261122/physics/solar-day-provenance.json",
     "scenes/imperial_corridor_8km/physics/solar-day-validation.json": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-solar-small-20261122/physics/solar-day-validation.json",
     "scenes/imperial_corridor_8km/physics/web/index.json": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/physics/web/index.json",
-    "scenes/imperial_corridor_8km/scene.json": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-solar-small-20261122/scene.json",
+    "scenes/imperial_corridor_8km/scene.json": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-traffic-native-20261122/scene.json",
     "tiles/detail_tiles_enu_20261030/index.json": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/tiles/detail_tiles_enu_20261030/index.json",
     "tiles/detail_tiles_enu_20261030/landmarks/abdus_salam_library.glb.gz": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/tiles/detail_tiles_enu_20261030/landmarks/abdus_salam_library.glb.gz",
     "tiles/detail_tiles_enu_20261030/landmarks/albert_bridge.glb.gz": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/tiles/detail_tiles_enu_20261030/landmarks/albert_bridge.glb.gz",
