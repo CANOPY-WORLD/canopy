@@ -1,3 +1,4 @@
+import {SCENE_PREVIEWS, createExternalPreview} from './external-preview.mjs';
 import {createInteriorLayer} from './interior.js';
 import {daylightWindow} from '../daylight-window.mjs';
 import { unpackShadow } from './shadow-codec.mjs';
@@ -44,6 +45,9 @@ import { recordedFrame } from '../scene-run.js';
 // the masks, the field layers (files, frame counts, clocks, display ranges) and the camera focus. South Kensington also
 // switches on the traffic / UAV / bird replay, the station tile, the OSM supplement and the building refinements.
 const SCENE = await loadScene();
+const externalPreviews = SCENE_PREVIEWS[SCENE.id] ?? [];
+const externalPreview = createExternalPreview(document.getElementById("tabs"));
+let selectedPreview = null;
 if (SCENE.corridor_context) await loadCorridorTerrain(SCENE.url);
 if (SCENE.wind_history) {
   SCENE.layers.wind = SCENE.wind_history;
@@ -240,6 +244,10 @@ function setupSceneUI() {
         ...(HAS_UAV_LAYER ? [['uavs', 'UAVs']] : []),
         ...(SCENE.traffic ? [['trafficMap', 'Traffic map']] : []),
       ]; // the close-up traffic and transport orbits stay reachable by ?shot=traffic|transport
+  for (const preview of externalPreviews) {
+    const index = shots.findIndex(([id]) => id === preview.after);
+    shots.splice(index < 0 ? shots.length : index + 1, 0, [preview.id, preview.label]);
+  }
   tabs.replaceChildren(
     ...shots.filter(([k]) => k !== 'birds' || SCENE.birds_enabled !== false).map(([k, t]) => mk('shot', 'shot', k, t)),
     ...PHASE_ORDER.map((k) => mk('field', 'field', k, TAB_NAME[k] ?? k)),
@@ -2041,9 +2049,11 @@ function updateTour(now, dt) {
   }
 }
 function setSectionUI() {
+  if (section !== "external") { externalPreview.hide(); selectedPreview = null; }
   shotButtons.forEach((b) =>
     b.classList.toggle(
       'active',
+      (section === 'external' && selectedPreview?.id === b.dataset.shot) ||
       section === 'campus' &&
         (replayLayer
           ? replayLayer.shot === b.dataset.shot
@@ -2073,6 +2083,18 @@ async function showCanopyBirds(){
 }
 
 function runCampus(shot = 'overview') {
+  const preview = externalPreviews.find(item => item.id === shot);
+  if (preview) {
+    viewIntent++; section = 'external'; selectedPreview = preview;
+    setPlaying(false); tour.active = false; tour.paused = true; flight = null;
+    ui.auto.checked = false;
+    corridorContext?.setPlaying(false); window.canopyBirds?.setActive(false);
+    if (interiorLayer?.journey) interiorLayer.journey.playing = false;
+    if (uavLayer) uavLayer.playing = false;
+    if (replayLayer) replayLayer.playing = false;
+    if (traffic) traffic.playing = false;
+    externalPreview.show(preview); setSectionUI(); return;
+  }
   if(shot === 'birds' && SCENE.birds_enabled === false)shot='overview';
   viewIntent++;
   corridorContext?.setPlaying(shot === 'traffic');
@@ -2462,6 +2484,7 @@ function syncNativeTrafficView(){
 }
 function animate(now) {
   requestAnimationFrame(animate);
+  if (section === "external") { last = now; return; }
   startCityLayers();
   detailTiles?.update(now);
   if (document.hidden) {
@@ -3054,7 +3077,7 @@ async function boot() {
     }
     if (qs.has('shot')) {
       if (replayLayer) replayLayer.startShot(qs.get('shot'));
-      else if (TOUR_SHOTS[qs.get('shot')] || qs.get('shot') === 'birds') runCampus(qs.get('shot'));
+      else if (TOUR_SHOTS[qs.get('shot')] || externalPreviews.some(item => item.id === qs.get('shot')) || qs.get('shot') === 'birds') runCampus(qs.get('shot'));
     }
     if (qs.get('hold') === '1') {
       if (replayLayer) replayLayer.shotUntil = Infinity;
