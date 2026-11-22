@@ -1,7 +1,7 @@
 {
-  "version": "7f1fa917fabb4a6013f3",
+  "version": "ae936c0b16ba3b48fe4b",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 281734173,
+  "bytes": 281737279,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -7720,8 +7720,8 @@
     },
     {
       "path": "viewer/3d/external-preview.mjs",
-      "bytes": 4078,
-      "sha256": "a998a20ac62b25748a1fc7b79f51dd57961ff32af4cde40d5d5ceccccc1bfed8"
+      "bytes": 4603,
+      "sha256": "955cb76a35f5f1a9fad8e28fe5942bf58e715c7d988859dc3db1fe99c807b06d"
     },
     {
       "path": "viewer/3d/field-colorbar.mjs",
@@ -7830,8 +7830,8 @@
     },
     {
       "path": "viewer/3d/style.css",
-      "bytes": 15473,
-      "sha256": "a651218d54f96e66ff4aa919c206c6b9acf17deb5318fc83d0ddb63855c84dd7"
+      "bytes": 15612,
+      "sha256": "dbd3728b3cd165ebede086a102b569b263691f8207104654d1cf76bf7b0c10df"
     },
     {
       "path": "viewer/3d/tile.js",
@@ -7865,8 +7865,8 @@
     },
     {
       "path": "viewer/3d/tube-intro.js",
-      "bytes": 3266,
-      "sha256": "c7f1b773cb840ab523a8b57f7990e0f8e1cb3e329fd743bf38734fce37fe65be"
+      "bytes": 5708,
+      "sha256": "fbc23006133f5bf1c34dd7678a2f0076e2d2e9a775a0984d7fe28806a9c7981f"
     },
     {
       "path": "viewer/3d/uav-layer.js",

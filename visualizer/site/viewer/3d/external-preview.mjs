@@ -12,11 +12,13 @@ export function createExternalPreview(tabs) {
   const host = document.createElement('section');
   host.id = 'external-preview'; host.hidden = true;
   document.body.append(host);
-  let selected = null, timer, controller;
+  let selected = null, timer, controller, onReady;
   const position = () => host.style.top = `${Math.ceil(tabs.getBoundingClientRect().bottom + 8)}px`;
   const observer = new ResizeObserver(position); observer.observe(tabs);
   window.addEventListener('resize', position);
   function hide() {
+    if (onReady) window.removeEventListener('message', onReady);
+    onReady = null; host.classList.remove('preview-ready');
     controller?.abort(); controller = null;
     clearTimeout(timer); selected = null; host.replaceChildren(); host.hidden = true;
     document.body.classList.remove('external-preview-active');
@@ -39,10 +41,12 @@ export function createExternalPreview(tabs) {
     link.rel = 'noopener noreferrer'; link.textContent = 'Open preview separately';
     status.append(message, link);
     const failed = () => { message.textContent = 'If the preview is unavailable, '; status.hidden = false; };
-    frame.addEventListener('load', () => {
-      if (config.intro && !frame.hasAttribute('srcdoc')) return;
-      clearTimeout(timer); status.hidden = true;
-    });
+    const ready = () => { clearTimeout(timer); status.hidden = true; host.classList.add('preview-ready'); };
+    onReady = event => {
+      if (event.source === frame.contentWindow && event.data?.type === 'canopy-preview-ready') ready();
+    };
+    window.addEventListener('message', onReady);
+    frame.addEventListener('load', () => { if (!config.intro) ready(); });
     frame.addEventListener('error', failed);
     timer = setTimeout(failed, 30000);
     host.append(frame, status);
@@ -59,6 +63,9 @@ export function createExternalPreview(tabs) {
         const style = doc.createElement('style');
         style.textContent = 'html:not([data-canopy-intro-ready]) #view{visibility:hidden}';
         doc.head.append(style);
+        const parentOrigin = doc.createElement('meta');
+        parentOrigin.name = 'canopy-parent-origin'; parentOrigin.content = location.origin;
+        doc.head.append(parentOrigin);
         const script = doc.createElement('script'); script.src = config.intro;
         doc.body.append(script);
         frame.srcdoc = '<!doctype html>' + doc.documentElement.outerHTML;
