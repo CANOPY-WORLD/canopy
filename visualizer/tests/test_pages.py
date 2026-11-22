@@ -156,6 +156,25 @@ class PublicationTests(unittest.TestCase):
             self.assertIn(f'scenes/{owner}/sample.bin', names)
             self.assertNotIn(f'scenes/{excluded}/sample.bin', names)
 
+    def test_immutable_reuse_uses_bounded_same_repository_snapshot(self):
+        self.manifest['schema_version']='1.1.0'
+        self.manifest['files'][0]['source_snapshot']='previous-v1'
+        self.remote()
+        records,_=pages.publications(self.root)
+        self.assertEqual(records['scenes/test/sample.bin']['path'],
+            'https://example.github.io/canopy-test/snapshots/previous-v1/sample.bin')
+
+    def test_reuse_cannot_escape_snapshot_or_hide_in_old_format(self):
+        self.manifest['schema_version']='1.1.0'
+        self.remote()
+        for value in ['../private','https://other','%2e%2e','test-v1','/bad']:
+            self.manifest['files'][0]['source_snapshot']=value
+            self.save()
+            ref=json.loads((self.data.parent/'publication.json').read_text())
+            ref['manifest']['sha256']=pages.checksum(self.data/'manifest.json')
+            (self.data.parent/'publication.json').write_text(json.dumps(ref))
+            with self.assertRaisesRegex(ValueError,'source snapshot'):pages.publications(self.root)
+
 
 if __name__ == '__main__':
     unittest.main()

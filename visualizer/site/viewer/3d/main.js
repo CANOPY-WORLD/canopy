@@ -1,3 +1,4 @@
+import { solarLight } from './solar-light.mjs';
 import { installColorbars } from './field-colorbar.mjs';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -1126,15 +1127,9 @@ function placeSun(altDeg, azDeg) {
     sun.intensity = SUN_DEFAULT.intensity;
     return;
   }
-  const alt = THREE.MathUtils.degToRad(Math.max(altDeg, 2)),
-    az = THREE.MathUtils.degToRad(azDeg),
-    r = 3000;
-  sun.position.set(
-    r * Math.cos(alt) * Math.sin(az),
-    r * Math.sin(alt),
-    -r * Math.cos(alt) * Math.cos(az),
-  );
-  sun.intensity = SUN_DEFAULT.intensity * (0.35 + 0.65 * Math.min(1, Math.max(0, altDeg) / 40));
+  const light = solarLight(altDeg, azDeg);
+  sun.position.set(...light.position);
+  sun.intensity = SUN_DEFAULT.intensity * light.intensity;
 }
 function frameIndex(step) {
   const own = (ph) => seqMode() && state.phase === ph,
