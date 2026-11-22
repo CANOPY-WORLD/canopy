@@ -6,6 +6,10 @@
     "steady_tracer": {
       "version": "1.0.0",
       "spec": "steady_tracer.json"
+    },
+    "traffic_transient": {
+      "version": "1.0.0",
+      "spec": "traffic_transient.json"
     }
   }
 }

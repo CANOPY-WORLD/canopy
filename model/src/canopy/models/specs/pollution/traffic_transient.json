@@ -1,0 +1,90 @@
+{
+  "schema_version": "2.0.0",
+  "model_id": "pollution",
+  "method_id": "traffic_transient",
+  "version": "1.0.0",
+  "category": "physics",
+  "adapter": "traffic_transient",
+  "title": "Transient SUMO exhaust tracer",
+  "description": "Conservative transient PMx increment with pressure-projected frozen recorded wind and sparse mass emissions.",
+  "inputs": {
+    "wind": {
+      "kind": "physics",
+      "required_layers": [
+        "vector_field"
+      ],
+      "required_artifacts": [
+        "transport_grid_json"
+      ]
+    },
+    "emissions": {
+      "kind": "physics",
+      "required_layers": [
+        "time_series"
+      ],
+      "required_artifacts": [
+        "emissions_json"
+      ]
+    }
+  },
+  "parameters": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "duration_s": {
+        "type": "number",
+        "default": 600,
+        "minimum": 1,
+        "maximum": 86400,
+        "x-unit": "s",
+        "description": "Duration within supplied emission coverage"
+      },
+      "frames": {
+        "type": "integer",
+        "default": 100,
+        "minimum": 2,
+        "maximum": 1000,
+        "x-unit": "1",
+        "description": "Number of output slices including the initial condition"
+      },
+      "slice_index": {
+        "type": "integer",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 127,
+        "x-unit": "1",
+        "description": "Horizontal output slice index"
+      },
+      "diffusivity_m2_s": {
+        "type": "number",
+        "default": 1,
+        "minimum": 0,
+        "maximum": 100,
+        "x-unit": "m2/s",
+        "description": "Assumed constant effective diffusivity"
+      },
+      "dt_max_s": {
+        "type": "number",
+        "default": 1,
+        "minimum": 0.001,
+        "maximum": 10,
+        "x-unit": "s",
+        "description": "Maximum internal timestep; also limited by positivity bound"
+      }
+    },
+    "required": []
+  },
+  "outputs": [
+    "scalar_field"
+  ],
+  "dependencies": [
+    "torch"
+  ],
+  "capabilities": {
+    "cancel": true,
+    "resume": false,
+    "progress": "steps"
+  },
+  "guide": "model/pollution/traffic_transient/README.md",
+  "example": "model/tests/fixtures/canopy/traffic_pollution.json"
+}
