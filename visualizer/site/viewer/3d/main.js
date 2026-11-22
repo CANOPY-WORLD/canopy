@@ -47,15 +47,9 @@ if (SCENE.wind_history) {
 }
 setDataBase(SCENE.physics, SCENE.protocol_display?.npy_transport);
 document.title = `${SCENE.title} · 3D`;
-// Lite mode: phones, tablets and low-memory machines get a proxy city extruded from the voxel masks instead of the
-// full model (which needs 1.5-2 GB of browser memory). ?lite=1 forces it, ?lite=0 forces the full model.
+// Complete geometry is the default. Light mode is an explicit opt-in.
 const qs0 = new URLSearchParams(location.search);
-const LITE =
-  qs0.get('lite') === '1' ||
-  (qs0.get('lite') !== '0' &&
-    (/iPhone|iPad|Android|Mobile/i.test(navigator.userAgent) ||
-      (navigator.maxTouchPoints > 1 && /Mac/.test(navigator.platform)) ||
-      (navigator.deviceMemory !== undefined && navigator.deviceMemory <= 4)));
+const LITE = qs0.get('lite') === '1';
 
 // ------------------------------------------------------------------ grid <-> model alignment
 // Field arrays: `cell_m` cells, `cols` columns (west->east) x `rows` rows (south->north). Model (glTF, Y up): column c
@@ -243,7 +237,7 @@ function setupSceneUI() {
         ...(SCENE.traffic ? [['trafficMap', 'Traffic map']] : []),
       ]; // the close-up traffic and transport orbits stay reachable by ?shot=traffic|transport
   tabs.replaceChildren(
-    ...shots.map(([k, t]) => mk('shot', 'shot', k, t)),
+    ...shots.filter(([k]) => k !== 'birds' || SCENE.birds_enabled !== false).map(([k, t]) => mk('shot', 'shot', k, t)),
     ...PHASE_ORDER.map((k) => mk('field', 'field', k, TAB_NAME[k] ?? k)),
     auto,
   );
@@ -273,6 +267,7 @@ function setupSceneUI() {
         return o;
       }),
     );
+    if (LAYERS.solar.shadow_only) { ui.solarMode.value='shadow'; $('solar-ghi-option').disabled=true; $('solar-ghi-option').hidden=true; }
     $('solar-ghi-option').textContent = LAYERS.solar.ghi_label ?? 'Irradiance';
     $('solar-shadow-option').textContent = LAYERS.solar.shadow_label ?? 'Shadows';
   }
@@ -2052,6 +2047,7 @@ let savedLandscapeDisplay={ground:true,trees:true};
 let canopyBirdsLoading=null;
 let fieldPreparation=null, fieldInitializationError=null, viewIntent=0;
 async function showCanopyBirds(){
+  if(SCENE.birds_enabled === false)return;
   if(!canopyBirdsLoading)canopyBirdsLoading=import('./canopy-birds-preview.js').then(m=>m.installBirdPreview(window.viewer,invalidate));
   const birds=await canopyBirdsLoading;
   const selected=section==='campus'&&tour.shot==='birds';
@@ -2060,6 +2056,7 @@ async function showCanopyBirds(){
 }
 
 function runCampus(shot = 'overview') {
+  if(shot === 'birds' && SCENE.birds_enabled === false)shot='overview';
   viewIntent++;
   corridorContext?.setPlaying(shot === 'traffic');
   window.canopyBirds?.setActive(shot==='birds');
@@ -2410,21 +2407,29 @@ let last = performance.now(),
   lastTrafficStats = -Infinity;
 let corridorContext = null;
 let contextStarted = false;
+let contextReady = null;
 let detailTiles = null; // All detailed tiles and landmarks stay resident in full mode.
-function animate(now) {
-  requestAnimationFrame(animate);
+function startCityLayers() {
   if (!detailTiles && MODEL.detail_tiles && !LITE && model.children.length) {
-    detailTiles = createDetailTiles({ scene, camera, coarse: model, priorityCentre: qs0.get('shot')==='uavs' ? SCENE.uav?.focus_world_m : null, indexUrl: SCENE.url(MODEL.detail_tiles), onChange: invalidate });
+    detailTiles = createDetailTiles({ scene, camera, coarse: model, priorityCentre: qs0.get('shot')==='uavs' ? SCENE.uav?.focus_world_m : null, indexUrl: SCENE.url(MODEL.detail_tiles), onChange: () => {
+      invalidate();
+      if(detailTiles && !ui.loading.classList.contains('hide'))setLoadingStatus(`Preparing detailed geometry · ${detailTiles.progress.loaded} / ${detailTiles.progress.total} tiles`);
+    } });
     window.cityDetailTiles = detailTiles;
     detailTiles.setEnabled(ui.lModel.checked);
   }
-  detailTiles?.update(now);
   if (!contextStarted && model.children.length && SCENE.corridor_context) {
     contextStarted = true;
-    createCorridorContext({scene, config:SCENE.corridor_context, url:SCENE.url, onChange:invalidate})
+    contextReady = createCorridorContext({scene, config:SCENE.corridor_context, url:SCENE.url, onChange:invalidate})
       .then(value => {corridorContext=value; window.corridorContext=value; value.setPlaying(section === 'campus' && tour.shot === 'traffic' && qs0.get('play') !== '0'); invalidate();})
-      .catch(error => {console.error(error); document.querySelector('#corridor-traffic-time').textContent = 'Context failed: ' + error.message;});
+      .catch(error => {console.error(error); document.querySelector('#corridor-traffic-time').textContent = 'Context failed: ' + error.message;throw error;});
+    contextReady.catch(()=>{}); // Boot awaits this before revealing the city.
   }
+}
+function animate(now) {
+  requestAnimationFrame(animate);
+  startCityLayers();
+  detailTiles?.update(now);
   if (document.hidden) {
     last = now;
     return;
@@ -2952,9 +2957,9 @@ async function boot() {
     });
     setupTransportUI();
   }
-  // The UAV replay already carries its wind samples and collision evidence.
-  // Let its city view open while independent field masks load in the background.
-  if(qs0.get('shot')!=='uavs'||!HAS_UAV_LAYER||LITE){await dataReady;if(dataError)throw dataError;}
+  await dataReady;if(dataError)throw dataError;
+  startCityLayers();
+  await Promise.all([detailTiles?.complete,contextReady]);
   ui.loading.classList.add('hide');
   try { const saved = JSON.parse(sessionStorage.getItem('canopy-download-timing') || 'null'); if(saved && Date.now()-saved.finished<600000){ const seconds=Math.round((Date.now()-saved.started)/1000);const download=Math.round((saved.finished-saved.started)/1000);const note=document.createElement('div');note.textContent=`Ready in ${Math.floor(seconds/60)}m ${seconds%60}s · Download ${Math.floor(download/60)}m ${download%60}s`;note.style.cssText='position:fixed;bottom:90px;left:24px;padding:10px 14px;background:#142a32dd;color:#e4ebe4;font:12px system-ui;z-index:15;border-radius:6px';(document.getElementById('viewer-details') ?? document.body).append(note);setTimeout(()=>note.remove(),15000);sessionStorage.removeItem('canopy-download-timing');} } catch {}
 
@@ -3038,7 +3043,7 @@ async function boot() {
     }
     if (qs.has('mode')) ui.mode.value = qs.get('mode');
     if (qs.has('phase') && has(qs.get('phase'))) state.phase = qs.get('phase');
-    if (qs.has('solar')) ui.solarMode.value = qs.get('solar'); // ?solar=shadow|ghi
+    if (qs.has('solar') && !LAYERS.solar?.shadow_only) ui.solarMode.value = qs.get('solar'); // ?solar=shadow|ghi
     if (qs.has('day')) ui.solarDate.value = qs.get('day'); // ?day=20260621|20261221
     if (qs.has('diurnal')) ui.diurnalMode.value = qs.get('diurnal'); // ?diurnal=ground|air0|air12
     solarPhaseSetup();

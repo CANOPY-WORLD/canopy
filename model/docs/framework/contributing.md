@@ -17,3 +17,14 @@ A cross-component feature must update both sides of its interface. For example, 
 Before finishing, run the checks required by the affected standards, regenerate the guide inventory when its source changes, and run `python model/tools/check_repository.py`. Report actual behavior and verification limits. Keep original source hashes, history, units, missing masks and recorded timestamps intact.
 
 The [data protocol](protocol-v2.md) and [Method lifecycle](method-guide.md) specify the contracts. The [component inventory](../../../visualizer/guide/inventory.json) is generated review data; the Python registry and runtime manifests remain authoritative.
+
+## Pull request, review and merge
+
+All changes to `main`, including agent work and documentation changes, use a feature branch and pull request.
+
+1. Complete the change on a feature branch, run the applicable checks, and open a PR describing the problem, resulting behavior and actual validation evidence.
+2. Review the actual diff for correctness, regressions, interface compatibility and scope. Resolve findings and conversations, and rerun affected checks after fixes. State whether the review was a self-review or an independent review; passing tests alone is not a review.
+3. Report the PR link, review findings, fixes and remaining validation limits to the user. Leave the PR open and wait for explicit user confirmation before merging. Approval applies to the reviewed change; material changes after approval require another review and confirmation.
+4. After confirmation, merge through GitHub without bypassing protection. If publication is authorized for the task, follow the [publishing standard](../../../visualizer/docs/publishing.md) from clean, synchronized `main`.
+
+A request to implement or push changes does not authorize a merge. Do not enable auto-merge while waiting for confirmation. GitHub currently requires a PR and resolved review conversations, but no independent approval or CI context is mandatory in its branch settings. Those settings do not replace this workflow or the user's merge decision.

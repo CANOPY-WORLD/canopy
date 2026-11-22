@@ -87,7 +87,7 @@ The builder still supports explicit local `data/` publications without a referen
 
 The worker preserves Range requests, gzip decoding, cancellation and bounded retries for transient network failures or HTTP 502/503/504. Data requests use CORS mode, omit credentials and do not forward application authorization headers. Redirects to undeclared targets are rejected. London's two Pages sites currently share the `canopy-world.github.io` origin; a future host on another origin must support browser CORS. Public Pages responses were checked to return `Access-Control-Allow-Origin: *`.
 
-`scenario-index.json` exposes each Scenario's Viewer link, repository, pinned revision, data website, snapshot manifest and download-list URL. `download-manifests/<scenario_id>.json` contains shared frontend files plus only that Scenario's data. The root `download-manifest.json` remains an alias for the default Scenario's list. The opening page selects `?scene=<id>` or the configured default, verifies file lengths and SHA-256, and caches the result under logical Viewer URLs. The direct Viewer loads resources on demand. A completed cache supports offline Viewer reloads.
+`scenario-index.json` exposes each Scenario's Viewer link, repository, pinned revision, data website, snapshot manifest and download-list URL. `download-manifests/<scenario_id>.json` contains shared frontend files plus only that Scenario's data. The root `download-manifest.json` remains an alias for the default Scenario's list. The opening page selects `?scene=<id>` or the configured default, verifies file lengths and SHA-256, and caches the result under logical Viewer URLs. Direct Viewer links use the same complete download and verification step before initializing the scene. The loading page stays visible until all detailed building tiles and the road/traffic context are ready. Complete geometry is the default on every device; `?lite=1` explicitly selects voxel geometry. A completed cache supports offline Viewer reloads.
 
 Moving the payloads changes their hosting location, not their transfer size: a complete London offline download is still approximately 563 MB. Additional Scenarios do not enter London's download list. Cache versions derive from the selected file inventory, including the routing configuration.
 
@@ -121,7 +121,7 @@ Use a new output directory for each build. Open `/canopy/`, `/canopy/viewer/3d/?
 
 `build_pages.py` verifies the locked inventories without network access, rejects stale generated indexes unless `--refresh` is requested, and copies only selected frontend files and metadata. Remote bytes are reported separately and excluded from the artifact size. A metadata build does not claim to verify live payload availability; that is the remote check above.
 
-Commit the references, docs, code and generated indexes on a feature branch and open a pull request. `main` is protected, including administrators: PRs and resolved conversations are required; force pushes and deletion are disabled. There are currently no mandatory independent approvals or required CI contexts. Run the checks above and attach the actual results to the PR.
+Commit the references, docs, code and generated indexes on a feature branch and open a pull request. `main` is protected, including administrators: PRs and resolved conversations are required; force pushes and deletion are disabled. There are currently no mandatory independent approvals or required CI contexts. Run the checks above and attach the actual results to the PR. The [review and merge workflow](../../model/docs/framework/contributing.md#pull-request-review-and-merge) also requires reviewing the diff, reporting findings and validation limits, and obtaining the user's explicit confirmation before an agent merges. Passing checks or GitHub reporting a PR as mergeable does not grant that confirmation.
 
 For an organization maintainer, after committing on a feature branch:
 
@@ -131,7 +131,7 @@ git push -u origin HEAD
 gh pr create --repo CANOPY-WORLD/canopy --base main --body-file cache/pr-description.md
 ```
 
-Merge the reviewed, validated PR through GitHub. Then synchronize the formal source branch and publish:
+Leave the PR open until the user confirms the merge; do not enable auto-merge while waiting. After confirmation, merge the reviewed, validated PR through GitHub. Only when publication is also authorized for the task, synchronize the formal source branch and publish:
 
 ```sh
 git switch main

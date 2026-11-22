@@ -1,0 +1,24 @@
+import {readFile} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+import {pathToFileURL} from 'node:url';
+const base=process.cwd(),threeURL=pathToFileURL(base+'/visualizer/site/vendor/three/build/three.module.js').href;
+const THREE=await import(threeURL);
+globalThis.location={search:''};globalThis.document={title:''};let disposed=0;
+let releaseLoads;const loadGate=new Promise(resolve=>{releaseLoads=resolve;});
+globalThis.MockLoader=class {setMeshoptDecoder(){return this;}async loadAsync(){await loadGate;const geometry=new THREE.BoxGeometry(),tex=new THREE.Texture({width:256,height:128}),mat=new THREE.MeshStandardMaterial({map:tex});geometry.addEventListener('dispose',()=>disposed++);const scene=new THREE.Group();scene.add(new THREE.Mesh(geometry,mat));return {scene,parser:{associations:new Map([[tex,{textures:0}]]),json:{textures:[{source:0}],images:[{uri:'../textures/shared.png'}]}}};}};
+globalThis.fetch=async()=>({ok:true,json:async()=>({tiles:Array.from({length:8},(_,i)=>({id:String(i),centre_xz:[i*1000,0],half_m:500,file:`tiles/${i}.glb`,landmarks:[]}))})});
+let code=await readFile('visualizer/site/viewer/3d/complete-detail-tiles.js','utf8');code=code.replace("import {MeshoptDecoder} from 'three/addons/libs/meshopt_decoder.module.js';",'const MeshoptDecoder={};').replace("import {drapeBuildings} from './corridor-terrain.js';",'const drapeBuildings=()=>{};').replace("import * as THREE from 'three';",`import * as THREE from '${threeURL}';`).replace("import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';",'const GLTFLoader=globalThis.MockLoader;');
+const {createDetailTiles}=await import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));
+const scene=new THREE.Scene(),coarse=new THREE.Group(),camera=new THREE.PerspectiveCamera();coarse.add(new THREE.Mesh(new THREE.BoxGeometry(),new THREE.MeshBasicMaterial()));scene.add(coarse);camera.position.set(0,1000,0);camera.lookAt(0,0,0);
+const d=createDetailTiles({scene,camera,coarse,indexUrl:'http://localhost/index.json'});await d.ready;let completed=false;d.complete.then(()=>{completed=true;});await new Promise(setImmediate);assert.equal(completed,false);assert.equal(d.progress.complete,false);releaseLoads();
+const settle=async()=>{for(let i=0;i<15;i++)await new Promise(setImmediate);};await settle();
+assert.equal(await d.complete,8);assert.equal(completed,true);assert(d.loaded.length===8);assert.equal(d.stats.textures,1);assert.equal(d.stats.materials,1);assert(coarse.visible);
+camera.position.set(7000,1000,0);camera.lookAt(7000,0,0);d.update(performance.now()+6000);await settle();
+assert.equal(d.stats.evictions,0);assert.equal(disposed,0);assert(d.loaded.includes('7'));assert(d.loaded.includes('0'));assert.equal(d.stats.textures,1);assert.equal(d.stats.materials,1);
+d.setEnabled(false);d.update(performance.now()+20000);await settle();assert.equal(d.stats.textures,0);assert.equal(d.stats.materials,0);assert.equal(d.loaded.length,0);assert(!coarse.visible);
+console.log('PASS: full-city loading, shared textures/materials, no camera-based eviction, disable cleanup.');
+
+globalThis.fetch=async()=>({ok:false,status:503});
+const failed=createDetailTiles({scene,camera,coarse:new THREE.Group(),indexUrl:'http://localhost/missing.json'});
+await assert.rejects(failed.complete,/Detail index HTTP 503/);
+assert.equal(failed.progress.complete,false);

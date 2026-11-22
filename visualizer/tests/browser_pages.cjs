@@ -29,6 +29,17 @@ const puppeteer = require(process.env.PUPPETEER_MODULE || 'puppeteer-core');
     const direct = await page.evaluate(() => ({scene: viewer.SCENE.id, children: viewer.model.children.length,
       controller: !!navigator.serviceWorker.controller, error: document.getElementById('viewer-error-message').textContent}));
     assert.equal(direct.scene, 'imperial_corridor_8km'); assert(direct.controller); assert(direct.children > 0); assert.equal(direct.error, '');
+    const opening = await page.evaluate(async baseURL => {
+      const metadata = await caches.open('canopy-preload-metadata');
+      const manifest = await (await metadata.match(new URL('download-manifests/imperial_corridor_8km.json',baseURL))).json();
+      const stored = await caches.open('canopy-complete-'+manifest.version);
+      return {expected:manifest.files.length,actual:(await stored.keys()).length,
+        details:cityDetailTiles.progress,tiles:cityDetailTiles.loaded.length,context:!!window.corridorContext};
+    },base.href);
+    assert.equal(opening.actual,opening.expected);assert(opening.details.complete);
+    assert.equal(opening.tiles,opening.details.total);assert(opening.context);
+    assert.deepEqual(opening.details.errors,[]);
+    console.log('Opening waits for all cached files, detail tiles and city context',JSON.stringify(opening));
     console.log('Direct entry and full GLB geometry loaded');
     const frames = await page.evaluate(async () => {
       const {Npy} = await import('../npy.js');
