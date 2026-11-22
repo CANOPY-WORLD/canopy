@@ -49,6 +49,7 @@ try{
    const recorder=await page.screencast({path:`${out}/demo.webm`,format:'webm',fps:24,ffmpegPath:process.env.FFMPEG_PATH});
    await sleep(2000);await click('londonTube');await sleep(9000);
    await page.mouse.move(660,420);await page.mouse.down();await page.mouse.move(720,430,{steps:25});await page.mouse.up();await sleep(2000);
+   assert(await page.evaluate(()=>viewer.camera.position.distanceTo(canopyTube.pose.pos)<2));
    await click('interior');await sleep(16000);await click('whiteCity');await sleep(3500);await recorder.stop();
  }
  assert.deepEqual(errors,[]);fs.writeFileSync(`${out}/verification.json`,JSON.stringify({passed:true,errors,checks:['single scene and renderer','source checksum','failure and retry','late-load cancellation','pause seek manual takeover','Tube Overview UAV Traffic and field to I-HUB','reduced motion','iPad viewport']},null,2));console.log('PASS native Tube / I-HUB transitions');

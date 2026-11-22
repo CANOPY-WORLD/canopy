@@ -34,7 +34,9 @@ export async function createTubeLayer({scene, config, signal}) {
   const light = new THREE.HemisphereLight(0xffffff,0x777b85,2); group.add(light);
   local.updateMatrixWorld(true);
   const world = p => local.localToWorld(new THREE.Vector3(...p)).toArray();
-  const position = world([30,2.35,-3.1]), target = world([0,2,-3.1]);
+  // A short look target keeps drag-to-look inside the platform instead of orbiting
+  // around a point thirty metres away and swinging through the tunnel wall.
+  const position = world([30,2.35,-3.1]), target = world([28,2.3266666667,-3.1]);
   const journey = createCameraJourney([
     {time:2.8,position:[east+60,100,-north+100],target:[east,0,-north]},
     {time:5,position,target},
