@@ -1,3 +1,4 @@
+import {createTrafficContextMask} from './traffic-context-mask.js';
 import {createNativeTraffic} from './native-traffic.js';
 import {createRoadCrossings} from './road-crossings.js';
 import {interpolateVehicle} from '../traffic-interpolation.mjs';
@@ -49,19 +50,22 @@ export async function createCorridorContext({scene, config, url, onChange}) {
     panel.querySelector('#corridor-traffic-visible').closest('label').lastChild.textContent=' Recorded South Kensington SUMO demo';
     for(const note of panel.querySelectorAll('p'))if(note.textContent.startsWith('Independent traffic clock'))note.textContent='Native 0.1 s recorded trajectories and synchronized signals. Synthetic low-load demonstration; not observed traffic or validated citywide capacity.';
     let active=false;
-    const preserved=new Map();
+    const contextMask=createTrafficContextMask(native.coverage);
+    // Replace only overlapping road/fixture presentation, preserving buildings,
+    // land, vegetation and the rest of the city's road network.
+    for(const root of [roads,elevatedRoads,signals,crossings])if(root)contextMask.add(root,'outside');
+    for(const root of [native.roads,native.facilities.group])contextMask.add(root,'inside');
     function setNativeActive(value){
       if(active===value)return;
       active=value;native.group.visible=value;
-      if(value){for(const child of group.children)if(child!==native.group){preserved.set(child,child.visible);child.visible=false;}}
-      else{for(const [child,visible] of preserved)child.visible=visible;preserved.clear();syncGround();}
+      contextMask.setActive(value);syncGround();
       onChange();
     }
-    panel.querySelector('#corridor-terrain-status').textContent='Traffic uses recorded native roads and heights, matching the reviewed SUMO clip. City context remains available in Overview.';
+    panel.querySelector('#corridor-terrain-status').textContent='Traffic shares the city buildings and landscape in their original flat datum. Recorded relative road and vehicle heights are preserved; terrain relief returns outside Traffic.';
     panel.querySelector('#corridor-signals-status').textContent='Recorded SUMO signal states are synchronized to the traffic clock.';
     return {group,ground,roads,elevatedRoads,terrain,signals,furniture,vegetation:landscape.vegetation,landscapeMeta:landscape.meta,cars:native.cars,meta:native.meta,frames:native.frames,
       nativeTraffic:true,setNativeActive,get frame(){return native.frame},get position(){return native.position},get playing(){return native.playing},show:native.show,setPlaying:native.setPlaying,
-      tick(dt){if(active)native.tick(dt);else syncGround();}};
+      tick(dt){syncGround();if(active)native.tick(dt);}};
   }
   const [meta,response]=await Promise.all([fetch(url(config.traffic_meta)).then(r=>{if(!r.ok)throw Error('Traffic metadata unavailable');return r.json()}),fetch(url(config.traffic_binary))]);
   if(!response.ok)throw Error('Traffic frames unavailable');
