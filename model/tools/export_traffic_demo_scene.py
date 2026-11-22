@@ -30,7 +30,7 @@ def export(run, output, begin, end, center, radius, osm=None):
         for lane in edge.findall('lane'):
             points=shape(lane.get('shape'))
             if any(nearby(*p[:2]) for p in points):
-                lanes.append({'id':lane.get('id'),'width':float(lane.get('width','3.2')),'internal':edge.get('function')=='internal','shape':points})
+                lanes.append({'id':lane.get('id'),'width':float(lane.get('width','3.2')),'internal':edge.get('function')=='internal','from_junction':edge.get('from'),'to_junction':edge.get('to'),'shape':points})
     for junction in root.findall('junction'):
         points=shape(junction.get('shape',''))
         if points and any(nearby(*p[:2]) for p in points):junctions.append({'id':junction.get('id'),'shape':points})

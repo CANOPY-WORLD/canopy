@@ -86,3 +86,11 @@ styles; fixture dimensions are illustrative. This presentation adapter is not
 a registered Asset widget and does not replace the published London dataset.
 See the [demo run guide](../model/traffic/demo/README.md) for source and export
 requirements.
+
+Native demo review groups lamps by incoming edge and identical recorded state
+history, placing a representative fixture outside the leftmost lane. Different
+state histories stay separate; this is schematic placement, not surveyed poles.
+`native-road-surface.js` joins curved lane strip vertices and matches junction
+boundary heights to explicitly connected lane ends. Markings follow the displayed
+surface. This presentation correction preserves native samples and does not
+repair the underlying SUMO elevation assumptions or certify network geometry.

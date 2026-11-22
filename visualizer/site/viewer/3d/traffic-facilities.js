@@ -2,20 +2,45 @@ import * as THREE from 'three';
 import {signalStateAt,signalLamps} from '../traffic-signal-state.mjs';
 
 // Presentation of declared native controls and mapped crossing ways only.
-export function createTrafficFacilities(data){
+export function createTrafficFacilities(data,{surfaceHeight=(x,y,z)=>z}={}){
  const group=new THREE.Group();group.name='Recorded signals and mapped crossings';
  const black=new THREE.MeshStandardMaterial({color:0x24292e,roughness:.8});
  const white=new THREE.MeshBasicMaterial({color:0xfaf7df,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4});
- const paint=[],heads=[],stops=new Set(),seen=new Set();
+ const paint=[],heads=[],stops=new Set();
+ // One fixture per native incoming edge when every represented link has the same
+ // recorded state history. Different movements retain separate heads.
+ const buckets=new Map();
+ for(const h of data.signals?.heads??[]){
+  const edge=h.edge??h.lane.replace(/_\d+$/,'');
+  const history=data.signals.timeline[h.tls];
+  const signature=history?.length?history.map(e=>e.state[h.link_index]).join(''):String(h.link_index);
+  const key=JSON.stringify([h.tls,edge,signature]);
+  const items=buckets.get(key)??[];items.push(h);buckets.set(key,items);
+ }
+ const fixtures=[];
+ for(const items of buckets.values()){
+  // Leftmost lane in ENU: place the representative pole at the road edge.
+  const base=items[0],nx=-Math.sin(base.heading),ny=Math.cos(base.heading);
+  const h=items.reduce((a,b)=>b.position[0]*nx+b.position[1]*ny+b.lane_width/2>a.position[0]*nx+a.position[1]*ny+a.lane_width/2?b:a);
+  fixtures.push(h);
+ }
  function rectangle(center,dx,dy,length,width){
-  const [x,y,z]=center,points=[[-length/2,-width/2],[length/2,-width/2],[length/2,width/2],[-length/2,width/2]].map(([a,b])=>[x+dx*a-dy*b,z+.065,-(y+dy*a+dx*b)]);
-  for(const i of [0,1,2,0,2,3])paint.push(...points[i]);
+  const [x,y,z]=center;
+  const point=(a,b)=>{const px=x+dx*a-dy*b,py=y+dy*a+dx*b;return [px,surfaceHeight(px,py,z)+.065,-py]};
+  const columns=Math.max(1,Math.ceil(length/.25)),rows=Math.max(1,Math.ceil(width/.25));
+  for(let i=0;i<columns;i++)for(let j=0;j<rows;j++){
+   const a=-length/2+i*length/columns,b=-width/2+j*width/rows;
+   const points=[point(a,b),point(a+length/columns,b),point(a+length/columns,b+width/rows),point(a,b+width/rows)];
+   for(const k of [0,1,2,0,2,3])paint.push(...points[k]);
+  }
  }
  for(const h of data.signals?.heads??[]){
-  const signature=(data.signals.timeline[h.tls]??[]).map(e=>e.state[h.link_index]).join('');
-  const key=`${h.tls}/${h.lane}/${signature||h.link_index}`;if(seen.has(key))continue;seen.add(key);
+  if(stops.has(h.lane))continue;stops.add(h.lane);
+  const [x,y,z]=h.position,dx=Math.cos(h.heading),dy=Math.sin(h.heading);
+  rectangle([x-dx*.35,y-dy*.35,z],dx,dy,.25,h.lane_width-.15);
+ }
+ for(const h of fixtures){
   const [x,y,z]=h.position,dx=Math.cos(h.heading),dy=Math.sin(h.heading),offset=h.lane_width/2+.5;
-  if(!stops.has(h.lane)){rectangle([x-dx*.35,y-dy*.35,z],dx,dy,.25,h.lane_width-.15);stops.add(h.lane)}
   const fixture=new THREE.Group();fixture.position.set(x-dy*offset,z,-y-dx*offset);fixture.rotation.y=h.heading-Math.PI/2;
   const pole=new THREE.Mesh(new THREE.CylinderGeometry(.07,.09,3.8,8),black);pole.position.y=1.9;fixture.add(pole);
   const housing=new THREE.Mesh(new THREE.BoxGeometry(.7,1.95,.35),black);housing.position.y=3.65;fixture.add(housing);

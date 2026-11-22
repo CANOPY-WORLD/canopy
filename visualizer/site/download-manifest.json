@@ -1,7 +1,7 @@
 {
-  "version": "37f6f4c522464873492f",
+  "version": "17dee42a69eb5678e67b",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 233136784,
+  "bytes": 233141476,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -6794,6 +6794,11 @@
       "sha256": "9edfff4afafb177080691229f4053bec47732af078842348b3ba9fc997bf9355"
     },
     {
+      "path": "viewer/3d/native-road-surface.js",
+      "bytes": 3553,
+      "sha256": "c51b744766b510d20d7313e26dd468589fa91f0348a54237950368ee4582bd90"
+    },
+    {
       "path": "viewer/3d/opening.css",
       "bytes": 2653,
       "sha256": "e0a5a3b5cb973218dfeef8764738489e821c859f705c03baffff01e55e37883c"
@@ -6850,8 +6855,8 @@
     },
     {
       "path": "viewer/3d/traffic-facilities.js",
-      "bytes": 3766,
-      "sha256": "88976023ab4789eb6cf0216631ec257d1988b6fb144519d2104e1dba85976c2d"
+      "bytes": 4905,
+      "sha256": "abaf971820231e9fee522ec10d6031f2ca132c33435787f250ad8765aef282d9"
     },
     {
       "path": "viewer/3d/traffic-signals-provenance.json",

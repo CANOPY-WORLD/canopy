@@ -22,4 +22,9 @@ test('native fixtures update actual lamps and clear them outside recording',asyn
  facilities.setTime(7);assert.deepEqual(lamps.map(m=>m.emissiveIntensity),[0,0,2.5]);
  facilities.setTime(10);assert.deepEqual(lamps.map(m=>m.emissiveIntensity),[0,0,0]);
  facilities.dispose();
+ const head=(lane,index,y)=>({tls:'s',lane,link_index:index,position:[10,y,2],heading:0,lane_width:3});
+ const shared={recorded_interval:[5,10],timeline:{s:[{time:0,state:'rr'},{time:7,state:'GG'}]},heads:[head('edge_0',0,20),head('edge_1',1,23)]};
+ const grouped=createTrafficFacilities({signals:shared});assert.equal(grouped.headCount,1);
+ assert.equal(grouped.group.children[0].position.z,-25);grouped.dispose();
+ const separate=createTrafficFacilities({signals:{...shared,timeline:{s:[{time:0,state:'rG'},{time:7,state:'Gr'}]}}});assert.equal(separate.headCount,2);separate.dispose();
 });
