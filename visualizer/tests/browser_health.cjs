@@ -27,6 +27,8 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
       await page.goto(base + '/src/visualization/viewer/?scenario=health_example', {waitUntil: 'networkidle0'});
       await page.waitForFunction(() => window.urbanViewer && document.querySelector('#status').textContent.includes('8 / 8 layers ready'));
       await page.waitForFunction(() => document.documentElement.scrollWidth <= innerWidth);
+      // Import retained compatibility code without activating its private planning UI.
+      await page.evaluate(() => import('../healthy-route/canopy-pedestrian.mjs'));
       assert.equal((await page.$$('.layer input[type=checkbox]')).length, 8);
       assert.equal((await page.$$('canvas.series')).length, 7);
       const recorded = await page.evaluate(() => {

@@ -29,6 +29,8 @@ The Method uses the standard `describe/validate/prepare/execute/export` lifecycl
 
 The original `wave_cvae` route optimizer remains available for authorized researchers with their private history and city bundle; it is not silently replaced by cold-start inference. Its export now includes trajectory, breathing and available environmental layers as well as the complete route artifact. Exact personalized replay still requires private inputs. The public runnable path above solves the repository-only handover without publishing them.
 
+The private route export preserves every route bend, waiting boundary and breathing-update timestamp in its shared sample axis; the complete original route remains an artifact. Environmental layers with missing values are omitted rather than filled for display, while their original missing values remain in `route.json`. Retained compatibility UI modules are inactive and reuse the shared half-float decoder; they do not replace the scientific Viewer or add a public planning API. The example launcher honors the configured cache root.
+
 ## Future city presentation
 
 This PR delivers the local model handover, not a hosted city health widget or live sensing. A future city integration must use the shared Canopy renderer and surrounding buildings, a declarative Scenario preset, exact retained result Asset references and the selected-widget timeline. Opening that widget must only load recorded results. Keep the public widget/canvas/playback layout minimal and scientific inspection in the local Viewer or supported details host.

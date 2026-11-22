@@ -60,6 +60,28 @@ class HealthyRoute(Method):
         times=[float(s['seconds']) for s in selected['profile']]
         if not times or not np.isfinite(times).all() or any(b<a for a,b in zip(times,times[1:])):
             raise ValueError('Route samples must be finite and ordered')
+        timeline=selected.get('timeline',[])
+        if not timeline:raise ValueError('A complete route timeline is required')
+        end=0.
+        for event in timeline:
+            start,stop=float(event['start']),float(event['end'])
+            points=np.asarray(event['points'],dtype=float)
+            if not np.isfinite([start,stop]).all() or stop<=start or abs(start-end)>1e-7:
+                raise ValueError('Route timeline must be finite, contiguous and increasing')
+            if points.ndim!=2 or points.shape[1]!=3 or len(points)==0 or not np.isfinite(points).all():
+                raise ValueError('Route timeline requires finite ENU positions')
+            times.extend([start,stop]);end=stop
+            if event['kind']!='Waiting':
+                distances=np.asarray(event['distance'],dtype=float)
+                if distances.shape!=(len(points),) or not np.isfinite(distances).all() or distances[0]!=0 or distances[-1]<=0 or (np.diff(distances)<0).any():
+                    raise ValueError('Route distances must be finite and nondecreasing from zero')
+                # Preserve every bend instead of interpolating across a street corner.
+                times.extend((start+(stop-start)*distances/distances[-1]).tolist())
+        breathing_times=[float(row['seconds']) for row in selected.get('breathing_profile',[])]
+        if not np.isfinite(breathing_times).all() or any(b<a for a,b in zip(breathing_times,breathing_times[1:])):
+            raise ValueError('Breathing samples must be finite and ordered')
+        times.extend(breathing_times)
+        if min(times)<0 or max(times)>end+1e-7:raise ValueError('Samples outside route timeline')
         # Adjacent events may share a boundary; preserve full route samples in the artifact.
         times=sorted(set(times))
         write(folder/'route.json',route)

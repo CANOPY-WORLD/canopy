@@ -1,5 +1,5 @@
 import {solarBracket,solarValue,sampleSolar,thermalProxy} from './solar-environment.mjs';
-import {f16} from '../../npy.js';
+import {f16} from '../shared/npy.mjs';
 
 export function bracket(times,t){
   if(!Number.isFinite(t)||t<times[0]||t>times.at(-1))return null;

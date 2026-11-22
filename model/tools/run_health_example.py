@@ -10,7 +10,7 @@ from canopy.visualization.profile import select
 
 def prepare(workspace=None,request_path=None):
     if workspace is None:
-        cache=ROOT/'cache/health-examples';cache.mkdir(parents=True,exist_ok=True)
+        cache=Storage.load(ROOT).cache_root/'health-examples';cache.mkdir(parents=True,exist_ok=True)
         workspace=Path(tempfile.mkdtemp(prefix='inference-',dir=cache))
     else:
         workspace=Path(workspace).resolve();workspace.mkdir(parents=True,exist_ok=False)

@@ -8,6 +8,18 @@ from canopy.models.registry import describe,implementation
 from common.contract import validate
 
 class PublicInferenceTests(unittest.TestCase):
+    def test_runtime_snapshot_retains_inference_assets(self):
+        import tarfile
+        from canopy.running.provenance import snapshot_runtime
+        with tempfile.TemporaryDirectory() as d:
+            target=Path(d)/'source.tar.gz';snapshot_runtime(target)
+            with tarfile.open(target) as archive:
+                inventory=json.load(archive.extractfile('runtime-source.json'))['files']
+                for name in ('state_cvae.pt','scaler.json','manifest.json'):
+                    path='src/healthy_route/assets/'+name
+                    data=archive.extractfile(path).read()
+                    self.assertEqual(data,(ASSETS/name).read_bytes())
+                    self.assertEqual(hashlib.sha256(data).hexdigest(),inventory[path])
     def test_packaged_json_uses_checksum_stable_lf_bytes(self):
         manifest=json.loads((ASSETS/'manifest.json').read_bytes())
         for name in ('manifest.json','scaler.json'):

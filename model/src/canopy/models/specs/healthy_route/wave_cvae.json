@@ -77,7 +77,8 @@
     ]
   },
   "outputs": [
-    "time_series"
+    "time_series",
+    "trajectories"
   ],
   "dependencies": [
     "torch",
