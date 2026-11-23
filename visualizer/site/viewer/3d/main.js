@@ -1358,6 +1358,7 @@ function setPhase(phase) {
   solarPass = 0;
   preparedSequence = null;
   state.phase = phase;
+  syncFieldCheckboxes();
   syncFieldRate();
   ui.stage.textContent = seqMode() ? `Sequence · ${PHASES[phase].label}` : OVERLAY_LABEL;
   if (section === 'fields' && state.introDone && seqMode())
@@ -1366,6 +1367,13 @@ function setPhase(phase) {
   setStep(PHASES[phase].start);
   if (state.playing) setPlaying(true); // phases can have their own rate (flood plays at 2 frames/s)
   setSectionUI();
+}
+// In sequential mode the phase is the single field selection. Keep the
+// checkboxes truthful so clicking Wind does not appear to enable every field.
+function syncFieldCheckboxes() {
+  if (!seqMode()) return;
+  const fields = {wind: ui.lWind, temp: ui.lTemp, poll: ui.lPoll, flood: ui.lFlood, solar: ui.lSolar, diurnal: ui.lDiurnal};
+  for (const [key, input] of Object.entries(fields)) if (input) input.checked = key === state.phase;
 }
 function tick() {
   if (state.loading) return; // previous frame still loading: wait for it rather than cancelling it (that starved the painter)
@@ -1633,11 +1641,12 @@ function updateFades(dt) {
   }
   return changed;
 }
-for (const el of [ui.lWind, ui.lTemp, ui.lPoll, ui.lFlood, ui.lSolar, ui.lDiurnal])
+for (const [key, el] of [['wind', ui.lWind], ['temp', ui.lTemp], ['poll', ui.lPoll], ['flood', ui.lFlood], ['solar', ui.lSolar], ['diurnal', ui.lDiurnal]])
   el.addEventListener('input', () => {
     if (seqMode()) {
-      ui.mode.value = 'overlay';
-      ui.stage.textContent = OVERLAY_LABEL;
+      if (el.checked) setPhase(key);
+      else el.checked = true;
+      return;
     }
     applyLayers();
     repaint();
@@ -2072,6 +2081,7 @@ function setSectionUI() {
       section === 'fields' && (seqMode() ? state.phase === b.dataset.field : true),
     ),
   );
+  syncFieldCheckboxes();
   for (const button of [...shotButtons, ...fieldButtons]) button.setAttribute('aria-pressed', String(button.classList.contains('active')));
   syncPlaybackUI();
 }
