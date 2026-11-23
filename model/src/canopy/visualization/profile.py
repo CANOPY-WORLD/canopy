@@ -22,7 +22,7 @@ def describe(storage,scenario):
         asset,manifest,path=load_asset(storage,scenario,choice['asset'],verify=False)
         if choice['layer'] not in asset['payload']['layers']:raise ValueError('View layer does not belong to asset')
         key=manifest['run_id']
-        url='/project/'+scenario+'/'+str(path.relative_to(data_root(storage,scenario)))
+        url='/project/'+scenario+'/'+path.relative_to(data_root(storage,scenario)).as_posix()
         if key in runs and runs[key]['url']!=url:raise ValueError('Ambiguous run identity in view')
         runs[key]={'url':url}
         selections.append({'run_id':key,'layer_id':choice['layer'],'visible':choice.get('visible',True)})

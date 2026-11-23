@@ -12,6 +12,7 @@ dependencies = ["numpy>=1.24", "jsonschema>=4.18,<5"]
 [project.optional-dependencies]
 physics = ["torch>=2.2", "scipy>=1.14"]
 geometry = ["DracoPy>=1.4", "numba>=0.60", "trimesh>=4"]
+healthy-route = ["torch>=2.2", "pandas>=2", "Pillow>=10", "shapely>=2.0"]
 traffic = ["eclipse-sumo", "pyproj", "requests"]
 
 [project.scripts]
@@ -21,10 +22,12 @@ uwm = "common.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["model/src", "visualizer/src"]
-include = ["canopy*", "common*", "urban_flow*", "urban_geometry*", "urban_planning*", "traffic*", "uav_routing*", "energy*", "visualization.adapters*"]
+include = ["healthy_route*", "canopy*", "common*", "urban_flow*", "urban_geometry*", "urban_planning*", "traffic*", "uav_routing*", "energy*", "visualization.adapters*"]
 
 [tool.setuptools.package-data]
 "*" = ["LICENSE*", "NOTICE*", "COPYING*"]
 "canopy" = ["schemas/*.json"]
 "canopy.models" = ["specs/*/*.json"]
 "canopy.models.vendor.nn4pdes" = ["SOURCE.json", "README.md"]
+
+"healthy_route" = ["assets/*.pt", "assets/*.json"]

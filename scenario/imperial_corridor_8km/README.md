@@ -64,3 +64,7 @@ a 1.58 m median residual. The original authored relative heights and explicit
 geographic transformation are preserved; the interior view uses the flat city
 datum and restores terrain on exit. Only the existing I-HUB landmark is replaced
 while indoors; surrounding detailed city geometry remains visible.
+
+## Optional research experiments
+
+[Healthy-route extended replay](experiments/healthy_route_extended_replay/README.md) is an opt-in private research profile. It does not change this Scenario's recorded timelines, default tasks or publication.

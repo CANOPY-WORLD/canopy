@@ -8,7 +8,7 @@ import tarfile
 
 from canopy._io import digest
 
-PACKAGES=('canopy','common','urban_flow','urban_geometry','urban_planning','traffic','uav_routing','energy')
+PACKAGES=('healthy_route','canopy','common','urban_flow','urban_geometry','urban_planning','traffic','uav_routing','energy')
 SUFFIXES={'.py','.json','.js','.mjs','.cjs','.sh','.toml','.yaml','.yml','.md','.cu','.c','.cpp','.h','.hpp','.so'}
 
 
@@ -27,7 +27,7 @@ def snapshot_runtime(destination):
         for root in sorted({Path(location).resolve() for location in spec.submodule_search_locations}):
             for path in sorted(root.rglob('*')):
                 if not path.is_file() or path.is_symlink() or '__pycache__' in path.parts:continue
-                if path.suffix not in SUFFIXES and not path.name.startswith(('LICENSE','NOTICE','COPYING')):continue
+                if path.suffix not in SUFFIXES and not path.name.startswith(('LICENSE','NOTICE','COPYING')) and not (name=='healthy_route' and path.relative_to(root).as_posix()=='assets/state_cvae.pt'):continue
                 archive_path=f'src/{name}/{path.relative_to(root).as_posix()}'
                 if archive_path in inventory:raise ValueError('Ambiguous runtime package source')
                 inventory[archive_path]=digest(path);sources.append((path,archive_path))

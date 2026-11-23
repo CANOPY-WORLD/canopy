@@ -77,10 +77,10 @@ def import_run(storage, scenario, source, *, derived_from=(), expected_kind=None
             asset = dict(schema_version='2.0.0',scenario_id=scenario,asset_id=aid,version='1',kind=kind,
                 spatial=manifest['spatial'],derived_from=list(derived_from),
                 provenance=manifest['provenance'],files=hashes,
-                payload={'format':'canopy-run-v1','manifest':str((destination/'manifest.json').relative_to(base)),
+                payload={'format':'canopy-run-v1','manifest':(destination/'manifest.json').relative_to(base).as_posix(),
                          'sha256':digest(stage/'manifest.json'),'layers':layers})
             check(asset,'asset');write(stage/f'{kind}.asset.json',asset)
-            references[aid+'@1']=str((destination/f'{kind}.asset.json').relative_to(base))
+            references[aid+'@1']=(destination/f'{kind}.asset.json').relative_to(base).as_posix()
         # Atomic directory rename; reject collisions rather than overwrite historical output.
         with lock(storage, scenario):
             current=load_scenario(storage,scenario)

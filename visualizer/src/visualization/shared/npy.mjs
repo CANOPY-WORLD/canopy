@@ -1,5 +1,6 @@
 const HALF=new Float32Array(65536);
 for(let h=0;h<65536;h++){const sign=h&32768?-1:1,e=(h>>10)&31,f=h&1023;HALF[h]=sign*(e===0?f*2**-24:e===31?(f?NaN:Infinity):(1+f/1024)*2**(e-15));}
+export const f16 = bits => Float32Array.from(bits, value => HALF[value]);
 export class NpySource {
   constructor(url,encoding,signal){this.url=url;this.encoding=encoding;this.signal=signal;this.frames=new Map();}
   async range(start,end){const response=await fetch(this.url,{headers:{Range:`bytes=${start}-${end}`},signal:this.signal});if(response.status!==206)throw new Error('NPY requires the uwm serve HTTP range server');const buffer=await response.arrayBuffer();if(buffer.byteLength!==end-start+1)throw new Error('Truncated NPY range');return buffer;}
