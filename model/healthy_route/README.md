@@ -1,5 +1,7 @@
 # Health model and local visualization
 
+Read the [spatial/temporal alignment record](ALIGNMENT.md) before using recorded health outputs in a city scene. It links exact source metadata and hashes and documents unresolved vertical-datum and clock alignment. This remains a standalone recorded research preview, not a city-integrated publication.
+
 ## Run from a fresh checkout
 
 The repository now includes the trained CVAE weights and fitted normalization parameters in `model/src/healthy_route/assets/`, and installs them in the Python wheel. No participant CSV, personal baseline, history timestamps or saved recurrent state is included. The runnable example needs neither the old private release nor the London dataset.

@@ -1,5 +1,7 @@
 # Integration validation
 
+23 November documentation follow-up: [ALIGNMENT.md](ALIGNMENT.md) and [alignment-inputs.json](alignment-inputs.json) address spatial/time/source traceability for review comment 7096944038. All 189 non-participant source file hashes/byte sizes and local documentation links were rechecked; the repository checker passed with 78 English documents. No numerical implementation, result payload or city configuration changed, so the numerical/browser checks below were not rerun for this documentation-only follow-up. CRS/vertical-datum and common-clock limitations remain unresolved for city integration; this does not certify or publish a city-integrated result.
+
 Verified on 22 November 2026. Executable revision: `b2389ffd21b3c582bbaaae4c75c7765cd8f93f55`, merged against upstream `666fe6450f9646007ad8968146a56299ed097e04`. This report is a documentation-only follow-up to that revision. The final submitted head and its confirmation checks are recorded in the PR description.
 
 ## Correction to earlier evidence
