@@ -1,7 +1,7 @@
 {
-  "version": "f152beaf27bd617290f7",
+  "version": "66aaa775171b9a61de0b",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 288570845,
+  "bytes": 288609736,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -7745,8 +7745,8 @@
     },
     {
       "path": "viewer/3d/index.html",
-      "bytes": 12698,
-      "sha256": "007e1883ac33fab8420e3372679f84b749a3e3628fcaf18c3438130acd7d1145"
+      "bytes": 12905,
+      "sha256": "fa390a12325086d67d93f65efa27232971b2e31f27695d155faff33cc8eecde1"
     },
     {
       "path": "viewer/3d/interior.js",
@@ -7755,8 +7755,8 @@
     },
     {
       "path": "viewer/3d/main.js",
-      "bytes": 134548,
-      "sha256": "c8dc48c40ed59ec80fdd11055d2816710ccc2b8b6a944a3820f686f2edd7daf2"
+      "bytes": 143671,
+      "sha256": "03c442675eaaa3cf542dc2767127f8fc6135885ff36607fc7fa8d1b09a54414f"
     },
     {
       "path": "viewer/3d/native-road-surface.js",
@@ -7825,8 +7825,8 @@
     },
     {
       "path": "viewer/3d/style.css",
-      "bytes": 15020,
-      "sha256": "adadbac6225c8728f7288c1427d944c9d954cb8b0ec239b2a8e845fc30a1639d"
+      "bytes": 15336,
+      "sha256": "ed6685bc438fd1581352d7e6415ac6a3a2d26584824c4a8795cbaf5671f6be37"
     },
     {
       "path": "viewer/3d/tile.js",
@@ -7872,6 +7872,26 @@
       "path": "viewer/3d/tube-preset.mjs",
       "bytes": 800,
       "sha256": "b3b8bd321777a45de56aa00ba0dca206ff26a93e1c870e5c863220d95377858d"
+    },
+    {
+      "path": "viewer/3d/tube-regional.js",
+      "bytes": 4674,
+      "sha256": "e706fa7541c65f143db5d96ef4f9bf3d4e405bc44fd401e5917ae300ed86c99d"
+    },
+    {
+      "path": "viewer/3d/tube-service.js",
+      "bytes": 10754,
+      "sha256": "89091edd03bb4b3c2dff73f41202e7c54fc8ba8426598651717ef1070bbc1bd3"
+    },
+    {
+      "path": "viewer/3d/tube-stations.js",
+      "bytes": 8254,
+      "sha256": "7a925c934f1ceb9a00c80cd5d1bca1c2a040439a40faa196c814273d7a1af69a"
+    },
+    {
+      "path": "viewer/3d/tube-timetable.mjs",
+      "bytes": 5563,
+      "sha256": "6414171c86da1c78da1554af7891be5dca391723e52a88bc41125d6b26edf389"
     },
     {
       "path": "viewer/3d/uav-layer.js",
