@@ -8,7 +8,7 @@ The London 8 km case uses [scenario.json](scenario.json) to select the shared Mo
 | --- | --- |
 | Scenario | ENU frame, terrain-normalized vertical datum and explicit Asset references |
 | Asset | Seven historical Assets plus two real-geometry crop/solar verification Assets |
-| Model | Shared registry; the GLB crop â†’ heightfield â†’ solar chain has been executed |
+| Model | Shared registry; the GLB crop → heightfield → solar chain has been executed |
 | Running | Historical full-domain task recipes are not migrated; `tasks` is currently empty |
 | Visualizer | Shared standard template with nine selected historical layers |
 | Detailed presentation | Terrain/context, traffic and UAV features remain in the compatibility website |
@@ -19,7 +19,7 @@ The generated [Asset review catalog](asset-catalog.json) lists every registered 
 
 ## Detailed website
 
-Physics Urban World â€” Imperial Corridor, London.
+Physics Urban World — Imperial Corridor, London.
 
 [Open Canopy on GitHub Pages](https://canopy-world.github.io/canopy/). Canopy publishes the shared viewer; this Scenario's 1,477 public resources (558,073,283 bytes) live in the independent [London data repository](https://github.com/CANOPY-WORLD/canopy-scenario-imperial-corridor-8km) and [data website](https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/). The [publication reference](publication.json) pins its source revision and immutable snapshot URL; [data/manifest.json](data/manifest.json) is a locked inventory only. Existing presentation paths resolve to the independent data host without copying payloads into Canopy's Pages artifact.
 
@@ -33,7 +33,7 @@ The loading illustration is a stylized pixel-art campus, not a measured building
 
 Open `?shot=uavs` for 1,383 validated original WavePDE routes between 100 irregular synthetic stations, all shown in pale gold. **All routes** toggles the network; **100 stations** frames the domain; **At building** follows a selected avoidance example.
 
-The solver grid is 4 Ã— 4 Ã— 4 m, with a 25 m AGL ceiling and 12 m takeoff/landing gates. Each station targets its nearest 30 destinations (3,000 directed attempts). Of these, 1,383 passed endpoint, original closed-voxel and independent 2 m terrain/building/tree-column checks. The displayed maximum is 22.95 m AGL. The 1,617 failed attempts remain in the retained run: 928 cycles, 264 blocked steps and 425 missing arrivals. The successful network connects all 100 stations. Station positions use seeded irregular sampling with at least 450 m separation, excluding buildings, trees, water and roads.
+The solver grid is 4 × 4 × 4 m, with a 25 m AGL ceiling and 12 m takeoff/landing gates. Each station targets its nearest 30 destinations (3,000 directed attempts). Of these, 1,383 passed endpoint, original closed-voxel and independent 2 m terrain/building/tree-column checks. The displayed maximum is 22.95 m AGL. The 1,617 failed attempts remain in the retained run: 928 cycles, 264 blocked steps and 425 missing arrivals. The successful network connects all 100 stations. Station positions use seeded irregular sampling with at least 450 m separation, excluding buildings, trees, water and roads.
 
 The original solver uses `gaussian_short`, a 0.1 s timestep, 4,000 steps, adaptive local crops and plain characteristic tracing. Native 8 m frozen wind at 7,500 s is interpolated onto the 4 m planner and transferred by height above terrain. This is not a new 4 m CFD simulation or a real flight validation. Kinematic replay time is separate from raw PDE first-peak time.
 
@@ -43,11 +43,11 @@ Website implementation: [visualizer/site](../../visualizer/site/README.md). Reso
 
 ## Full-day summer solar replacement
 
-The retained `solar_day_20260621_100_20261122_physics@1` Asset contains 100 newly computed samples from 00:00 BST on 21 June 2026 through the following midnight. Native 4 m ShadowNet/HorizonNet results use the original ODN terrain and building columns; the scientific and web presentation exports use 8 m valid-ground aggregation. Irradiance and shadows share exact times and masks. The clear-sky result peaks at 933.24 W/mÂ², includes 32 zero-irradiance nighttime samples and integrates to a domain valid-ground mean of 7.029 kWh/mÂ². These are model results, not weather observations.
+The retained `solar_day_20260621_100_20261122_physics@1` Asset contains 100 newly computed samples from 00:00 BST on 21 June 2026 through the following midnight. Native 4 m ShadowNet/HorizonNet results use the original ODN terrain and building columns; the scientific and web presentation exports use 8 m valid-ground aggregation. Irradiance and shadows share exact times and masks. The clear-sky result peaks at 933.24 W/m², includes 32 zero-irradiance nighttime samples and integrates to a domain valid-ground mean of 7.029 kWh/m². These are model results, not weather observations.
 
 The new Asset is separately retained; historical summer and winter assets remain unchanged. The full-day experiment is not the prescribed-direction registered Method. See the [run and export guide](../../model/solar/shadow/full-day.md). The public candidate replaces both old solar date selections with summer only, restores irradiance, and reuses all unchanged city resources through publication manifest 1.1. Its selected payload total is 249,886,035 bytes, including 30,509,013 newly stored bytes. The candidate requires reviewed PR approval before merge and deployment; a local build does not establish deployment.
 
-Local validation: 103 Python tests passed with one optional SUMO skip; all four new solar numerical tests ran. All 39 JavaScript tests and 11 publication-boundary tests passed. The scientific two-layer export passes the V1.1 validator. A full-detail browser loaded all 64 detail tiles, read all 100 irradiance frames, verified night zeros and the noon peak, switched shadows, and checked the 1024Ã—768 viewport without page/network errors. The new fixed colour scale remains 0â€“950 W/mÂ² throughout playback. Remote deployment verification has not run because upload is on hold.
+Local validation: 103 Python tests passed with one optional SUMO skip; all four new solar numerical tests ran. All 39 JavaScript tests and 11 publication-boundary tests passed. The scientific two-layer export passes the V1.1 validator. A full-detail browser loaded all 64 detail tiles, read all 100 irradiance frames, verified night zeros and the noon peak, switched shadows, and checked the 1024×768 viewport without page/network errors. The new fixed colour scale remains 0–950 W/m² throughout playback. Remote deployment verification has not run because upload is on hold.
 
 ### White City I-HUB indoor presentation
 
