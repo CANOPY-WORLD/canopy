@@ -1,6 +1,6 @@
 """Public-asset breathing inference with standard scientific-viewer layers."""
 import numpy as np
-from canopy._io import write,digest
+from canopy._io import write
 from .interface import Method
 from .methods import base
 
@@ -11,6 +11,7 @@ class HealthInference(Method):
         if request['execution'].get('device','cpu')!='cpu':raise ValueError('CPU only')
         if len(p['positions_m'])!=n+1 or len(p['irradiance_w_m2'])!=n+1:raise ValueError('Positions and irradiance require N+1 boundary samples')
         rows=np.asarray(p['features'])
+        if not np.isfinite(p['irradiance_w_m2']).all():raise ValueError('Missing irradiance is unavailable; supply a complete interval or separate runs')
         if not np.isfinite(rows).all() or (rows[:,0]<0).any() or ((rows[:,2]<0)|(rows[:,2]>100)).any():raise ValueError('Invalid pollution or humidity')
         lo=np.asarray(context.scenario['spatial']['bounds_m']['min']);hi=np.asarray(context.scenario['spatial']['bounds_m']['max'])
         positions=np.asarray(p['positions_m'])
@@ -33,6 +34,9 @@ class HealthInference(Method):
             'diagnostics':{'initialization':'explicit cold start; zero recurrent memory; not participant replay','input_label':p['input_label'],'inference_assets':assets,'reference':'explicit illustrative reference parameters, not personal baseline','limitations':'Research predictions; latent spread is not total calibrated uncertainty; thermal and health score are heuristic; supplied route is evaluated, not optimized'}}
     def export(self,result,context):
         folder=context.workspace/'payload';folder.mkdir();m=base(context,result['times'])
+        # The existing scientific Viewer reads this retained, human-readable notice.
+        m['provenance']={**m['provenance'],'parameters':{**m['provenance']['parameters'],
+            'disclaimer':'Offline research inference on supplied inputs; not live monitoring, clinical risk or validated health advice. Health score and thermal proxy are experimental heuristics. Latent spread is not calibrated total uncertainty. Missing samples are not replaced with zero.'}}
         for name,(values,unit) in result['fields'].items():
             write(folder/(name+'.json'),{'labels':[name],'values':[[float(v)] for v in values]})
             m['layers'].append({'id':name,'kind':'time_series','format':'json','asset':name+'.json','sampling':'step','field':{'name':name,'unit':unit},'display':{'widget':'time_series','capabilities':['pick']}})

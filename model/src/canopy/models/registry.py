@@ -25,12 +25,11 @@ def describe(model, method):
 
 def implementation(spec):
     from .methods import Heightfield, Solar, Wind
-    from .healthy_route import HealthyRoute
     from .health_inference import HealthInference
     from .flood import Flood
     from .geometry import RasterizeGLB
     from .transport import Temperature,SteadyPollution
     from .transient_pollution import TransientPollution
-    trusted={'health_inference':HealthInference,'healthy_route_wave':HealthyRoute,'traffic_transient':TransientPollution,'glb_rasterize':RasterizeGLB,'temperature_numpy':Temperature,'temperature_torch':Temperature,'steady_tracer':SteadyPollution,'heightfield':Heightfield,'solar_shadow':Solar,'nn4pdes_linear':Flood,'wind_mac':Wind}
+    trusted={'health_inference':HealthInference,'traffic_transient':TransientPollution,'glb_rasterize':RasterizeGLB,'temperature_numpy':Temperature,'temperature_torch':Temperature,'steady_tracer':SteadyPollution,'heightfield':Heightfield,'solar_shadow':Solar,'nn4pdes_linear':Flood,'wind_mac':Wind}
     if spec['adapter'] not in trusted: raise ValueError('Unregistered implementation')
     return trusted[spec['adapter']](spec)

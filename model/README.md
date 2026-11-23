@@ -101,4 +101,4 @@ The [transient traffic pollution Method](pollution/traffic_transient/README.md) 
 
 ## Healthy-route research
 
-The [health model](healthy_route/README.md) includes weights and a runnable, participant-free inference example with standard local-viewer layers. Personalized route optimization remains a separate private-input workflow; its extended London replay is opt-in.
+The [health model](healthy_route/README.md) includes weights and a runnable, participant-free inference example with standard local-viewer layers. Private personalized routing is preserved on the follow-up branch; it is not registered in this portable handover.
