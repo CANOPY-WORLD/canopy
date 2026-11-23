@@ -1,0 +1,21 @@
+{
+  "initialization": "explicit cold start; zero recurrent memory; not participant replay",
+  "input_label": "Fictional exposure and route example; no participant data",
+  "inference_assets": {
+    "format": "healthy-route-inference-v1",
+    "version": "1.0.0",
+    "architecture": {
+      "features": 8,
+      "hidden": 16,
+      "latent": 4
+    },
+    "files": {
+      "state_cvae.pt": "1cdbc16e611e2c5ff52d23b8b4615cb6b08547fd08faef2fba1ee0e2476793f6",
+      "scaler.json": "c109bb0cc70c9db1028f9bcf8c5097d14770fb11fb38cd65b00ee7a4281cb289"
+    },
+    "contents": "Model tensors and fitted normalization only; no observations, participant baseline, recurrent state, timestamps, optimizer state or training logs.",
+    "limitations": "Research checkpoint; training-derived parameters are not a differential-privacy guarantee. No patient-specific initialization or clinical calibration is supplied."
+  },
+  "reference": "explicit illustrative reference parameters, not personal baseline",
+  "limitations": "Research predictions; latent spread is not total calibrated uncertainty; thermal and health score are heuristic; supplied route is evaluated, not optimized"
+}

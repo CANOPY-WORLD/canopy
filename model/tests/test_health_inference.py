@@ -68,5 +68,8 @@ class PublicInferenceTests(unittest.TestCase):
             self.assertIn('not live monitoring',m['provenance']['parameters']['disclaimer'])
             self.assertNotIn('disclaimer',c.provenance['parameters'])
             self.assertEqual(m['time']['samples'][-1],3600)
+            request['parameters']['irradiance_w_m2'][3]=float('nan')
+            with self.assertRaisesRegex(ValueError,'Missing irradiance'):method.validate(request,c)
+            request['parameters']['irradiance_w_m2'][3]=400
             request['parameters']['positions_m']=[[999,0,0]]*13
             with self.assertRaisesRegex(ValueError,'bounds'):method.validate(request,c)

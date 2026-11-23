@@ -4,3 +4,6 @@ model/src/canopy/models/vendor/nn4pdes/LICENSE -text
 # Packaged inference checksums cover these exact bytes on every platform.
 model/src/healthy_route/assets/*.json text eol=lf
 model/src/healthy_route/assets/*.pt -text
+
+# Recorded fixture hashes cover exact bytes, including JSON provenance.
+model/tests/fixtures/health_recorded/** -text

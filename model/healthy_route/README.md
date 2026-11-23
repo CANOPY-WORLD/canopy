@@ -8,10 +8,10 @@ Python 3.11+ and CPU PyTorch are required. From the checkout root:
 
 ```sh
 python -m pip install -e '.[healthy-route]'
-python model/tools/run_health_example.py --serve --open
+python model/tools/run_health_example.py --recorded --serve --open
 ```
 
-This computes a new fictional example in an isolated workspace under the configured cache root and opens the shared scientific Viewer on port 8772. Omit `--serve --open` for batch execution, or select `--port 8773`. Every new inference run receives a new Asset ID; it does not overwrite a recorded result. The viewer only reads results; opening a view never runs a solver. The selected recorded preview and replay command are described in ALIGNMENT.md.
+This replays the pinned fictional record. Omit `--recorded` to compute a new fictional example in an isolated workspace under the configured cache root and opens the shared scientific Viewer on port 8772. Omit `--serve --open` for batch execution, or select `--port 8773`. Every new inference run receives a new Asset ID; it does not overwrite a recorded result. The viewer only reads results; opening a view never runs a solver. The selected recorded preview and replay command are described in ALIGNMENT.md.
 
 ## Inputs, output and limits
 
