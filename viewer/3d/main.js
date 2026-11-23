@@ -47,7 +47,7 @@ import { recordedFrame } from '../scene-run.js';
 // switches on the traffic / UAV / bird replay, the station tile, the OSM supplement and the building refinements.
 const SCENE = await loadScene();
 const tubeConfig = TUBE_PRESETS[SCENE.id];
-let tubeLayer=null, tubeLoading=null, tubeController=null;
+let tubeLayer=null, tubeLoading=null, tubeController=null, tubeSelect=null;
 function cancelTubeLoad(){tubeController?.abort();tubeController=null;tubeLoading=null;}
 if (SCENE.corridor_context) await loadCorridorTerrain(SCENE.url);
 if (SCENE.wind_history) {
@@ -1358,6 +1358,7 @@ function setPhase(phase) {
   solarPass = 0;
   preparedSequence = null;
   state.phase = phase;
+  syncFieldCheckboxes();
   syncFieldRate();
   ui.stage.textContent = seqMode() ? `Sequence · ${PHASES[phase].label}` : OVERLAY_LABEL;
   if (section === 'fields' && state.introDone && seqMode())
@@ -1366,6 +1367,13 @@ function setPhase(phase) {
   setStep(PHASES[phase].start);
   if (state.playing) setPlaying(true); // phases can have their own rate (flood plays at 2 frames/s)
   setSectionUI();
+}
+// In sequential mode the phase is the single field selection. Keep the
+// checkboxes truthful so clicking Wind does not appear to enable every field.
+function syncFieldCheckboxes() {
+  if (!seqMode()) return;
+  const fields = {wind: ui.lWind, temp: ui.lTemp, poll: ui.lPoll, flood: ui.lFlood, solar: ui.lSolar, diurnal: ui.lDiurnal};
+  for (const [key, input] of Object.entries(fields)) if (input) input.checked = key === state.phase;
 }
 function tick() {
   if (state.loading) return; // previous frame still loading: wait for it rather than cancelling it (that starved the painter)
@@ -1633,11 +1641,12 @@ function updateFades(dt) {
   }
   return changed;
 }
-for (const el of [ui.lWind, ui.lTemp, ui.lPoll, ui.lFlood, ui.lSolar, ui.lDiurnal])
+for (const [key, el] of [['wind', ui.lWind], ['temp', ui.lTemp], ['poll', ui.lPoll], ['flood', ui.lFlood], ['solar', ui.lSolar], ['diurnal', ui.lDiurnal]])
   el.addEventListener('input', () => {
     if (seqMode()) {
-      ui.mode.value = 'overlay';
-      ui.stage.textContent = OVERLAY_LABEL;
+      if (el.checked) setPhase(key);
+      else el.checked = true;
+      return;
     }
     applyLayers();
     repaint();
@@ -1832,7 +1841,7 @@ const TOUR_SHOTS = {
   },
   londonTube: {
     fixed: () => tubeLayer?.pose ?? campusPoseDeg(-150),
-    dur: Infinity, label: () => 'South Kensington · representative underground platform',
+    dur: Infinity, label: () => tubeLayer?.selection==='network' ? 'Piccadilly · four-station network' : `${tubeLayer?.platform?.station ?? 'London Tube'} · representative underground platform`,
     time: () => 'Static concept geometry · drag to explore',
   },
   interior: {
@@ -2056,6 +2065,7 @@ function updateTour(now, dt) {
   }
 }
 function setSectionUI() {
+  if(tubeSelect)tubeSelect.hidden=section!=='campus'||tour.shot!=='londonTube';
   shotButtons.forEach((b) =>
     b.classList.toggle(
       'active',
@@ -2071,6 +2081,7 @@ function setSectionUI() {
       section === 'fields' && (seqMode() ? state.phase === b.dataset.field : true),
     ),
   );
+  syncFieldCheckboxes();
   for (const button of [...shotButtons, ...fieldButtons]) button.setAttribute('aria-pressed', String(button.classList.contains('active')));
   syncPlaybackUI();
 }
@@ -2096,9 +2107,13 @@ function runCampus(shot = 'overview') {
     button.textContent='Loading Tube…'; button.setAttribute('aria-busy','true');
     if(!tubeLoading){
       const controller=new AbortController();tubeController=controller;
-      tubeLoading=createTubeLayer({scene,config:tubeConfig,signal:controller.signal}).then(layer=>{
+      tubeLoading=createTubeLayer({scene,camera,config:tubeConfig,signal:controller.signal}).then(layer=>{
         tubeLayer=layer;window.canopyTube=layer;
-        const note=document.createElement('p');note.textContent='Representative South Kensington platform and depths; static geometry, not live service. ';
+        tubeSelect=document.createElement('select');tubeSelect.id='tube-view';tubeSelect.className='tab';tubeSelect.hidden=true;tubeSelect.setAttribute('aria-label','Tube station or network overview');
+        tubeSelect.replaceChildren(new Option('Network overview','network'),...layer.stations.map(s=>new Option(s.label,s.id)));tubeSelect.value=layer.selection;
+        tubeSelect.addEventListener('change',()=>{if(section==='campus'&&tour.shot==='londonTube'){layer.select(tubeSelect.value);runCampus('londonTube');}});
+        document.querySelector('[data-shot="londonTube"]').after(tubeSelect);
+        const note=document.createElement('p');note.textContent='Four representative Piccadilly stations and source connecting routes. Network overview uses an x-ray display through the city; tunnel depths and interiors are illustrative. Static geometry, not live service. ';
         const link=document.createElement('a');link.href=tubeConfig.attribution;link.textContent='Source and attribution';note.append(link);document.getElementById('viewer-details').append(note);
         return layer;
       }).finally(()=>{if(tubeController===controller){tubeController=null;tubeLoading=null;}});
@@ -2109,6 +2124,7 @@ function runCampus(shot = 'overview') {
 
     return;
   }
+  if(shot==='londonTube'&&tubeLayer.selection==='network')tubeLayer.select('network');
   if(shot!=='londonTube')cancelTubeLoad();
   if(shot === 'birds' && SCENE.birds_enabled === false)shot='overview';
   viewIntent++;
@@ -2491,9 +2507,10 @@ function syncNativeTrafficView(){
   interiorLayer?.setVisible(indoor);
   if(!indoor&&interiorLayer?.journey)interiorLayer.journey.playing=false;
   detailTiles?.setSourceVisible(SCENE.interior?.replace_asset, !indoor);
-  const underground=Boolean(tubeLayer && section==='campus' && tour.shot==='londonTube');
-  tubeLayer?.setVisible(underground);
-  if(!underground&&tubeLayer)tubeLayer.journey.playing=false;
+  const tubeActive=Boolean(tubeLayer && section==='campus' && tour.shot==='londonTube');
+  const underground=tubeActive&&tubeLayer.selection!=='network';
+  tubeLayer?.setVisible(tubeActive);
+  if(!tubeActive&&tubeLayer)tubeLayer.journey.playing=false;
   controls.maxPolarAngle=indoor||underground ? Math.PI-.02 : Math.PI/2-.02;
   const near=indoor||underground ? 0.1 : 5;
   if(camera.near!==near){camera.near=near;camera.updateProjectionMatrix();invalidate();}
@@ -2603,6 +2620,7 @@ window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+  if(section==='campus'&&tour.shot==='londonTube'&&tubeLayer?.selection==='network'){tubeLayer.select('network');startTour('londonTube');}
   iso.material.resolution.set(window.innerWidth, window.innerHeight);
   transport?.resize(window.innerWidth, window.innerHeight);
 });
