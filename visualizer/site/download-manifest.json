@@ -1,7 +1,7 @@
 {
-  "version": "7f33ac3a3cb96ed63360",
+  "version": "17abb838cbcc2fd5093b",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 281732625,
+  "bytes": 281740294,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -7755,8 +7755,8 @@
     },
     {
       "path": "viewer/3d/main.js",
-      "bytes": 132765,
-      "sha256": "f6ee5563c980133b9940614504161dcbf56c555fe8198823b9b5377f0a409b1b"
+      "bytes": 133984,
+      "sha256": "cbc0c86af2fdb100eeed62310523ab432ff9bb49a9d08882a0867f241e6891ff"
     },
     {
       "path": "viewer/3d/native-road-surface.js",
@@ -7825,8 +7825,8 @@
     },
     {
       "path": "viewer/3d/style.css",
-      "bytes": 14769,
-      "sha256": "63d5b8006818d66f32856ef836a4376ae0ede516ccad5d025f5309db12d2d2db"
+      "bytes": 15020,
+      "sha256": "adadbac6225c8728f7288c1427d944c9d954cb8b0ec239b2a8e845fc30a1639d"
     },
     {
       "path": "viewer/3d/tile.js",
@@ -7860,13 +7860,18 @@
     },
     {
       "path": "viewer/3d/tube-layer.js",
-      "bytes": 3381,
-      "sha256": "70a142c91f54b82fbc15aeb25aed7db5d6bbe54f0ed3ab9d0990687828360adc"
+      "bytes": 6985,
+      "sha256": "2059122d2071292a4bd9b31b65fd0940423c8b5aa99b0c53dbc878d16f0a1a64"
+    },
+    {
+      "path": "viewer/3d/tube-network.mjs",
+      "bytes": 2367,
+      "sha256": "65134aa0c473036c000f3ea75266e132d30830abd655eaa2b5f4c27c7081fa01"
     },
     {
       "path": "viewer/3d/tube-preset.mjs",
-      "bytes": 572,
-      "sha256": "08f089cd49a57adc7f5ca17be30ac77ab24aad50fc630476bf808bf81e944718"
+      "bytes": 800,
+      "sha256": "b3b8bd321777a45de56aa00ba0dca206ff26a93e1c870e5c863220d95377858d"
     },
     {
       "path": "viewer/3d/uav-layer.js",

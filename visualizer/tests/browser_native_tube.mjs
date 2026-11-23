@@ -18,7 +18,7 @@ try{
  assert(await page.$eval('[data-shot="overview"]',e=>e.classList.contains('active')));
  rejectTube=false;await click('londonTube');await click('whiteCity');await sleep(500);
  assert(await page.$eval('[data-shot="whiteCity"]',e=>e.classList.contains('active')));
- await click('londonTube');await page.waitForFunction(()=>window.canopyTube?.group.visible,{timeout:120000});await sleep(6000);
+ await click('londonTube');await page.waitForFunction(()=>window.canopyTube?.group.visible,{timeout:120000});await page.select('#tube-view','940GZZLUSKS');await sleep(6000);
  assert(await page.evaluate(()=>canopyTube.group.parent===viewer.scene&&document.querySelectorAll('iframe').length===0));
  assert.equal(await page.evaluate(()=>canopyTube.sha256),'01697290c7b3018b4a7a48b1394294e491a288bd758f493d3926147192462db6');
  assert(await page.evaluate(()=>viewer.camera.position.y<0&&viewer.controls.enabled&&!canopyTube.journey.playing));
