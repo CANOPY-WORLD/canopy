@@ -1,0 +1,12 @@
+{
+  "snapshot": "sk-lisflood-fp-20261123",
+  "repository": "https://github.com/CANOPY-WORLD/canopy-scenario-imperial-corridor-8km",
+  "manifest_path": "snapshots/sk-lisflood-fp-20261123/manifest.json",
+  "manifest_sha256": "d6fd885547355c2d514ff0c91e24507913781bb69f29981e1c4fe8d7431e0340",
+  "archive_path": "snapshots/sk-lisflood-fp-20261123/downloads/sk-lisflood-fp-20261123.zip",
+  "archive_sha256": "642ba6c88c792e13a10faf8e92d83a159e6c42b985ebe391beb27ea80aad5287",
+  "archive_bytes": 64829459,
+  "snapshot_bytes": 131363547,
+  "files": 34,
+  "integration": "Independent research report; not scenario.json, publication.json or a registered Canopy Asset."
+}

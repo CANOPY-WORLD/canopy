@@ -68,3 +68,5 @@ while indoors; surrounding detailed city geometry remains visible.
 ## Optional research experiments
 
 [Healthy-route extended replay](experiments/healthy_route_extended_replay/README.md) is an opt-in private research profile. It does not change this Scenario's recorded timelines, default tasks or publication.
+
+[SK LISFLOOD-FP rainfall](experiments/sk_lisflood_fp/README.md) is a separate recorded experiment with public presentation products and a frozen-input rerun package. It leaves the active Scenario tasks, assets, publication and shared Viewer layers unchanged.

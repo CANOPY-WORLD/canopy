@@ -102,3 +102,7 @@ The [transient traffic pollution Method](pollution/traffic_transient/README.md) 
 ## Healthy-route research
 
 The [health model](healthy_route/README.md) includes weights and a runnable, participant-free inference example with standard local-viewer layers. Personalized route optimization remains a separate private-input workflow; its extended London replay is opt-in.
+
+## Recorded external-solver cases
+
+The [LISFLOOD-FP SK case utility](flood/lisflood_fp/README.md) verifies, builds, reruns and audits a frozen-input research experiment. It is separate from the registered Methods and does not change the existing flood adapter.
