@@ -134,4 +134,4 @@ self.addEventListener('fetch', event => {
   })());
 });
 
-// Publication routing: 7f0a46d58513da261e9a5b0a9d614286142e0ded563257146bd6dd09e34beb4a
+// Publication routing: 099435519214aff434a8061d793f4eaa16d8c8762ad77893309f19366f827567
