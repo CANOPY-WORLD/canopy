@@ -3,12 +3,12 @@
   "kind": "canopy.publication-reference",
   "scenario_id": "imperial_corridor_8km",
   "repository": "https://github.com/CANOPY-WORLD/canopy-scenario-imperial-corridor-8km",
-  "revision": "d959b45ccd8db1e5a1c11584c9381e02fa559418",
+  "revision": "38c04aa6141f4d50bc37183ffb58787e551d631d",
   "website": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/",
-  "base_url": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-ihub-interior-20261122/",
-  "snapshot": "london-ihub-interior-20261122",
+  "base_url": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-public-20261118/",
+  "snapshot": "london-public-20261118",
   "manifest": {
     "path": "data/manifest.json",
-    "sha256": "95fbcb9cff7d92097c754f62a9b0ded837017f6adbb63d5ab5f9a8380c2778b8"
+    "sha256": "58c7460506f91030ca751b132d8b3128ada5903af2b82ea7c0007a3f874c2b28"
   }
 }
