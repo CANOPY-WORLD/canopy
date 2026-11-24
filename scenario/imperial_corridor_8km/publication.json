@@ -5,10 +5,10 @@
   "repository": "https://github.com/CANOPY-WORLD/canopy-scenario-imperial-corridor-8km",
   "revision": "38c04aa6141f4d50bc37183ffb58787e551d631d",
   "website": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/",
-  "base_url": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-public-20261118/",
-  "snapshot": "london-public-20261118",
+  "base_url": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/",
+  "snapshot": "london-compact-20261122",
   "manifest": {
     "path": "data/manifest.json",
-    "sha256": "58c7460506f91030ca751b132d8b3128ada5903af2b82ea7c0007a3f874c2b28"
+    "sha256": "75fdcb48d65aea4c89b86f32378d092592c7be096d1e15005fd4da966b2efe3d"
   }
 }
