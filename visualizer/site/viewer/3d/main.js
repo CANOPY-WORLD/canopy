@@ -1,3 +1,4 @@
+import { createNavigation } from './navigation.js';
 import { installModelCard } from './model-card.js';
 import { installCosmosDemos } from './cosmos-demos.js';
 import {TUBE_PRESETS} from './tube-preset.mjs';
@@ -68,6 +69,7 @@ setDataBase(SCENE.physics, SCENE.protocol_display?.npy_transport);
 document.title = `${SCENE.title} · 3D`;
 // Complete geometry is the default. Light mode is an explicit opt-in.
 const qs0 = new URLSearchParams(location.search);
+let navigation = null;
 const LITE = qs0.get('lite') === '1';
 
 // ------------------------------------------------------------------ grid <-> model alignment
@@ -1996,6 +1998,7 @@ function tourPose(az, shot = tour.shot) {
   };
 }
 function startTour(shot = 'overview') {
+  navigation?.reset();
   const first = !tour.active || tour.shot === shot;
   tour.active = true;
   tour.paused = false;
@@ -2107,6 +2110,7 @@ function applyInteriorPose(){
   invalidate();
 }
 function updateTour(now, dt) {
+  if (navigation?.manual) return;
   if(['interior','londonTube'].includes(tour.shot)){const j=activeJourney();tour.paused=!j?.playing;if(j?.playing){j.tick(dt);applyInteriorPose();}return;}
   if(SCENE.id==='imperial_corridor_8km'&&(tour.shot==='birds'||tour.shot==='uavs'&&uavLayer?.flightSelection))return;
   if (!tour.active || flight) return;
@@ -2174,6 +2178,7 @@ async function showCanopyBirds(){
 }
 
 function runCampus(shot = 'overview') {
+  navigation?.reset();
   if(shot==='londonTube'&&!tubeConfig)shot='overview';
   // Lazy-load geometry without moving the camera until the latest selection is ready.
   if(shot==='londonTube' && !tubeLayer){
@@ -2398,6 +2403,7 @@ function setupTransportUI() {
 }
 /** Fields section: climb to the overhead view, hide ground / trees / replay, play the fields in sequence. */
 async function runFields(phase = PHASE_ORDER[0]) {
+  navigation?.reset();
   cancelTubeLoad();leaveTubeMode();
   const intent=++viewIntent;
   if(fieldPreparation){ui.stage.textContent='Loading physics field masks…';await fieldPreparation;}
@@ -2604,7 +2610,7 @@ function syncNativeTrafficView(){
   tubeLayer?.setVisible(tubeActive);
   if(!tubeActive&&tubeLayer)tubeLayer.journey.playing=false;
   controls.maxPolarAngle=indoor||underground ? Math.PI-.02 : Math.PI/2-.02;
-  const near=indoor||underground ? 0.1 : 5;
+  const near=indoor||underground||navigation?.active ? 0.1 : 5;
   if(camera.near!==near){camera.near=near;camera.updateProjectionMatrix();invalidate();}
   currentTerrain()?.setEnabled(section !== 'fields' && !active);
   corridorContext?.setNativeActive?.(active);
@@ -2619,6 +2625,7 @@ function animate(now) {
     last = now;
     return;
   }
+  const manualPose = navigation?.manual ? {position:camera.position.clone(), target:controls.target.clone(), quaternion:camera.quaternion.clone()} : null;
   const elapsed = Math.max(0, now - last);
   syncNativeTrafficView();
   corridorContext?.tick(elapsed / 1000);
@@ -2686,6 +2693,8 @@ function animate(now) {
   }
   syncPlaybackUI();
   updateFlight(now);
+  if (manualPose) { camera.position.copy(manualPose.position); controls.target.copy(manualPose.target); camera.quaternion.copy(manualPose.quaternion); }
+  navigation?.tick(dt);
   if (controls.enabled) controls.update();
   const fading = updateFades(dt);
   const particles = state.introDone && wind.lines.visible;
@@ -3333,6 +3342,13 @@ document.addEventListener('visibilitychange', () => {
   invalidate();
 });
 await boot();
+if (!LITE) navigation = createNavigation({
+  camera, controls, canvas:renderer.domElement, invalidate,
+  indoorRoot:() => interiorLayer?.group.visible ? interiorLayer.group : null,
+  groundHeight:position => section === 'campus' && tour.shot === 'londonTube' ? -Infinity : (currentTerrain()?.sample(position.x, position.z) ?? 0),
+  onEnter() { flight = null; tour.paused = true; ui.auto.checked = false; const journey = activeJourney(); if (journey) journey.playing = false; },
+});
+window.canopyNavigation = navigation;
 if (SCENE.id === 'imperial_corridor_8km' && (qs0.get('birds') === '1' || qs0.get('shot') === 'birds')) {
   runCampus('birds');
 }
@@ -3345,6 +3361,7 @@ if (SCENE.city_tools) {
     camera,
     invalidate,
     enter() {
+      navigation?.reset();
       setPlaying(false);
       ui.auto.checked = false;
       tour.active = false;
