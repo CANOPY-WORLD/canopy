@@ -1,6 +1,19 @@
 # Health handover and local city validation
 
-Checked 25 November 2026. Runtime implementation: `a3f2f9aa12b4572fb31268d5c25c608d6ccf0163`, including current main `2e83effd8f362a3e34b7e232e4ccbc352db46941`. The following documentation-only commit records this evidence; the PR identifies its final submitted head. Earlier 23 November validation describes the prior portable-only revision and is superseded by this record.
+Checked 25 November 2026. Original city runtime implementation: `a3f2f9aa12b4572fb31268d5c25c608d6ccf0163`, including main `2e83effd8f362a3e34b7e232e4ccbc352db46941`; evidence was recorded at `87849e3b4e9c1403f668ed96b42482974e1bc65e`. The widget-switch correction below is the subsequent runtime change. The PR identifies the final submitted head. Earlier 23 November validation describes the prior portable-only revision and is superseded by this record.
+
+## Widget-switch correction, 25 November 2026
+
+A fresh remote download of main and PR 27 combined without conflicts; its tree matched PR head `87849e3b4e9c1403f668ed96b42482974e1bc65e`. Side-by-side browser testing found that leaving Health could hide the selected Traffic/UAV model-information card: Health's bubbling click handler cleared its active state after the other widget's handler refreshed the UI. The correction clears Health in the capture phase, before the selected widget handler runs. A browser regression checks both restored cards and paused Health playback.
+
+The exact candidate files were compared byte-for-byte with the tested local source and built browser module:
+
+- `city-recording.mjs` SHA-256: `752bb1f1c747848a3ec7f36aee424c79762f21600ea6dcb0e71fb1eb66834745`.
+- `browser_health_city.cjs` SHA-256: `8decb78b55044b1435e32d1c8d716e461ed3312e9052a25a6be9ff03b8622d90`.
+
+After the correction, Traffic, UAV, Pollution, Wind, Sunlight, Flooding and Overview matched fresh main's clock bounds and information cards; play, pause and seek passed. Native layer/phase definitions were identical. The full-detail Health browser test passed with all 64 tiles, two later start times, reversed endpoints, finite synthetic predictions, mobile/error recovery and the new Traffic/UAV assertions, with no unexpected captured errors.
+
+Before pushing, the Viewer suite was rerun: 69 passed, one optional skip. Contract and repository checks passed. Python, weights, schemas, Scenario policies and public data were unchanged; their earlier evidence below was retained rather than reported as a new run. This follow-up contains only the two Visualizer files and this validation record. Self-review confirmed that no personal data, generated results or local launchers are included; independent review remains outstanding.
 
 ## Environment and installation
 

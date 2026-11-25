@@ -80,7 +80,8 @@ export async function installCityRecording(viewer,{enter,invalidate,selectRoutes
   function setActive(on){active=on;panel.hidden=!on;button.classList.toggle('active',on);group.visible=on&&!pending&&$('visible').checked;playing=false;last=null;selection?.setActive(on);if(on){enter();seek(time);focus();}invalidate();}
   button.onclick=()=>setActive(!active);$('close').onclick=()=>setActive(false);$('focus').onclick=focus;$('visible').onchange=()=>{group.visible=active&&!pending&&$('visible').checked;invalidate();};
   if(physiology)$('followup').onchange=()=>{playing=false;includeFollowup=$('followup').checked;drawCharts();seek(time);};
-  document.querySelector('#tabs').addEventListener('click',e=>{if(e.target.closest('button')!==button&&active)setActive(false);});
+  // Release Health before the selected widget's handler refreshes its card and clock.
+  document.querySelector('#tabs').addEventListener('click',e=>{if(e.target.closest('button')!==button&&active)setActive(false);},{capture:true});
   function tick(now){if(active&&playing){if(last!==null)seek(time+(now-last)/1000*speed);if(time>=displayEnd())playing=false;}last=now;requestAnimationFrame(tick);}requestAnimationFrame(tick);
   function replaceResult(next){if(!next.samples?.length||next.samples.some((s,i)=>!Number.isFinite(s.world_seconds)||(i&&s.world_seconds<=next.samples[i-1].world_seconds)))throw Error('Invalid calculated timeline');
     result=next;rows=result.samples;lift=result.alignment.presentation.route_visibility_lift_m;arrival=result.route_duration_s??result.duration_s;

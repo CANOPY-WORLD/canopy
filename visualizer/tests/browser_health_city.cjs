@@ -39,6 +39,13 @@ const url=process.env.CANOPY_CITY_URL||'http://127.0.0.1:8826/viewer/3d/?scene=i
  assert.equal(await page.evaluate(()=>JSON.stringify({layers:viewer.LAYERS,phases:viewer.PHASES})),native);
  await page.click('#tabs [data-field="poll"]');assert.equal(await page.evaluate(()=>canopyLocalHealth.active),false);
  await page.waitForFunction(()=>+document.querySelector('#step').max===viewer.PHASES.poll.end);assert.equal(await page.evaluate(()=>canopyLocalHealth.playing),false);
+ // Synchronous widget handlers must see Health already released.
+ for(const [key,title] of [['traffic','SUMO Microscopic Traffic Simulation'],['uavs','WavePDE']]){
+  await page.evaluate(()=>canopyLocalHealth.setActive(true));
+  await page.click('#tabs [data-shot="'+key+'"]');
+  await page.waitForFunction(title=>!canopyLocalHealth.active&&!document.querySelector('#model-card').hidden&&document.querySelector('#model-card h2').textContent===title,{},title);
+  assert.equal(await page.evaluate(()=>canopyLocalHealth.playing),false);
+ }
  await page.evaluate(()=>canopyLocalHealth.setActive(true));
  await page.setViewport({width:390,height:844});assert(await page.$eval('#city-recorded-health',e=>e.getBoundingClientRect().right<=innerWidth));
  await page.setViewport({width:1440,height:1000});
