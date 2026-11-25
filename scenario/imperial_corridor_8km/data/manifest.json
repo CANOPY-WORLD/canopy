@@ -2,7 +2,7 @@
   "schema_version": "1.1.0",
   "kind": "canopy.publication",
   "scenario_id": "imperial_corridor_8km",
-  "snapshot": "london-complete-20261125",
+  "snapshot": "london-complete-daylight-20261125",
   "representation": "london-website-compatibility",
   "source": {
     "repository": "https://github.com/acse-yl222/canopy",
@@ -13,7 +13,7 @@
       "https://github.com/acse-yl222/physics-grounded-4d-world-model-framework/releases/tag/imperial-corridor-native-20261102"
     ]
   },
-  "bytes": 283898863,
+  "bytes": 283898895,
   "files": [
     {
       "path": "actors/demo_rev02/actors/pigeon.glb.gz",
@@ -439,7 +439,8 @@
       "path": "derivation.json",
       "viewer_path": "scenes/imperial_corridor_8km/derivation.json",
       "bytes": 488,
-      "sha256": "7a77fef7726b95fc85a582e5410a444652355defe244a60ed216e453df658575"
+      "sha256": "7a77fef7726b95fc85a582e5410a444652355defe244a60ed216e453df658575",
+      "source_snapshot": "london-complete-20261125"
     },
     {
       "path": "interiors/ihub-v10/building.glb.gz",
@@ -4113,7 +4114,8 @@
       "path": "physics/manifest.json",
       "viewer_path": "scenes/imperial_corridor_8km/physics/manifest.json",
       "bytes": 47632,
-      "sha256": "df4d3ab831bd253748e1daa57060dc96bfa4e241ac696408f75ef73022841e20"
+      "sha256": "df4d3ab831bd253748e1daa57060dc96bfa4e241ac696408f75ef73022841e20",
+      "source_snapshot": "london-complete-20261125"
     },
     {
       "path": "physics/solar-day-frames.json",
@@ -4153,8 +4155,8 @@
     {
       "path": "scene.json",
       "viewer_path": "scenes/imperial_corridor_8km/scene.json",
-      "bytes": 134767,
-      "sha256": "64a008eb10dd5f0d35d7acfc9aa81e70692bcd5ab89ac3d5cdee8a01eec68e22"
+      "bytes": 134799,
+      "sha256": "8e939b29a323b3aa9a2fd63310afb962d0d7bea08eefb81d1bf8af7a6b10cbe3"
     },
     {
       "path": "tiles/detail_tiles_enu_20261030/index.json",
@@ -10442,6 +10444,7 @@
     "updated": [
       "LISFLOOD flood metadata and quantization",
       "100-frame summer-solstice irradiance and packed shadows"
-    ]
+    ],
+    "daylight_default": true
   }
 }

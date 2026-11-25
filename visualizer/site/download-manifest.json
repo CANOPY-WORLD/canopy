@@ -1,7 +1,7 @@
 {
-  "version": "f6d08b279662e21c5247",
+  "version": "f152beaf27bd617290f7",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 288570502,
+  "bytes": 288570845,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -86,12 +86,12 @@
     {
       "path": "asset-router.js",
       "bytes": 6285,
-      "sha256": "857d0e57c952e5685b7049b22ea1e8658aa8a674e7c8822124ae540472210eda"
+      "sha256": "218892e39bf5bc66b83ca0a12a4a48588bf98affacb61d6f69c1d22e9cbfd34e"
     },
     {
       "path": "asset-sources.json",
-      "bytes": 354777,
-      "sha256": "dc5433426dc37b0fba44e7ffab05e08810755182324416ef13fc768000f1e24f"
+      "bytes": 354907,
+      "sha256": "4dcac3415637c2eb1e6abd7b1a517dba2687e8a50fa4753cd969471443cec5cf"
     },
     {
       "path": "assets/uav-wavepde-4m-20261111/config.json",
@@ -150,18 +150,18 @@
     },
     {
       "path": "scenario-index.json",
-      "bytes": 966,
-      "sha256": "b0541be149c7b81c9c8008475ab204504bb3f51a6accf085c6a73e27980ce2cb"
+      "bytes": 984,
+      "sha256": "5ad9efe9763216a0cb08506b5d6950ce83924e3aa480d7d55f44f19c2feee7c3"
     },
     {
       "path": "scenario/imperial_corridor_8km/data/manifest.json",
-      "bytes": 501083,
-      "sha256": "c0303b583b03baea2e7582811fc1d80cf74edc66d7c8791d7a290967cca2a5ac"
+      "bytes": 501228,
+      "sha256": "5979fb771f8c82b428249c9d8e309e79ae5db38b3d17ddb7040a5527122571a2"
     },
     {
       "path": "scenario/imperial_corridor_8km/publication.json",
-      "bytes": 649,
-      "sha256": "ad167aa37d6b473570d37070dec66a5c3aa8b63908af2d3c5ca9554a174a5208"
+      "bytes": 667,
+      "sha256": "0d5cff4f1d85da7bbe0c6ae06b3ded51e1bd45c1eae92f958b2c044dc466cf88"
     },
     {
       "path": "scenes/imperial_corridor_8km/compact-provenance/fields-8m-report.json",
@@ -3080,8 +3080,8 @@
     },
     {
       "path": "scenes/imperial_corridor_8km/scene.json",
-      "bytes": 134767,
-      "sha256": "64a008eb10dd5f0d35d7acfc9aa81e70692bcd5ab89ac3d5cdee8a01eec68e22"
+      "bytes": 134799,
+      "sha256": "8e939b29a323b3aa9a2fd63310afb962d0d7bea08eefb81d1bf8af7a6b10cbe3"
     },
     {
       "path": "scenes/index.json",
