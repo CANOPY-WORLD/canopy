@@ -19,6 +19,7 @@ const delay=ms=>new Promise(r=>setTimeout(r,ms));
    await page.waitForFunction(()=>window.urbanViewer&&document.querySelector('#health-inspection'),{timeout:60000});
    assert.equal(await page.$$eval('[data-health-plot]',e=>e.length),7);
    const seek=t=>page.$eval('#time',(e,t)=>{e.value=t;e.dispatchEvent(new Event('input'));},t);
+   await page.select('#health-playback-rate','10');await seek(0);await page.click('#play');await delay(300);await page.click('#play');assert.ok(await page.$eval('#time',e=>Number(e.value))>1);await page.select('#health-playback-rate','1');
    await seek(0);const initial=await page.$eval('[data-metric=distance]',e=>e.textContent),startPosition=await page.evaluate(()=>window.urbanViewer.healthInspections[0].position);
    const end=await page.$eval('#time',e=>Number(e.max));await seek(end);
    assert.notEqual(await page.$eval('[data-metric=distance]',e=>e.textContent),initial);

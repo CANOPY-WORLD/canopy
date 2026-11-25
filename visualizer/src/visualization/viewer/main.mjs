@@ -17,6 +17,7 @@ scene.add(new THREE.HemisphereLight(0xdff5ff,0x38514e,2.5));const sun=new THREE.
 const raycaster=new THREE.Raycaster();const widgets=[],rows=new Map();let manifest,playing=false,previous=performance.now(),disposed=false;
 const abort=new AbortController();
 const inspections=[];
+let healthPlaybackRate=1;
 let animationId=0,dirty=true,presentation={};
 const performanceStats={renders:0};
 function invalidate(){dirty=true;if(!disposed&&!document.hidden&&!animationId)animationId=requestAnimationFrame(animate);}
@@ -131,6 +132,11 @@ async function load(){
     const inspector=await loadRecordedInspector({run,host:$('layers').parentElement,scene,camera,controls,signal:abort.signal,invalidate});
     if(inspector)inspections.push({inspector,offset:run.offset});
   }
+  if(inspections.length){
+    const rate=document.createElement('select');rate.id='health-playback-rate';rate.setAttribute('aria-label','Journey playback speed');
+    for(const value of [.25,.5,1,2,5,10,30,60]){const option=document.createElement('option');option.value=value;option.textContent=`${value}×`;rate.append(option);}rate.value=1;
+    rate.addEventListener('change',()=>{healthPlaybackRate=Number(rate.value);});$('play').after(rate);
+  }
   $('status').textContent=`${widgets.length} / ${total} layers ready`;
   $('time').min=times[0]||0;$('time').max=times.at(-1)||0;$('time').disabled=times.length<2;$('play').disabled=times.length<2;setTime(Number.isFinite(presentation.initial_time_s)?Math.max(times[0],Math.min(times.at(-1),presentation.initial_time_s)):(times[0]||0));fit();
   if(viewCamera){
@@ -148,7 +154,7 @@ async function load(){
 function animate(now){
   animationId=0;if(disposed||document.hidden){previous=0;return;}
   const dt=previous?(now-previous)/1000:0;previous=now;
-  if(playing){const next=Math.min(Number($('time').max),Number($('time').value)+dt*(Number.isFinite(presentation.playback_rate)&&presentation.playback_rate>0?presentation.playback_rate:1));setTime(next);if(next>=Number($('time').max)){playing=false;$('play').textContent='Play';}}
+  if(playing){const next=Math.min(Number($('time').max),Number($('time').value)+dt*(inspections.length?healthPlaybackRate:Number.isFinite(presentation.playback_rate)&&presentation.playback_rate>0?presentation.playback_rate:1));setTime(next);if(next>=Number($('time').max)){playing=false;$('play').textContent='Play';}}
   controls.update();
   if(manifest){const near=nearPlaneForSceneBounds(camera.position.toArray(),manifest.spatial.bounds_m,camera.getWorldDirection(cameraForward).toArray());if(near!==camera.near){camera.near=near;camera.updateProjectionMatrix();}}
   if(dirty){dirty=false;renderer.render(scene,camera);performanceStats.renders++;}
