@@ -49,8 +49,15 @@ class HealthyRoute(Method):
         planner=CanopyPlanner(root,cache_root=context.workspace/'traffic-cache')
         context.checkpoint(); context.emit('planning')
         result=planner.plan(parameters)
+        from healthy_route.recording import record
+        def sample(position, seconds):
+            sunlight=planner.environment.sunlight(position,seconds,planner.solar_day)
+            return dict(temperature=planner.sample_temperature(position,seconds),
+                pollution=planner.sample_pollution(position,seconds),sunlight=sunlight,
+                thermal_proxy=planner.sample_thermal(position,seconds))
+        recording=record(result,sample)
         context.checkpoint()
-        return {'route':result,'diagnostics':{'quality':'exploratory_conditional_scenario',
+        return {'route':result,'recording':recording,'diagnostics':{'quality':'exploratory_conditional_scenario',
             'experiment_id':'healthy_route_extended_replay_v2',
             'limitations':'Bounded search; repeated environmental/traffic scenario; uncalibrated running physiology; not clinical or road-safety validation'}}
 
@@ -91,6 +98,14 @@ class HealthyRoute(Method):
             'sampling':'linear','field':{'name':'journey_elapsed','unit':'s'},
             'display':{'widget':'time_series','capabilities':['pick']}}]
         m['artifacts']=[{'id':'healthy_route_result','asset':'route.json','sha256':digest(folder/'route.json'),'media_type':'application/json'}]
+        from healthy_route.recording import record
+        recording=result.get('recording') or record(route)
+        points=np.asarray([row['position'] for row in recording['samples']])
+        m['spatial']={**m['spatial'],'bounds_m':{'min':(points.min(axis=0)-10).tolist(),'max':(points.max(axis=0)+10).tolist()}}
+        write(folder/'health-recording.json',recording)
+        m['artifacts'].append({'id':'health_recording','asset':'health-recording.json','sha256':digest(folder/'health-recording.json'),'media_type':'application/json'})
+        m['provenance']={**m['provenance'],'parameters':{**m['provenance']['parameters'],
+            'disclaimer':recording['limits']}}
         # Full research routes use the same standard layers as portable inference.
         if selected.get('timeline'):
             positions=[]

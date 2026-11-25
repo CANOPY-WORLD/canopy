@@ -5,6 +5,7 @@ import { createWidget } from '../widgets/binary.mjs';
 import { enuToWorld } from '../shared/time.mjs';
 import { nearPlaneForSceneBounds } from '../shared/camera-depth.mjs';
 import { renderScenarioTabs } from '../shared/scenario-tabs.mjs';
+import { loadRecordedInspector } from '../healthy-route/recorded-inspector.mjs';
 
 const $=id=>document.getElementById(id),viewport=$('viewport');
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x111923);
@@ -15,6 +16,7 @@ const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamp
 scene.add(new THREE.HemisphereLight(0xdff5ff,0x38514e,2.5));const sun=new THREE.DirectionalLight(0xffffff,3);sun.position.set(300,500,150);scene.add(sun);
 const raycaster=new THREE.Raycaster();const widgets=[],rows=new Map();let manifest,playing=false,previous=performance.now(),disposed=false;
 const abort=new AbortController();
+const inspections=[];
 let animationId=0,dirty=true,presentation={};
 const performanceStats={renders:0};
 function invalidate(){dirty=true;if(!disposed&&!document.hidden&&!animationId)animationId=requestAnimationFrame(animate);}
@@ -23,7 +25,7 @@ controls.addEventListener('change',invalidate);
 renderer.domElement.addEventListener('webglcontextrestored',invalidate);
 const resize=new ResizeObserver(()=>{const {width,height}=viewport.getBoundingClientRect();camera.aspect=width/height;camera.updateProjectionMatrix();renderer.setSize(width,height);invalidate();});resize.observe(viewport);
 function fit(){if(!manifest)return;const {min,max}=manifest.spatial.bounds_m;const center=min.map((v,i)=>(v+max[i])/2),span=Math.max(...max.map((v,i)=>v-min[i]),1);controls.target.set(...enuToWorld(center));const radius=Math.hypot(...max.map((v,i)=>v-min[i]))/2||1;const halfFov=Math.min(camera.fov*Math.PI/360,Math.atan(Math.tan(camera.fov*Math.PI/360)*camera.aspect));const distance=radius/Math.sin(halfFov)*1.15;camera.position.copy(controls.target).add(new THREE.Vector3(1,.85,1).normalize().multiplyScalar(distance));camera.near=Math.max(span/10000,.001);camera.far=span*100;camera.updateProjectionMatrix();controls.update();}
-function setTime(value){$('time').value=value;$('clock').textContent=presentation.time_unit==='model_year'?`${(Number(value)/presentation.year_seconds).toFixed(2)} 模型年`:`${Number(value).toFixed(2)} s`;widgets.forEach(w=>{if(w.layer.sampling!=='static'||w.layer.kind==='time_series')w.setTime(Number(value)-(w.timeOffset||0));});invalidate();}
+function setTime(value){$('time').value=value;$('clock').textContent=presentation.time_unit==='model_year'?`${(Number(value)/presentation.year_seconds).toFixed(2)} 模型年`:`${Number(value).toFixed(2)} s`;widgets.forEach(w=>{if(w.layer.sampling!=='static'||w.layer.kind==='time_series')w.setTime(Number(value)-(w.timeOffset||0));});inspections.forEach(i=>i.inspector.setTime(Number(value)-i.offset));invalidate();}
 $('time').addEventListener('input',()=>setTime($('time').value));
 $('play').addEventListener('click',()=>{if(!playing&&Number($('time').value)>=Number($('time').max))setTime($('time').min);playing=!playing;$('play').textContent=playing?'Pause':'Play';invalidate();});
 $('fit').addEventListener('click',fit);
@@ -125,6 +127,10 @@ async function load(){
     }
   }
   if(selections&&total!==selections.length)throw new Error('View references a missing layer');
+  for(const run of runs){
+    const inspector=await loadRecordedInspector({run,host:$('layers').parentElement,scene,camera,controls,signal:abort.signal,invalidate});
+    if(inspector)inspections.push({inspector,offset:run.offset});
+  }
   $('status').textContent=`${widgets.length} / ${total} layers ready`;
   $('time').min=times[0]||0;$('time').max=times.at(-1)||0;$('time').disabled=times.length<2;$('play').disabled=times.length<2;setTime(Number.isFinite(presentation.initial_time_s)?Math.max(times[0],Math.min(times.at(-1),presentation.initial_time_s)):(times[0]||0));fit();
   if(viewCamera){
@@ -149,7 +155,7 @@ function animate(now){
   if(playing&&!animationId)animationId=requestAnimationFrame(animate);else if(!animationId)previous=0;
 }
 document.addEventListener('visibilitychange',()=>{if(animationId)cancelAnimationFrame(animationId);animationId=0;previous=0;if(!document.hidden)invalidate();});
-function dispose(){if(disposed)return;disposed=true;if(animationId)cancelAnimationFrame(animationId);renderer.domElement.removeEventListener('webglcontextrestored',invalidate);abort.abort();widgets.forEach(w=>w.dispose());controls.dispose();resize.disconnect();renderer.dispose();}
+function dispose(){if(disposed)return;disposed=true;if(animationId)cancelAnimationFrame(animationId);renderer.domElement.removeEventListener('webglcontextrestored',invalidate);abort.abort();widgets.forEach(w=>w.dispose());inspections.forEach(i=>i.inspector.dispose());controls.dispose();resize.disconnect();renderer.dispose();}
 window.addEventListener('pagehide',dispose,{once:true});
 // Back/forward cache can restore a page whose WebGL resources were disposed.
 window.addEventListener('pageshow',event=>{if(event.persisted)location.reload();});
