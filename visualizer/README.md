@@ -1,5 +1,7 @@
 # Visualizer
 
+Draft model descriptions and project references for viewer information cards are maintained in [Widget model cards](docs/widget-model-cards.md).
+
 [Canopy](../README.md) / Visualizer
 
 Before adding a feature, read the [Visualizer contribution standard](CONTRIBUTING.md). [All component standards](../model/docs/framework/contributing.md) provide the shared entrypoint.
