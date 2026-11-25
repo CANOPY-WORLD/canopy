@@ -1461,7 +1461,9 @@ function setRateOptions(kind, value) {
   );
   ui.rate.value = String(value);
 }
+const activeHealth = () => window.canopyLocalHealth?.active ? window.canopyLocalHealth : null;
 ui.play.addEventListener('click', () => {
+  if(activeHealth()){activeHealth().setPlaying(!activeHealth().playing);syncPlaybackUI();return;}
   if (isOrbitWidget()) {
     tour.paused = !tour.paused;
     tour.active = true;
@@ -1488,6 +1490,7 @@ ui.play.addEventListener('click', () => {
   }
 });
 ui.rate.addEventListener('change', () => {
+  if(activeHealth()){activeHealth().setSpeed(+ui.rate.value);return;}
   if(tubeNetworkActive()){tubeLayer.service.clock.speed=+ui.rate.value;syncTubeStrip();return;}
   if(section==='campus'&&activeJourney()){activeJourney().speed=+ui.rate.value;return;}
   if(section==='campus'&&tour.shot==='birds'&&window.canopyBirds){window.canopyBirds.setRate(ui.rate.value);return;}
@@ -1502,6 +1505,7 @@ ui.rate.addEventListener('change', () => {
   else if (state.playing) setPlaying(true);
 });
 ui.step.addEventListener('input', () => {
+  if(activeHealth()){activeHealth().seekWorld(+ui.step.value);syncPlaybackUI();return;}
   if(tubeNetworkActive()){tubeLayer.service.seek(+ui.step.value);syncTubeStrip();syncPlaybackUI();invalidate();return;}
   if(section==='campus'&&activeJourney()){activeJourney().seek(+ui.step.value);applyInteriorPose();return;}
   if (isOrbitWidget()) {
@@ -1941,7 +1945,15 @@ function syncPlaybackUI() {
     ui.step.min = min; ui.step.max = max; ui.step.step = step; ui.step.value = value;
     available = max > min;
   };
-  if (section === 'fields') {
+  if (activeHealth()) {
+    const health=activeHealth();
+    // Recorded arrival may fall between centisecond ticks; allow the slider
+    // to reach that exact final sample instead of rounding down before arrival.
+    range(health.start,health.end,'any',health.time);
+    available=Boolean(health.result);playing=health.playing;
+    label=`Health experiment · ${health.elapsed.toFixed(1)} / ${(health.end-health.start).toFixed(1)} s`;
+    ui.timeLabel.textContent=label;ui.rate.disabled=!available;ui.rate.value=String(health.speed);
+  } else if (section === 'fields') {
     const phase = PHASES[state.phase];
     range(phase.start, phase.end, 1, state.step);
     available &&= LAYERS[state.phase]?.frames > 1;
@@ -2161,7 +2173,7 @@ function setSectionUI() {
   );
   syncFieldCheckboxes();
   for (const button of [...shotButtons, ...fieldButtons]) button.setAttribute('aria-pressed', String(button.classList.contains('active')));
-  modelCard?.select(section === 'fields' ? state.phase : (replayLayer?.shot ?? tour.shot));
+  modelCard?.select(activeHealth() ? 'localHealth' : (section === 'fields' ? state.phase : (replayLayer?.shot ?? tour.shot)));
   syncPlaybackUI();
 }
 /** Site section: ground, trees and (South Kensington) the traffic / UAV replay visible; the physics fields hidden; the shot tour runs. */
@@ -2612,7 +2624,9 @@ function syncNativeTrafficView(){
   controls.maxPolarAngle=indoor||underground ? Math.PI-.02 : Math.PI/2-.02;
   const near=indoor||underground||navigation?.active ? 0.1 : 5;
   if(camera.near!==near){camera.near=near;camera.updateProjectionMatrix();invalidate();}
-  currentTerrain()?.setEnabled(section !== 'fields' && !active);
+  // Only a recording with an explicit current-terrain transform uses terrain.
+  // Historical comparisons retain their original flat presentation.
+  currentTerrain()?.setEnabled(section !== 'fields' && !active && (!activeHealth() || activeHealth().usesTerrain));
   corridorContext?.setNativeActive?.(active);
   if(active!==nativeTrafficActive)invalidate();
   nativeTrafficActive=active;
@@ -3177,6 +3191,7 @@ async function boot() {
   await dataReady;if(dataError)throw dataError;
   startCityLayers();
   await Promise.all([detailTiles?.complete,contextReady]);
+  await localHealthReady;
   ui.loading.classList.add('hide');
   try { const saved = JSON.parse(sessionStorage.getItem('canopy-download-timing') || 'null'); if(saved && Date.now()-saved.finished<600000){ const seconds=Math.round((Date.now()-saved.started)/1000);const download=Math.round((saved.finished-saved.started)/1000);const note=document.createElement('div');note.textContent=`Ready in ${Math.floor(seconds/60)}m ${seconds%60}s · Download ${Math.floor(download/60)}m ${download%60}s`;note.style.cssText='position:fixed;bottom:90px;left:24px;padding:10px 14px;background:#142a32dd;color:#e4ebe4;font:12px system-ui;z-index:15;border-radius:6px';(document.getElementById('viewer-details') ?? document.body).append(note);setTimeout(()=>note.remove(),15000);sessionStorage.removeItem('canopy-download-timing');} } catch {}
 
@@ -3341,6 +3356,7 @@ document.addEventListener('visibilitychange', () => {
   if (state.playing) setPlaying(true);
   invalidate();
 });
+const localHealthReady=installLocalHealth();
 await boot();
 if (!LITE) navigation = createNavigation({
   camera, controls, canvas:renderer.domElement, invalidate,
@@ -3349,6 +3365,33 @@ if (!LITE) navigation = createNavigation({
   onEnter() { flight = null; tour.paused = true; ui.auto.checked = false; const journey = activeJourney(); if (journey) journey.playing = false; },
 });
 window.canopyNavigation = navigation;
+if(qs0.get('pedestrian')==='1')window.canopyLocalHealth?.setActive(true);
+async function installLocalHealth(){
+// Explicit loopback experiment: public launches never load this controller.
+if(qs0.get('health')==='local'&&['127.0.0.1','localhost'].includes(location.hostname)){
+  try{
+    const {installCityHealth}=await import('../../src/visualization/healthy-route/city-health.mjs');
+    window.canopyLocalHealth=await installCityHealth(window.viewer,{invalidate,enter(){
+      navigation?.reset();viewIntent++;setPlaying(false);ui.auto.checked=false;tour.active=false;flight=null;
+      section='free';controls.enabled=true;state.introDone=false;applyLayers();
+      for(const plane of Object.values(planes)){plane.fade=0;plane.target=0;}updateFades(0);
+      replayLayer?.setVisible(false);if(replayLayer)replayLayer.playing=false;
+      traffic?.setVisible(false);if(traffic)traffic.playing=false;
+      if(uavLayer){uavLayer.playing=false;uavLayer.group.visible=false;}
+      corridorContext?.setPlaying(false);window.canopyBirds?.setActive?.(false);
+      if(tubeLayer?.service)tubeLayer.service.clock.playing=false;
+      transport?.setVisible(false);
+      ui.rate.replaceChildren(...[.25,.5,1,2,5,10,30,60].map(v=>new Option(v+'×',v)));
+      setSectionUI();invalidate();
+    }});
+  }catch(error){
+    console.error(error);
+    const warning=document.createElement('button');warning.className='tab';warning.id='local-health-error';
+    warning.textContent='Health unavailable';warning.title='Local Health unavailable: '+error.message;
+    warning.onclick=()=>alert(warning.title);$('tabs').append(warning);
+  }
+}
+}
 if (SCENE.id === 'imperial_corridor_8km' && (qs0.get('birds') === '1' || qs0.get('shot') === 'birds')) {
   runCampus('birds');
 }

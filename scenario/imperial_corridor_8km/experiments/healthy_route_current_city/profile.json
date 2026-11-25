@@ -1,0 +1,23 @@
+{
+  "experiment_id": "healthy_route_current_city_recorded_v1",
+  "scenario_id": "imperial_corridor_8km",
+  "publication_snapshot": "london-complete-tube53-20261125",
+  "publication_manifest_sha256": "a51b797d186edc975e1f68ab46414687fbf7f4c4dea873575ec3e0d1cb535e57",
+  "purpose": "Local recorded research preview; no publication or new route optimization",
+  "solar_day": "20260621",
+  "solar_clock_offset_s": 31800,
+  "solar_clock_meaning": "Conditional 08:50 BST on 21 June; not a common observation epoch",
+  "environmental_repeat": false,
+  "spatial_fill": false,
+  "temporal_extrapolation": false,
+  "health_input_policy": "unavailable_without_compatible_total_pm25_and_activity_humidity",
+  "presentation": {
+    "renderer": "shared_city",
+    "detail": "full",
+    "trajectory_source": "recorded_asset",
+    "clock": "selected_widget_relative_seconds",
+    "native_traffic_visible": false,
+    "signal_states_visible": false,
+    "route_visibility_lift_m": 0.15
+  }
+}

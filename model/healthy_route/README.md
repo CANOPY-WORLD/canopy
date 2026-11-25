@@ -1,6 +1,6 @@
 # Portable health-model handover
 
-This branch registers only `healthy_route/breathing_cvae@1.0.0`: bundled trained weights and normalization, explicit cold-start state and supplied five-minute exposures/trajectory. It does not optimize routes or connect to live sensors. See [alignment and demo selection](ALIGNMENT.md).
+The portable path registers `healthy_route/breathing_cvae@1.0.0`: bundled trained weights and normalization, explicit cold-start state and supplied five-minute exposures/trajectory. It does not optimize routes or connect to live sensors. See [alignment and demo selection](ALIGNMENT.md).
 
 ## Run
 
@@ -25,9 +25,9 @@ Missing/nonfinite features and positions are rejected; missing irradiance is rej
 
 Weights load with `weights_only=True` and SHA-256 verification. Packaged tensors/scaler contain no participant observations, personal baseline or saved recurrent state. They are training-derived artifacts, not a differential-privacy guarantee. User requests and outputs containing sensitive inputs must stay private.
 
-## Private workflow and city follow-up
+## Opt-in local city integration
 
-The private personalized planner, London extended replay and legacy interactive UI are preserved at commit `02024b0` on branch `preserve/healthy-route-private-20261123`; they are removed from this portable branch's registry/package. The [follow-up requirements](FOLLOW_UP.md) preserve the unresolved alignment and display work. No private dataset or old result was deleted. The canonical London configuration, current city viewer and publication remain unchanged.
+The [current-city setup](LOCAL_CITY.md) adds registered `city_exposure`, `city_breathing` and `city_walk` Methods. It reuses the shared renderer with pinned city Geometry/fields and optional Health-only replay/interpolation. The public example uses fictional physiology inputs and packaged weights; participant-based outputs are not included. The private wave optimizer remains excluded. Canonical city fields, publication and other widgets' clocks stay unchanged. Hosted integration and independent physiological/vertical validation remain separate work.
 
 ## Verification
 

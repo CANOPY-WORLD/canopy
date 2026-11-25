@@ -6,6 +6,18 @@
     "breathing_cvae": {
       "version": "1.0.0",
       "spec": "breathing_cvae.json"
+    },
+    "city_exposure": {
+      "version": "1.0.0",
+      "spec": "city_exposure.json"
+    },
+    "city_breathing": {
+      "version": "1.0.0",
+      "spec": "city_breathing.json"
+    },
+    "city_walk": {
+      "version": "1.0.0",
+      "spec": "city_walk.json"
     }
   }
 }

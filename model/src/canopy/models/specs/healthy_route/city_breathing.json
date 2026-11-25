@@ -1,0 +1,117 @@
+{
+  "schema_version": "2.0.0",
+  "model_id": "healthy_route",
+  "method_id": "city_breathing",
+  "version": "1.0.0",
+  "category": "physics",
+  "title": "Conditional current-city breathing and heuristic health score",
+  "description": "Packaged recurrent CVAE with explicit current-city proxy inputs, bounded donor estimates and explicit covariate template.",
+  "adapter": "city_physiology",
+  "inputs": {
+    "exposure": {
+      "kind": "physics",
+      "required_layers": [
+        "trajectories"
+      ],
+      "required_artifacts": [
+        "city_recording"
+      ]
+    },
+    "city": {
+      "kind": "physics",
+      "required_layers": [
+        "time_series"
+      ],
+      "required_artifacts": [
+        "city_inputs"
+      ]
+    },
+    "physiology": {
+      "kind": "physics",
+      "required_layers": [
+        "time_series"
+      ],
+      "required_artifacts": [
+        "physiology_inputs",
+        "model_identity"
+      ]
+    }
+  },
+  "parameters": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "assumed_background_pm25_ug_m3": {
+        "type": "number",
+        "default": 6,
+        "minimum": 0,
+        "maximum": 100,
+        "x-unit": "ug/m3",
+        "description": "Assumed PM2.5 background from the original local scenario; not observed current city background."
+      },
+      "pmx_to_pm25_proxy_fraction": {
+        "type": "number",
+        "default": 1,
+        "minimum": 0,
+        "maximum": 1,
+        "x-unit": "1",
+        "description": "Experimental fraction of city exhaust PMx assigned to a PM2.5 proxy; not a calibrated size conversion."
+      },
+      "max_temperature_fill_m": {
+        "type": "number",
+        "default": 128,
+        "minimum": 0,
+        "maximum": 256,
+        "x-unit": "m",
+        "description": "Maximum route-position to valid cell-centre distance for an explicitly estimated air temperature."
+      },
+      "max_pmx_fill_m": {
+        "type": "number",
+        "default": 16,
+        "minimum": 0,
+        "maximum": 64,
+        "x-unit": "m",
+        "description": "Maximum route-position to valid cell-centre distance for an explicitly estimated PMx increment."
+      },
+      "solar_warming_c_per_800": {
+        "type": "number",
+        "default": 6,
+        "minimum": 0,
+        "maximum": 15,
+        "x-unit": "degC",
+        "description": "Original heuristic solar warming at 800 W/m2; does not replace air temperature in CVAE."
+      },
+      "breathing_history_offset_s": {
+        "type": "number",
+        "default": 39600,
+        "minimum": 0,
+        "maximum": 86400,
+        "x-unit": "s",
+        "description": "Offset into the retained historical private physiology template, independent of city observation time."
+      },
+      "followup_until_elapsed_s": {
+        "type": "number",
+        "default": 600,
+        "minimum": 0,
+        "maximum": 600,
+        "x-unit": "s",
+        "description": "Optional assumed stationary follow-up at the recorded destination; never repeats city fields."
+      }
+    }
+  },
+  "outputs": [
+    "time_series",
+    "trajectories"
+  ],
+  "dependencies": [
+    "torch",
+    "pandas"
+  ],
+  "capabilities": {
+    "cancel": true,
+    "resume": false,
+    "progress": "steps"
+  },
+  "guide": "model/healthy_route/CITY_PHYSIOLOGY.md",
+  "example": "model/tests/fixtures/canopy/city_breathing.json"
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": "2.0.0",
+  "scenario_id": "imperial_corridor_8km",
+  "model_id": "healthy_route",
+  "method_id": "city_walk",
+  "method_version": "1.0.0",
+  "inputs": {
+    "city": "PINNED_CITY_physics@1",
+    "physiology": "PHYSIOLOGY_INPUT_physics@1",
+    "geometry": "PINNED_CITY_geometry@1"
+  },
+  "parameters": {
+    "assumed_background_pm25_ug_m3": 6,
+    "pmx_to_pm25_proxy_fraction": 1,
+    "max_temperature_fill_m": 128,
+    "max_pmx_fill_m": 16,
+    "solar_warming_c_per_800": 6,
+    "breathing_history_offset_s": 39600,
+    "followup_until_elapsed_s": 600,
+    "origin": "PINNED_START_NODE",
+    "goal": "PINNED_END_NODE",
+    "speed_m_s": 1.3333333333333333,
+    "departure_s": 0,
+    "field_time_policy": "health_replay",
+    "field_replay_blend_s": 60
+  },
+  "execution": {
+    "device": "cpu",
+    "threads": 2
+  }
+}

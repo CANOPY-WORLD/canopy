@@ -1,0 +1,56 @@
+{
+  "schema_version": "2.0.0",
+  "model_id": "healthy_route",
+  "method_id": "city_exposure",
+  "version": "1.0.0",
+  "category": "physics",
+  "title": "Pinned city exposure on a recorded route",
+  "description": "Exact current-scene mapping and masked environmental sampling; no route optimization or physiology substitution.",
+  "adapter": "city_exposure",
+  "inputs": {
+    "geometry": {
+      "kind": "geometry",
+      "required_layers": [
+        "mesh"
+      ],
+      "required_artifacts": [
+        "city_inputs"
+      ]
+    },
+    "city": {
+      "kind": "physics",
+      "required_layers": [
+        "time_series"
+      ],
+      "required_artifacts": [
+        "city_inputs"
+      ]
+    },
+    "recording": {
+      "kind": "physics",
+      "required_layers": [
+        "trajectories"
+      ],
+      "required_artifacts": [
+        "healthy_route_result"
+      ]
+    }
+  },
+  "parameters": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+  },
+  "outputs": [
+    "time_series",
+    "trajectories"
+  ],
+  "dependencies": [],
+  "capabilities": {
+    "cancel": true,
+    "resume": false,
+    "progress": "steps"
+  },
+  "guide": "model/healthy_route/CITY_ALIGNMENT.md",
+  "example": "model/tests/fixtures/canopy/city_exposure.json"
+}
