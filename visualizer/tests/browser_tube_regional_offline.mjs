@@ -12,7 +12,7 @@ const browser = await puppeteer.launch({executablePath: process.env.CHROME_PATH 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const receipt = {checks: [], errors: [], pinned_source_requests: 0};
 const pass = name => { receipt.checks.push(name); console.log('ok', name); };
-const RAIL = ['underground.json', 'underground_trains_am_peak.json'], CODE = ['viewer/3d/tube-regional.js', 'viewer/3d/tube-service.js', 'viewer/3d/tube-timetable.mjs', 'viewer/3d/tube-stations.js'];
+const RAIL = ['underground.json', 'underground_trains_am_peak.json'], CODE = ['viewer/3d/tube-regional.js', 'viewer/3d/tube-service.js', 'viewer/3d/tube-timetable.mjs', 'viewer/3d/tube-stations.js', 'viewer/3d/tube-station-view.mjs', 'viewer/3d/tube-cutaway.js', 'viewer/3d/tube-platform-camera.js'];
 try {
   const page = await browser.newPage(); await page.setViewport({width: 1280, height: 800}); page.setDefaultTimeout(180000);
   page.on('pageerror', e => receipt.errors.push(e.message));
@@ -91,9 +91,8 @@ try {
 
   // ---- 3. Offline, stations from the stored station file.
   if (stored.stations) {
-    const choose = async id => { await page.select('#tube-view', id); await until(id => window.canopyTube.selection === id && window.canopyTube.stationGroup?.visible && !document.querySelector('#tube-view').hasAttribute('aria-busy'), id); };
-    await choose('940GZZLULAD'); s = await state(); assert(s.station === 'Ladbroke Grove' && s.alone && !s.network.visible && s.network.time === 30144 && !s.ground && !s.model, JSON.stringify(s));
-    await seek(1e9); await until(() => !window.canopyTube.journey.playing);
+    const choose = async id => { await page.select('#tube-view', id); await until(id => window.canopyTube.selection === id && (window.canopyTube.networkView || window.canopyTube.stationGroup?.visible) && !document.querySelector('#tube-view').hasAttribute('aria-busy'), id); };
+    await choose('940GZZLULAD'); s = await state(); assert(s.station === 'Ladbroke Grove' && !s.alone && !s.network.visible && s.network.time === 30144 && s.ground === shown.ground && s.model === shown.model, JSON.stringify(s));
     await choose('940GZZLUGPK'); s = await state(); assert(s.station === 'Green Park' && !s.alone && s.model === shown.model && s.ground === shown.ground && s.trees === shown.trees, JSON.stringify(s));
     await seek(1e9); await until(() => !window.canopyTube.journey.playing);
     await page.select('#tube-view', 'network'); await until(() => window.canopyTube.service.group.visible); assert.equal((await state()).network.time, 30144);

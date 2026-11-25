@@ -2021,9 +2021,10 @@ function startTour(shot = 'overview') {
   if (['interior','londonTube'].includes(shot)) {
     flight=null;
     const j=activeJourney();
-    const from=shot==='londonTube'?tubeLayer?.entry:null;   // an open station on the regional data path: the camera starts on its own line of sight
+    const from=shot==='londonTube'?tubeLayer?.entry:null;
     if(j){j.speed=1;j.start(from?.position??camera.position.toArray(),from?.target??controls.target.toArray(),matchMedia('(prefers-reduced-motion: reduce)').matches);applyInteriorPose();}
-    else {camera.position.copy(p.pos);controls.target.copy(p.target);controls.update();}
+    else if(shot==='londonTube'&&tubeLayer?.regional&&!matchMedia('(prefers-reduced-motion: reduce)').matches){flyTo(p,1800);}
+    else {camera.position.copy(p.pos);controls.target.copy(p.target);controls.enabled=true;controls.update();}
   } else if (camera.position.distanceTo(p.pos) > 50) {
     flyTo(p, 2600, () => {
       controls.enabled = shot==='uavs'&&uavLayer?.flightSelection;
@@ -2053,7 +2054,7 @@ function leaveTubeMode(){
 }
 function activeJourney(){return tour.shot==='interior'?interiorLayer?.journey:tour.shot==='londonTube'&&!tubeNetworkActive()?tubeLayer?.journey:null;}
 /** True while the strip is the Tube service clock: London Tube is shown, from the regional data, on its Network overview. */
-function tubeNetworkActive(){return Boolean(tubeLayer?.service&&section==='campus'&&tour.shot==='londonTube'&&tubeLayer.selection==='network');}
+function tubeNetworkActive(){return Boolean(tubeLayer?.service&&section==='campus'&&tour.shot==='londonTube'&&tubeLayer.networkView);}
 /** The visible service time and rate selector exist for the scheduled network only; everywhere else they are hidden. */
 function syncTubeStrip(){
   const time=document.getElementById('tube-time'),rate=document.getElementById('tube-rate');if(!time||!rate)return;
@@ -2072,28 +2073,27 @@ function syncTubeStrip(){
 }
 /**
  * Regional data path: what the selected Tube view needs from the rest of the viewer. The scheduled network hides
- * buildings and trees (it is drawn through the ground); an open-air or elevated station is shown alone, so the ground
- * is hidden as well; a deep station needs nothing. The service clock runs only while the network is on screen: it
+ * buildings and trees (it is drawn through the ground), only on the overview. All platform views retain the city around a local cutaway. The service clock runs only while the network is on screen: it
  * starts on the first visit, later resumes as it was left, and never starts by itself under reduced motion.
  */
 function syncTubeMode(){
-  const inTube=Boolean(tubeLayer?.regional&&section==='campus'&&tour.shot==='londonTube'),network=inTube&&tubeLayer.selection==='network',alone=inTube&&tubeLayer.alone;
-  if(network||alone){
+  const inTube=Boolean(tubeLayer?.regional&&section==='campus'&&tour.shot==='londonTube'),network=inTube&&tubeLayer.networkView;
+  if(network){
     tubeLayersSaved??={ground:ui.lGround.checked,model:ui.lModel.checked,trees:ui.lTrees.checked};
-    ui.lGround.checked=alone?false:tubeLayersSaved.ground;ui.lModel.checked=false;ui.lTrees.checked=false;applyLayers();
+    ui.lGround.checked=tubeLayersSaved.ground;ui.lModel.checked=false;ui.lTrees.checked=false;applyLayers();
   }else if(tubeLayersSaved){
     ui.lGround.checked=tubeLayersSaved.ground;ui.lModel.checked=tubeLayersSaved.model;ui.lTrees.checked=tubeLayersSaved.trees;tubeLayersSaved=null;applyLayers();
   }
   const svc=tubeLayer?.service;
   if(svc&&network&&!tubeServiceShown){
     tubeServiceShown=true;
-    ui.rate.replaceChildren(...TUBE_RATES.map(v=>new Option(v+'×',v)));ui.rate.value=String(svc.clock.speed);ui.rate.disabled=false;
     svc.clock.playing=!matchMedia('(prefers-reduced-motion: reduce)').matches&&(tubeServiceResume??true)&&svc.clock.time<svc.clock.end;tubeServiceResume=null;
     svc.tick(0,camera);ui.timeLabel.textContent=svc.label;
   }else if(svc&&!network&&tubeServiceShown){
     tubeServiceShown=false;tubeServiceResume=svc.clock.playing;svc.clock.playing=false;
     if(inTube)setRateOptions('replay',1);
   }
+  if(svc&&network){ui.rate.replaceChildren(...TUBE_RATES.map(v=>new Option(v+'×',v)));ui.rate.value=String(svc.clock.speed);ui.rate.disabled=false;}
   syncTubeStrip();
 }
 function applyInteriorPose(){
@@ -2190,6 +2190,7 @@ function runCampus(shot = 'overview') {
           // view leaves the load running: the station appears when it arrives, or its failure is shown on the menu.
           const mine=++tubeSelectPending;tubeSelect.setAttribute('aria-busy','true');tubeSelect.removeAttribute('aria-invalid');tubeSelect.title='Loading station…';
           done.then(()=>{if(mine!==tubeSelectPending)return;tubeSelect.removeAttribute('aria-busy');tubeSelect.title='';tubeSelect.value=layer.selection;
+            for(const station of layer.stations){const option=[...tubeSelect.options].find(o=>o.value===station.id);if(option)option.textContent=station.label;}
             if(section==='campus'&&tour.shot==='londonTube')runCampus('londonTube');
           }).catch(error=>{if(mine!==tubeSelectPending)return;tubeSelect.removeAttribute('aria-busy');tubeSelect.value=layer.selection;
             if(error.name!=='AbortError'){console.error(error);tubeSelect.setAttribute('aria-invalid','true');tubeSelect.title='Station unavailable · choose it again to retry';}else tubeSelect.title='';
@@ -2197,7 +2198,7 @@ function runCampus(shot = 'overview') {
         });
         document.querySelector('[data-shot="londonTube"]').after(tubeSelect);
         const note=document.createElement('p');note.textContent=layer.regional
-          ? `Tube network: schematic tunnels at assumed depths and one representative day's scheduled timetable${layer.service.serviceDate?' ('+layer.service.serviceDate+')':''}, 08:00 to 09:00; not live positions. Trains move at constant speed between timetabled calls, without added stops; where the timetable gives the same minute for a departure and the next arrival, a train covers that run within a second (some Central line runs). Tube stations: representative interiors with assumed cross-sections, stairs, ways out and roofs, not surveyed; track positions, levels and entrance points come from the source data; static geometry without trains or passengers. An open-air or elevated station is shown alone, with the city hidden. ${(SCENE.underground.attribution??[]).join(' · ')} `
+          ? `Tube network: schematic tunnels at assumed depths and one representative day's scheduled timetable${layer.service.serviceDate?' ('+layer.service.serviceDate+')':''}, 08:00 to 09:00; not live positions. Trains move at constant speed between timetabled calls, without added stops; where the timetable gives the same minute for a departure and the next arrival, a train covers that run within a second (some Central line runs). Tube stations: representative interiors with assumed cross-sections, stairs, ways out and roofs, not surveyed; track positions, levels and entrance points come from the source data; static geometry without trains or passengers. All stations use the same journey to a standing view 1.6 m above a source platform surface, with a local city cutaway; source positions are unchanged. Deep platforms retain their tunnel shells; open and deck platforms retain their exported roofs, open sky and surrounding city. ${(SCENE.underground.attribution??[]).join(' · ')} `
           : 'Four representative Piccadilly stations and source connecting routes. Network overview uses an x-ray display through the city; tunnel depths and interiors are illustrative. Static geometry, not live service. ';
         const link=document.createElement('a');link.href=tubeConfig.attribution;link.textContent='Source and attribution';note.append(link);document.getElementById('viewer-details').append(note);
         return layer;
@@ -2594,7 +2595,7 @@ function syncNativeTrafficView(){
   if(!indoor&&interiorLayer?.journey)interiorLayer.journey.playing=false;
   detailTiles?.setSourceVisible(SCENE.interior?.replace_asset, !indoor);
   const tubeActive=Boolean(tubeLayer && section==='campus' && tour.shot==='londonTube');
-  const underground=tubeActive&&tubeLayer.selection!=='network';
+  const underground=tubeActive&&!(tubeLayer.regional?tubeLayer.networkView:tubeLayer.selection==='network');
   tubeLayer?.setVisible(tubeActive);
   if(!tubeActive&&tubeLayer)tubeLayer.journey.playing=false;
   controls.maxPolarAngle=indoor||underground ? Math.PI-.02 : Math.PI/2-.02;
@@ -2717,8 +2718,7 @@ window.addEventListener('resize', () => {
   if(section==='campus'&&tour.shot==='londonTube'&&tubeLayer?.regional){
     // Regional data: refit what is on screen without re-selecting it, so a station that is still loading is not cancelled.
     tubeLayer.refit();
-    if(tubeLayer.selection==='network')startTour('londonTube');
-    else if(tubeLayer.alone){startTour('londonTube');tubeLayer.journey.seek(tubeLayer.journey.duration);applyInteriorPose();}
+    if(tubeLayer.networkView)startTour('londonTube');
   }
   else if(section==='campus'&&tour.shot==='londonTube'&&tubeLayer?.selection==='network'){tubeLayer.select('network');startTour('londonTube');}
   iso.material.resolution.set(window.innerWidth, window.innerHeight);
