@@ -147,6 +147,8 @@ def frontend(root):
         files[route] = (root / 'visualizer' / route).read_bytes()
     for name in ('index.html', 'style.css', 'app.js', 'inventory.json', 'architecture.svg'):
         files['guide/' + name] = (root / 'visualizer/guide' / name).read_bytes()
+    for path in sorted((root / 'scenario').glob('*/presentation/model-cards.json')):
+        files['viewer/model-cards/' + path.parent.parent.name + '.json'] = path.read_bytes()
     return files
 
 
