@@ -142,6 +142,9 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 }
 .widget-player .timebar .btn { width: 40px; min-height: 40px; flex: 0 0 auto; }
 .widget-player .timebar input { width: 100%; min-width: 0; min-height: 40px; margin: 0; }
+/* London Tube scheduled network only: the service time and its rate, inside the strip. Hidden in every other view. */
+.widget-player .timebar .tube-time { flex: 0 0 auto; font-size: 13px; font-variant-numeric: tabular-nums; color: #e8e8e4; }
+.widget-player .timebar #tube-rate { flex: 0 0 auto; min-height: 40px; }
 /* Loading is a separate full-page state; the minimal controls appear when ready. */
 .widget-player #loading { z-index: 18; }
 .widget-player #loading.hide { display: none; }
