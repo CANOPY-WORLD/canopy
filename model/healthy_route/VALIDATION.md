@@ -1,48 +1,79 @@
-# Portable handover validation
+# Health handover and local city validation
 
-Checked 23 November 2026 against main `02024b0eac94f9b593086ce4e745ec1bd3d6ee48`. Full clean-checkout validation passed at implementation commit `34f24d81f8a3894fc0757196d57bcf18008fd781`. Subsequent changes correct README encoding and record this evidence; runtime, weights and recorded payload remain identical. The PR records the final submitted commit and final rerun results separately, avoiding a self-referential commit hash in this file.
+Checked 25 November 2026. Runtime implementation: `a3f2f9aa12b4572fb31268d5c25c608d6ccf0163`, including current main `2e83effd8f362a3e34b7e232e4ccbc352db46941`. The following documentation-only commit records this evidence; the PR identifies its final submitted head. Earlier 23 November validation describes the prior portable-only revision and is superseded by this record.
 
 ## Environment and installation
 
-Linux: Ubuntu 22.04 under WSL2, Python 3.12.16, CPU torch 2.15.0, numpy 2.5.5, scipy 1.18.1, jsonschema 4.26.0, setuptools 78.1.0 and pip 26.3. A new detached checkout used `core.autocrlf=false`. Dependencies were already present; installation used:
+Windows, Python 3.12.14, CPU torch 2.15.0, numpy 2.5.5, scipy 1.18.1, pandas 3.0.1, shapely 2.2.0, pyarrow 26.0.1, jsonschema 4.26.0, setuptools 84.2.1, pip 25.0.1; Node 24.22.3, Edge headless and puppeteer-core 25.12.0. Separate virtual environments reused already installed dependencies. This checks installation and execution, not a fresh dependency download/resolution. Linux filesystem checks used Python 3.12 under WSL2 with the same source revision.
 
 ```sh
-python -m pip install --no-build-isolation --no-deps -e '.[physics,healthy-route]'
+python -m pip install --no-deps --no-build-isolation -e .
+python -X utf8 -m unittest discover -s model/tests -v
+node --test visualizer/tests/test_*.mjs
+python -X utf8 model/tools/check_contract.py model/tests/fixtures/contract-v1/manifest.json
+python -X utf8 model/tools/build_review_inventory.py
+python -X utf8 model/tools/check_repository.py
+python -X utf8 visualizer/tools/build_pages.py --refresh
+git diff --check
 ```
 
-This checks package installation into that environment, not fresh dependency resolution. Windows checks used Python 3.12.14, torch 2.14.1 and numpy 2.5.4. A separate fresh clone with `core.autocrlf=true` passed both new inference and pinned replay. Python documentation tools on Windows require `-X utf8` on non-UTF-8 locales; the first unqualified invocation failed on encoding, then passed with UTF-8 enabled.
+The suite was also run in a fresh clone of the implementation commit, with a separate editable installation and `core.autocrlf=true`.
 
-## Commands and results
+- Python: 162 tests; 157 passed, one optional SUMO/projection environment check skipped, and four Windows symlink setup errors (`WinError 1314`). The four unchanged tests all passed separately on Linux: `test_catalog_server.RegistryServerTests.test_public_scenario_mount_is_bounded`, `test_contract.ContractTests.test_symlink_escape`, `test_layout.DomainLayoutTests.test_public_routes_read_new_layout_without_exposing_source`, and `test_storage.StorageTests.test_reject_escaping_symlink`. This is combined platform evidence, not a claim of a wholly green Windows run.
+- Viewer: 70 tests, 69 passed, one optional archived Tube timetable test skipped; no failures.
+- Contract and repository checks passed: one curated London Scenario, 11 catalog Assets, 13 registered Methods and 86 English documents. Generated inventory was refreshed from merged sources.
+- Pages build passed: 1,494 remote public resources, 126 frontend files, **zero bundled city payload bytes**. Native publication inputs remain pinned. Frontend download indexes were generated from committed LF bytes, avoiding unrelated Windows line-ending hash changes.
 
-```sh
-python -m unittest discover -s model/tests -v
-node --test visualizer/tests/test_viewer.mjs
-node --test visualizer/tests/test_camera_journey.mjs
-python model/tools/check_contract.py model/tests/fixtures/contract-v1/manifest.json
-python model/tools/build_review_inventory.py
-python model/tools/check_repository.py
-git diff --exit-code -- visualizer/guide/inventory.json
-python model/tools/run_health_example.py
-python model/tools/run_health_example.py --recorded
-```
-
-- Python: 123 tests, 122 passed and one optional projection/geometry test skipped (`test_only_explicit_markings_are_painted_and_clipped`; SUMO review environment unavailable).
-- Viewer: six tests passed; camera journey: four tests passed.
-- Fixture contract, repository and regenerated inventory checks passed: one London Scenario, 11 catalog Assets and 10 Methods. The fictional recording remains a test fixture, outside that catalog.
-- Fresh inference completed with bundled weights and checksum enforcement. Recorded replay preserved `20261123T130814Z_ccd01c3453_physics@1`; its empty `derived_from` chain is deliberate because all inputs are explicit fictional parameters. Tests verify replay never calls inference and rejects changed trajectory bytes.
-- Windows Edge headless browser: eight layers, seven charts at widths 1440 and 390; caveats visible, seeking updates field values and rendered trajectory, play advances, pause holds, visibility changes, final sample/restart succeeds. No captured page, request or HTTP errors. Command: `node visualizer/tests/browser_health.cjs http://127.0.0.1:8774` against the local recorded workspace; `CHROME_PATH` and `PUPPETEER_MODULE` select Edge and puppeteer-core.
-
-Wheel commands:
+## Fresh checkout and installed wheel
 
 ```sh
+python -X utf8 model/tools/run_health_example.py
+python -X utf8 model/tools/run_health_example.py --recorded
 python -m pip wheel --no-deps --no-build-isolation . -w cache/wheels
 python -m pip install --no-deps --target cache/installed-wheel cache/wheels/canopy_world-0.2.0-py3-none-any.whl
 ```
 
-An isolated `python -I` process outside the checkout inserted only the installed-wheel target before importing `healthy_route.inference`. It asserted that `ASSETS` resolves inside that target, compared every manifest SHA-256 with its actual file bytes, rejected carriage returns in `scaler.json`, and ran `predict([[10,22,50,.03,0,1,0,1]],16,16,42)`. Result: `[16.0, 16.51461927428889]`. Checksum enforcement was never disabled.
+Both fresh-checkout examples completed. Recorded replay preserved `20261123T130814Z_ccd01c3453_physics@1`, whose inputs are explicitly fictional and whose empty dependency chain is documented in `DEMO_RESULT.json`. Its fixture source archive was inspected: 658 source/model members, no participant CSV/Parquet or private input paths.
+
+The installed-wheel smoke process used `python -I`, explicitly inserted only the installed-wheel directory ahead of dependencies, and asserted that inference and the conditional runtime resolved inside it. It verified every packaged inference checksum, rejected CR bytes in the scaler, loaded all three new city Method specs, and initialized 289 synthetic template states. `predict([[10,22,50,.03,0,1,0,1]],16,16,42)` returned `[16.0, 16.51461927428889]`. Wheel SHA-256: `9bb740427fd695c721e8701f560a6192898bdf9959ff6f7181035255928d1307`. Scaler SHA-256: `c109bb0cc70c9db1028f9bcf8c5097d14770fb11fb38cd65b00ee7a4281cb289`. Checksum enforcement remained enabled.
+
+## Participant-free city preparation
+
+The commands in [LOCAL_CITY.md](LOCAL_CITY.md) completed using the pinned public `london-complete-tube53-20261125` snapshot and matching Overture 2026-10-21.0 segment/connector inputs. `prepare_city_health.py --example` created a new disposable workspace, explicit synthetic physiology Asset and selected-route result. It did not copy a private physiology bundle or a user's saved route.
+
+The generated initial result was `20261125T202809Z_ba0f3652ad_physics@1`, with direct dependencies:
+
+- Geometry: `city_connections_02da72fd8378_b320c988_geometry@1`.
+- City Physics: `city_connections_02da72fd8378_b320c988_physics@1`.
+- Synthetic physiology: `health_physiology_5854ec9657c54226_physics@1`.
+
+Each Asset retains its descriptors, exact upstream dependencies, hashes and preparation provenance locally. These generated Assets and public city payloads are **not committed or published**. This identifies the tested local result, not a new hosted demo input. The portable committed recording remains a separate fictional example.
+
+## Browser behavior
+
+Tests used the shared renderer from the merged revision, with `CANOPY_PUPPETEER` and `CANOPY_BROWSER_PATH` selecting installed tooling:
+
+```sh
+node visualizer/tests/browser_health_city.cjs
+node visualizer/tests/browser_active_crossing.cjs
+node visualizer/tests/browser_health.cjs http://127.0.0.1:8828
+```
+
+`CANOPY_CITY_URL` selected the prepared loopback city preview in lite and full-detail modes. The crossing test used a separately calculated synthetic 78.69 m route with two waiting crossings and an explicit request/result index. Opening either preview produced no inference POSTs.
+
+- City lite and full detail: play advances, pause holds, seeking updates the trajectory and five-minute prediction, fractional final sample reaches Arrived, restart succeeds, visibility changes, 60x works, controls fit 390 px mobile. Full detail loaded all 64 tiles without errors.
+- Explicit endpoint reversal and start times 12:50:37 / 18:50:37 produced new results at relative times 14,437 / 36,037 seconds. All checked samples had finite breathing/score, strictly increasing times, and native pollution/temperature remained null beyond native coverage while separately labelled Health inputs supplied estimates. Tests assert the native layer definitions and phase clocks are unchanged. Switching to Pollution restored its native timeline; an ordinary city launch requested no Health API and mounted no Health controls.
+- A deliberate HTTP 503 showed the error and hid stale results; restoring the saved preview worked. No unexpected captured browser/HTTP errors.
+- Crossing lamps remained fixed beside the road across seek, playback, camera and viewport changes. Red WAIT changed to green WALK; active lamps were 96 screen pixels while other heads retained their normal dimensions. Focus, transition to the next crossing, mobile visibility and route visibility passed. No POSTs occurred during playback.
+- Fresh-checkout scientific Viewer: eight layers, seven charts, desktop/mobile, seek/result/trajectory/render-matrix/pick, advance/pause, visibility, final sample and restart all passed without captured errors.
+- Latest-main navigation and model-card assertions passed. Their test launchers were copied to disposable cache and only the hard-coded Linux Chrome executable was replaced with Windows Edge; repository implementations/assertions were unchanged.
+
+Model tests cover source connector topology, disconnected roads, masks, valid zero values, bounded donor selection, missing-input failure, Health-only temporal replay, sunlight's separate day clock, crossing wait accounting, service privacy and fixed-input request boundaries. This does not certify every possible road/start-time combination.
 
 ## Review and limits
 
-Self-review checked removal of the private registry entry, private-only dependencies and obsolete UI references; exact recording identity and bytes; no changes to the London Scenario configuration, current city renderer or publication; and preservation of the prior workflow at `02024b0` on `preserve/healthy-route-private-20261123`. An unintended README encoding change was corrected to the original UTF-8 text. Independent review is still required before merge.
+Self-review checked the four-domain split, exact Asset inputs, preserved current contribution guidance, minimal shared-viewer hooks, absence of the private wave optimizer, and exclusion of participant files, private results, local launchers and assistant artifacts. No contributor's city field/clock/mask is overwritten. A byte comparison confirmed that all 66 inventoried source files in the user's working local checkout remained unchanged.
 
-Not run: private participant-dependent planner, private full-city optimization, alignment against pinned city Geometry/roads, vertical control-point residuals, common observation-clock validation, held-out physiological evaluation or clinical validation. No city integration or hosted deployment is claimed. The recording contains fictional inputs plus trained aggregate model artifacts, not participant records; weights are not a differential-privacy guarantee.
+The city preview is an opt-in local research scenario, not a hosted or validated city result. Spatial mapping is tied to pinned source geometry and declared terrain/deck conventions, not independent surveyed vertical control. The Health clock is an illustrative scenario mapping: repeated short pollution/temperature sequences and traffic clips are not new measured coverage; pedestrian signals are model assumptions distinct from recorded vehicle signals. Activity/humidity and the assumed breathing reference in the public example are synthetic, so its scores do not reproduce a person's private results.
+
+Not run: participant-dependent/private optimization, reproduction of an individual's predictions, independent vertical control-point survey, common measured observation-clock validation, held-out physiological evaluation or clinical validation. The score and thermal proxy remain heuristic and latent spread is not calibrated total uncertainty. Trained weights are not a differential-privacy guarantee. Independent review remains required; this work does not merge or deploy the PR.
