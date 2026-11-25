@@ -1,7 +1,7 @@
 {
-  "version": "98393276665bd1c34c95",
+  "version": "b6c6472103833342579e",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 302986709,
+  "bytes": 302994027,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -7739,6 +7739,11 @@
       "sha256": "bb05774fd64243ff99856422d12ce32a42f12e44c8dbd47695c78c75f835bc4e"
     },
     {
+      "path": "viewer/3d/cosmos-demos.js",
+      "bytes": 3888,
+      "sha256": "85560f41ed166964fc1d7d427fe9331119d492d2d28f95b612b179f8404b733d"
+    },
+    {
       "path": "viewer/3d/detail-tiles.js",
       "bytes": 6207,
       "sha256": "87a9f1abe2fd94de6cb962c97781dca714f6c017fd3fc7475661b4a5f9535ae1"
@@ -7785,8 +7790,8 @@
     },
     {
       "path": "viewer/3d/main.js",
-      "bytes": 143920,
-      "sha256": "b635bdd8455d3611e85ad4f8855fb10547ba337eec21627c1815283d703f7e38"
+      "bytes": 144004,
+      "sha256": "d5b98de09e75bdda5234def52cd705afbea2ae4048d9fd4935bc2172b0d65171"
     },
     {
       "path": "viewer/3d/native-road-surface.js",
@@ -7977,6 +7982,11 @@
       "path": "viewer/daylight-window.mjs",
       "bytes": 504,
       "sha256": "90b0e43204051153c3551d176414521d3ddf95bbb3497ab360b74f3baaa20a6d"
+    },
+    {
+      "path": "viewer/demos/provenance.json",
+      "bytes": 3346,
+      "sha256": "18bf0bfdf54ee1b8e6aa93bba86b04dc21360c0f2e0616b458301b1e043a1826"
     },
     {
       "path": "viewer/frames.js",

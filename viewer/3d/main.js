@@ -1,3 +1,4 @@
+import { installCosmosDemos } from './cosmos-demos.js';
 import {TUBE_PRESETS} from './tube-preset.mjs';
 import {createTubeLayer} from './tube-layer.js';
 import {createRegionalTubeLayer} from './tube-regional.js';
@@ -261,6 +262,7 @@ function setupSceneUI() {
     ...PHASE_ORDER.map((k) => mk('field', 'field', k, TAB_NAME[k] ?? k)),
     auto,
   );
+  installCosmosDemos(tabs);
   for (const el of document.querySelectorAll('[data-layer]'))
     el.style.display = has(el.dataset.layer) ? '' : 'none';
   const legend = (k, L) => {
