@@ -1,7 +1,7 @@
 {
-  "version": "5424b9ca733a4f408183",
+  "version": "e35264d9ac727e98377a",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 303005279,
+  "bytes": 303013019,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -7790,8 +7790,8 @@
     },
     {
       "path": "viewer/3d/main.js",
-      "bytes": 144607,
-      "sha256": "d12a150cf3099f1b4eeeb1f898d819290e56d4447e7d2bd1214bd87c26cbb531"
+      "bytes": 145684,
+      "sha256": "6d827849a954a861ce290d266e61a8b517da301497f8026814e4eaed99deaff1"
     },
     {
       "path": "viewer/3d/model-card.js",
@@ -7807,6 +7807,11 @@
       "path": "viewer/3d/native-traffic.js",
       "bytes": 2797,
       "sha256": "db0b9e35bad295cba9ca511d3108664c7dad93a203c1307f85d9e6d159a48d2c"
+    },
+    {
+      "path": "viewer/3d/navigation.js",
+      "bytes": 5856,
+      "sha256": "24897d74363d8a1c027c1022a0ff593a8d18263fdc0ecd20abad8c652d070c1a"
     },
     {
       "path": "viewer/3d/opening.css",
@@ -7865,8 +7870,8 @@
     },
     {
       "path": "viewer/3d/style.css",
-      "bytes": 16798,
-      "sha256": "1280fb5e87b5b6af6876a53948d68ea221559ceef376dc731d1f7500cd0c4212"
+      "bytes": 17605,
+      "sha256": "6ba22ee76542b34bd80b1c53b338db18a631ccbf90fb740811d9795c2df27fb8"
     },
     {
       "path": "viewer/3d/tile.js",
