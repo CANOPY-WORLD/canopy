@@ -142,3 +142,7 @@ The published interior preset is recorded in
 [`scenario/imperial_corridor_8km/presentation/ihub-interior.json`](../scenario/imperial_corridor_8km/presentation/ihub-interior.json).
 The `london-ihub-interior-20261122` snapshot includes this object as `scene.interior`
 and declares both losslessly compressed GLBs in its checksum inventory.
+
+## Cosmos3-Super recordings
+
+The top-bar Cosmos3-Super button opens a video dialog with Video generation and Text modification recordings. These are recorded model experiments, not an online inference service. Video generation uses retained November 20 renders; text modification uses the actual November 25 native reasoner batch output. Videos load on demand, are excluded from the required offline download, and stop when the dialog closes. Hashes and provenance are in `site/viewer/demos/provenance.json`.

@@ -188,7 +188,8 @@ def generated(root):
     for name, path in manifests.items():
         files[name] = path.read_bytes()
     shared = [{'path': name, 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
-              for name, data in files.items()]
+              for name, data in files.items()
+              if not (name.startswith('viewer/demos/') and name.endswith('.mp4'))]
     downloads = {}
     for scenario in scenarios:
         inventory = shared + [{'path': name, 'bytes': record['bytes'], 'sha256': record['sha256']}

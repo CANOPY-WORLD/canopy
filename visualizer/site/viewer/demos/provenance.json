@@ -1,0 +1,17 @@
+{
+  "model": "Cosmos3-Super",
+  "videos": [
+    {
+      "file": "video-generation.mp4",
+      "bytes": 2711338,
+      "sha256": "3dc78a8b175a96a7d31f184371fc89f1e05fc2cc5eb9000a9a161f4178b57a6f"
+    },
+    {
+      "file": "text-modification.mp4",
+      "bytes": 374663,
+      "sha256": "af48b081c82a4938f924574835567104b9258c37998def124b562f08c84979d3"
+    }
+  ],
+  "video_generation": "Retained November 20, 2026 Borg job 217448 renders. Canopy edge video and generated RGB first frame conditioning. Historical comparison recording.",
+  "text_modification": "November 25, 2026 Borg job 220335 native reasoner output. Recorded batch response loaded, compiled, applied and undone; not live inference. Two restricted scene API calls; physics not recalculated."
+}
