@@ -20,4 +20,3 @@ header #fit{flex:0 0 auto}
 
 /* Keep multi-channel scientific results usable in narrow viewports. */
 #time{min-width:0}#charts{max-height:calc(100% - 20px);overflow-y:auto;min-width:0}.series{flex-shrink:0}
-#health-inspection{background:#12202df0;padding:12px;border:1px solid #314b5d;border-radius:6px;max-width:520px;overflow-wrap:anywhere;font-size:12px}#health-inspection p{line-height:1.45}#health-inspection dl{display:grid;grid-template-columns:1fr 1fr;gap:5px}#health-inspection dd{margin:0}#health-inspection button{margin:3px;padding:5px;font-size:12px}

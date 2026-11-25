@@ -41,8 +41,6 @@ That integration needs pinned current city geometry and environmental/traffic in
 
 # Private personalized route workflow
 
-The [local planning and recorded inspection guide](LOCAL_WORKFLOW.md) adds endpoint selection, explicit calculation and recorded personal score/plot inspection through the shared scientific Viewer. It requires an authorized private bundle and keeps current-city alignment separate.
-
 Version `healthy_route/wave_cvae@1.0.0` adapts the 16 November V2 planner. It includes bounded destination-guided wave search, recurrent CVAE costs, walking/running timing, candidate-arrival environmental sampling, solar thermal proxy and recorded-vehicle crossing gaps. Source identities are in `SOURCE.json`.
 
 ## Installation and input preparation

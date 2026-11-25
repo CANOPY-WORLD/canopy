@@ -1,7 +1,5 @@
 # Visualizer
 
-The [local health workflow](../model/healthy_route/LOCAL_WORKFLOW.md) uses a separate explicit planning page and the shared scientific Viewer for recorded health inspection. It does not activate a public city health widget or run a solver when a view opens.
-
 [Canopy](../README.md) / Visualizer
 
 Before adding a feature, read the [Visualizer contribution standard](CONTRIBUTING.md). [All component standards](../model/docs/framework/contributing.md) provide the shared entrypoint.
