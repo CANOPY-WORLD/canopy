@@ -40,4 +40,6 @@ The planning service requires a same-origin token for writes, rejects other Host
 
 ## Validation
 
+See [the revision-specific validation record](LOCAL_VALIDATION.md) for actual environments, commands, results and remaining limits.
+
 Run `python -m unittest discover -s model/tests -v`, the documented contract/repository checks, and `node --test visualizer/tests/test_viewer.mjs`. `visualizer/tests/browser_local_health.cjs` exercises an explicitly prepared workspace via its local planning service and requires Puppeteer/Chrome. It tests planning request protection, recorded inspection, seek, playback/pause, restart, follow, visibility and desktop/mobile layout. Never commit the workspace, browser captures or personal result payloads as fixtures. Synthetic recording tests cover score calculation, missing data, reference changes, waits and timeline gaps. Paired runs with authorized private inputs provide additional local parity evidence, not physiological validation.
