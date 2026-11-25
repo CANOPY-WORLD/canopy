@@ -13,16 +13,16 @@ export function installCosmosDemos(tabs) {
   dialog.innerHTML = `<header><h2 id="cosmos-title">Cosmos3-Super demos</h2><button type="button" data-close aria-label="Close demos">Close</button></header>
     <nav aria-label="Choose a demo"><button type="button" data-demo="0">Video generation</button><button type="button" data-demo="1">Text modification</button></nav>
     <video controls playsinline preload="none" aria-label="Cosmos3-Super demonstration"></video>
-    <p data-caption></p><p data-status role="status"></p>`;
+    <details><summary>About these recordings</summary><p data-caption></p></details><p data-status role="status"></p>`;
   const style = document.createElement('style');
-  style.textContent = `#cosmos-demos{box-sizing:border-box;width:min(1000px,94vw);max-height:92dvh;overflow:auto;border:1px solid #516570;border-radius:16px;background:#14232d;color:#edf4f8;padding:20px}#cosmos-demos::backdrop{background:#000b}#cosmos-demos header{display:flex;align-items:center;justify-content:space-between;gap:16px}#cosmos-demos h2{font:600 20px system-ui;margin:0}#cosmos-demos nav{display:flex;gap:10px;margin:18px 0;flex-wrap:wrap}#cosmos-demos button{font:inherit;color:inherit;background:#293e4a;border:1px solid #6b8796;border-radius:8px;padding:10px 14px;cursor:pointer}#cosmos-demos button[aria-pressed=true]{background:#246b70}#cosmos-demos button:focus-visible{outline:3px solid #83e9ee;outline-offset:3px}#cosmos-demos video{display:block;width:100%;max-height:62dvh;background:#000}#cosmos-demos p{font:14px/1.5 system-ui}#cosmos-demos [data-status]:empty{display:none}`;
+  style.textContent = `#cosmos-demos{box-sizing:border-box;width:min(1000px,94vw);max-height:92dvh;overflow:auto;border:1px solid #516570;border-radius:16px;background:#14232d;color:#edf4f8;padding:20px}#cosmos-demos::backdrop{background:#000b}#cosmos-demos header{display:flex;align-items:center;justify-content:space-between;gap:16px}#cosmos-demos h2{font:600 20px system-ui;margin:0}#cosmos-demos nav{display:flex;gap:10px;margin:18px 0;flex-wrap:wrap}#cosmos-demos button{font:inherit;color:inherit;background:#293e4a;border:1px solid #6b8796;border-radius:8px;padding:10px 14px;cursor:pointer}#cosmos-demos button[aria-pressed=true]{background:#246b70}#cosmos-demos button:focus-visible{outline:3px solid #83e9ee;outline-offset:3px}#cosmos-demos video{display:block;width:100%;max-height:62dvh;background:#000}#cosmos-demos details{margin-top:12px;color:#a9c0cc;font:12px/1.5 system-ui}#cosmos-demos summary{cursor:pointer}#cosmos-demos p{font:12px/1.5 system-ui}#cosmos-demos [data-status]:empty{display:none}`;
   document.head.append(style);
   document.body.append(dialog);
   const video = dialog.querySelector('video');
   const status = dialog.querySelector('[data-status]');
   const demos = [
     ['video-generation.mp4', 'Video generation · Recorded November 20, 2026. Cosmos3-Super renders conditioned on Canopy edge videos and generated first frames.'],
-    ['text-modification.mp4', 'Text modification · Actual Cosmos3-Super batch output: generate scene code, compile, apply and undo in one scene. Recorded November 25, 2026; not live inference.']
+    ['text-modification.mp4', 'Two recorded Cosmos3-Super edits: lower/cream and raise/slate blue, followed by Undo. Accelerated playback; native reasoner batch outputs from November 25, 2026. Geometry only; physics not recalculated.']
   ];
   function play(index) {
     video.pause();
