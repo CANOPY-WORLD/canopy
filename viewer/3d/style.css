@@ -156,3 +156,19 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .top-tabs select#tube-view { background:#203c38; color:#edfff8; border-color:#7ac9b2; max-width:210px; }
 .top-tabs select#tube-view:focus-visible { outline:2px solid #b4ffe7; outline-offset:2px; }
 .top-tabs select#tube-view[hidden] { display:none; }
+
+/* Compact, optional model information; the city remains the primary surface. */
+#model-card{position:fixed;left:max(14px,env(safe-area-inset-left));z-index:14;width:300px;max-width:calc(100vw - 28px);box-sizing:border-box;padding:12px 14px;border:1px solid #536a61;border-radius:12px;background:#172c26f5;color:#edf5ef;box-shadow:0 4px 18px #0002;font:12px/1.5 system-ui;max-height:calc(100dvh - 170px);overflow:auto}
+#model-card header{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#b5cbbd}
+#model-card button{font:18px system-ui;color:inherit;background:transparent;border:0;min-width:36px;min-height:36px;cursor:pointer;border-radius:6px}
+#model-card h2{font:500 16px/1.3 system-ui;margin:3px 0 8px}
+#model-card p{margin:0 0 10px}
+#model-card [data-description]{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#model-card nav{display:flex;gap:16px;flex-wrap:wrap;margin:10px 0}
+#model-card a{color:#b8e6ce;text-underline-offset:3px}
+#model-card details{border-top:1px solid #405c4e;padding-top:8px}
+#model-card summary{cursor:pointer;min-height:26px}
+#model-card [data-note]{margin-top:8px;color:#c7d7ce}
+#model-card :focus-visible{outline:2px solid #b4ffe7;outline-offset:2px}
+.widget-player:has(#loading:not(.hide)) #model-card{visibility:hidden}
+@media(pointer:coarse){#model-card button{min-width:44px;min-height:44px}#model-card a{padding:8px 0}#model-card summary{min-height:36px}}
