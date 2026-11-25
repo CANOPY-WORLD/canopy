@@ -2,7 +2,7 @@
   "schema_version": "1.1.0",
   "kind": "canopy.publication",
   "scenario_id": "imperial_corridor_8km",
-  "snapshot": "london-complete-daylight-20261125",
+  "snapshot": "london-complete-tube53-20261125",
   "representation": "london-website-compatibility",
   "source": {
     "repository": "https://github.com/acse-yl222/canopy",
@@ -13,7 +13,7 @@
       "https://github.com/acse-yl222/physics-grounded-4d-world-model-framework/releases/tag/imperial-corridor-native-20261102"
     ]
   },
-  "bytes": 283898895,
+  "bytes": 298269504,
   "files": [
     {
       "path": "actors/demo_rev02/actors/pigeon.glb.gz",
@@ -266,6 +266,42 @@
       "bytes": 1004954,
       "sha256": "76f4f497901bfe5a54ee99b6d7da04c1dcb97a203cefb7a2e705866f8eaf13f7",
       "source_snapshot": "london-traffic-native-20261122"
+    },
+    {
+      "path": "context/underground/underground.json",
+      "viewer_path": "scenes/imperial_corridor_8km/context/underground/underground.json",
+      "bytes": 617011,
+      "sha256": "dc543052d8ec7e5b366bade26a799a021a3f3c95640f6d873e3dd8663d402d12"
+    },
+    {
+      "path": "context/underground/underground_stations_scene_data.js",
+      "viewer_path": "scenes/imperial_corridor_8km/context/underground/underground_stations_scene_data.js",
+      "bytes": 12949830,
+      "sha256": "93d577d5e8ca0d52bb17b91b85f40d736f8d2a85e56d683f0d8b73d283bdb179"
+    },
+    {
+      "path": "context/underground/underground_status.json",
+      "viewer_path": "scenes/imperial_corridor_8km/context/underground/underground_status.json",
+      "bytes": 39909,
+      "sha256": "608793404387f6f01802b0e4de1d96a65941817487979ad6cc6e0823cb2bada8"
+    },
+    {
+      "path": "context/underground/underground_trains_am_peak.json",
+      "viewer_path": "scenes/imperial_corridor_8km/context/underground/underground_trains_am_peak.json",
+      "bytes": 260163,
+      "sha256": "0ce2681a7e3c4b9c1baac0aa182d40f41bada31571bd2b58183b93964069cc64"
+    },
+    {
+      "path": "context/underground/underground_trains_inter_peak.json",
+      "viewer_path": "scenes/imperial_corridor_8km/context/underground/underground_trains_inter_peak.json",
+      "bytes": 238093,
+      "sha256": "6b352913834c8681e8c84dedd3c1834eae7efb12b3b86483e23e791858c263fe"
+    },
+    {
+      "path": "context/underground/underground_trains_pm_peak.json",
+      "viewer_path": "scenes/imperial_corridor_8km/context/underground/underground_trains_pm_peak.json",
+      "bytes": 260116,
+      "sha256": "da7a8c1e4500e67f5c7a08a5ad2febc45f7b0a019a92733e337aa79b4dac5c4d"
     },
     {
       "path": "context/vector_landscape/00-wetland.f32",
@@ -4155,8 +4191,8 @@
     {
       "path": "scene.json",
       "viewer_path": "scenes/imperial_corridor_8km/scene.json",
-      "bytes": 134799,
-      "sha256": "8e939b29a323b3aa9a2fd63310afb962d0d7bea08eefb81d1bf8af7a6b10cbe3"
+      "bytes": 140286,
+      "sha256": "840b7873d166cd4513cb1b0eeafc065a3ece69643fde2c2ca044959c7c3cc87c"
     },
     {
       "path": "tiles/detail_tiles_enu_20261030/index.json",
@@ -10433,7 +10469,7 @@
   ],
   "derivation": {
     "operation": "Compose existing approved presentation assets; no numerical rerun or resampling",
-    "base_snapshot": "london-ihub-interior-20261122",
+    "base_snapshot": "london-complete-daylight-20261125",
     "updated_fields_snapshot": "london-compact-20261122",
     "preserved": [
       "I-HUB v10 interior",
@@ -10445,6 +10481,9 @@
       "LISFLOOD flood metadata and quantization",
       "100-frame summer-solstice irradiance and packed shadows"
     ],
-    "daylight_default": true
+    "daylight_default": true,
+    "tube_source_commit": "bdb4408288a334c8ac61962bca0e00bbb2a4a0cf",
+    "tube_source_pr": "https://github.com/CANOPY-WORLD/canopy-scenario-imperial-corridor-8km/pull/6",
+    "tube_payloads": "Byte-identical six payloads from Bohan; only scene metadata composed."
   }
 }

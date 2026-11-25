@@ -1,7 +1,7 @@
 {
-  "version": "f152beaf27bd617290f7",
+  "version": "bc22296863185ea806bc",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 288570845,
+  "bytes": 302983816,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -86,12 +86,12 @@
     {
       "path": "asset-router.js",
       "bytes": 6285,
-      "sha256": "218892e39bf5bc66b83ca0a12a4a48588bf98affacb61d6f69c1d22e9cbfd34e"
+      "sha256": "7c6f4d267f167aeb6e012ab444af5b17d760c18f9e314315225da97d321dad0c"
     },
     {
       "path": "asset-sources.json",
-      "bytes": 354907,
-      "sha256": "4dcac3415637c2eb1e6abd7b1a517dba2687e8a50fa4753cd969471443cec5cf"
+      "bytes": 356393,
+      "sha256": "168f7d0f642dfbd62ef8afa63e18cad42a028a5843e9d7682368a47a8e110d37"
     },
     {
       "path": "assets/uav-wavepde-4m-20261111/config.json",
@@ -150,18 +150,18 @@
     },
     {
       "path": "scenario-index.json",
-      "bytes": 984,
-      "sha256": "5ad9efe9763216a0cb08506b5d6950ce83924e3aa480d7d55f44f19c2feee7c3"
+      "bytes": 980,
+      "sha256": "5c69429dae30151a0cda539b03ddb9640d78da8897e53fb3e422d349f49835fb"
     },
     {
       "path": "scenario/imperial_corridor_8km/data/manifest.json",
-      "bytes": 501228,
-      "sha256": "5979fb771f8c82b428249c9d8e309e79ae5db38b3d17ddb7040a5527122571a2"
+      "bytes": 503221,
+      "sha256": "a51b797d186edc975e1f68ab46414687fbf7f4c4dea873575ec3e0d1cb535e57"
     },
     {
       "path": "scenario/imperial_corridor_8km/publication.json",
-      "bytes": 667,
-      "sha256": "0d5cff4f1d85da7bbe0c6ae06b3ded51e1bd45c1eae92f958b2c044dc466cf88"
+      "bytes": 663,
+      "sha256": "56091435fd49f5aa5ceb9c5bfcb3bf31a55cac942b40c1a8987f24db6f10e751"
     },
     {
       "path": "scenes/imperial_corridor_8km/compact-provenance/fields-8m-report.json",
@@ -302,6 +302,36 @@
       "path": "scenes/imperial_corridor_8km/context/traffic-native.json",
       "bytes": 1004954,
       "sha256": "76f4f497901bfe5a54ee99b6d7da04c1dcb97a203cefb7a2e705866f8eaf13f7"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/context/underground/underground.json",
+      "bytes": 617011,
+      "sha256": "dc543052d8ec7e5b366bade26a799a021a3f3c95640f6d873e3dd8663d402d12"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/context/underground/underground_stations_scene_data.js",
+      "bytes": 12949830,
+      "sha256": "93d577d5e8ca0d52bb17b91b85f40d736f8d2a85e56d683f0d8b73d283bdb179"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/context/underground/underground_status.json",
+      "bytes": 39909,
+      "sha256": "608793404387f6f01802b0e4de1d96a65941817487979ad6cc6e0823cb2bada8"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/context/underground/underground_trains_am_peak.json",
+      "bytes": 260163,
+      "sha256": "0ce2681a7e3c4b9c1baac0aa182d40f41bada31571bd2b58183b93964069cc64"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/context/underground/underground_trains_inter_peak.json",
+      "bytes": 238093,
+      "sha256": "6b352913834c8681e8c84dedd3c1834eae7efb12b3b86483e23e791858c263fe"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/context/underground/underground_trains_pm_peak.json",
+      "bytes": 260116,
+      "sha256": "da7a8c1e4500e67f5c7a08a5ad2febc45f7b0a019a92733e337aa79b4dac5c4d"
     },
     {
       "path": "scenes/imperial_corridor_8km/context/vector_landscape/00-wetland.f32",
@@ -3080,8 +3110,8 @@
     },
     {
       "path": "scenes/imperial_corridor_8km/scene.json",
-      "bytes": 134799,
-      "sha256": "8e939b29a323b3aa9a2fd63310afb962d0d7bea08eefb81d1bf8af7a6b10cbe3"
+      "bytes": 140286,
+      "sha256": "840b7873d166cd4513cb1b0eeafc065a3ece69643fde2c2ca044959c7c3cc87c"
     },
     {
       "path": "scenes/index.json",
@@ -7745,8 +7775,8 @@
     },
     {
       "path": "viewer/3d/index.html",
-      "bytes": 12698,
-      "sha256": "007e1883ac33fab8420e3372679f84b749a3e3628fcaf18c3438130acd7d1145"
+      "bytes": 12905,
+      "sha256": "fa390a12325086d67d93f65efa27232971b2e31f27695d155faff33cc8eecde1"
     },
     {
       "path": "viewer/3d/interior.js",
@@ -7755,8 +7785,8 @@
     },
     {
       "path": "viewer/3d/main.js",
-      "bytes": 134548,
-      "sha256": "c8dc48c40ed59ec80fdd11055d2816710ccc2b8b6a944a3820f686f2edd7daf2"
+      "bytes": 143671,
+      "sha256": "03c442675eaaa3cf542dc2767127f8fc6135885ff36607fc7fa8d1b09a54414f"
     },
     {
       "path": "viewer/3d/native-road-surface.js",
@@ -7825,8 +7855,8 @@
     },
     {
       "path": "viewer/3d/style.css",
-      "bytes": 15020,
-      "sha256": "adadbac6225c8728f7288c1427d944c9d954cb8b0ec239b2a8e845fc30a1639d"
+      "bytes": 15336,
+      "sha256": "ed6685bc438fd1581352d7e6415ac6a3a2d26584824c4a8795cbaf5671f6be37"
     },
     {
       "path": "viewer/3d/tile.js",
@@ -7872,6 +7902,26 @@
       "path": "viewer/3d/tube-preset.mjs",
       "bytes": 800,
       "sha256": "b3b8bd321777a45de56aa00ba0dca206ff26a93e1c870e5c863220d95377858d"
+    },
+    {
+      "path": "viewer/3d/tube-regional.js",
+      "bytes": 4674,
+      "sha256": "e706fa7541c65f143db5d96ef4f9bf3d4e405bc44fd401e5917ae300ed86c99d"
+    },
+    {
+      "path": "viewer/3d/tube-service.js",
+      "bytes": 10754,
+      "sha256": "89091edd03bb4b3c2dff73f41202e7c54fc8ba8426598651717ef1070bbc1bd3"
+    },
+    {
+      "path": "viewer/3d/tube-stations.js",
+      "bytes": 8254,
+      "sha256": "7a925c934f1ceb9a00c80cd5d1bca1c2a040439a40faa196c814273d7a1af69a"
+    },
+    {
+      "path": "viewer/3d/tube-timetable.mjs",
+      "bytes": 5563,
+      "sha256": "6414171c86da1c78da1554af7891be5dca391723e52a88bc41125d6b26edf389"
     },
     {
       "path": "viewer/3d/uav-layer.js",

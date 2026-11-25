@@ -21,7 +21,7 @@ The generated [Asset review catalog](asset-catalog.json) lists every registered 
 
 Physics Urban World — Imperial Corridor, London.
 
-[Open Canopy on GitHub Pages](https://canopy-world.github.io/canopy/). Canopy publishes the shared viewer; this Scenario's 1,488 complete public resources (283,898,895 bytes) live in the independent [London data repository](https://github.com/CANOPY-WORLD/canopy-scenario-imperial-corridor-8km) and [data website](https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/). The [publication reference](publication.json) pins its source revision and immutable snapshot URL; [data/manifest.json](data/manifest.json) is a locked inventory only. Existing presentation paths resolve to the independent data host without copying payloads into Canopy's Pages artifact.
+[Open Canopy on GitHub Pages](https://canopy-world.github.io/canopy/). Canopy publishes the shared viewer; this Scenario's 1,494 complete public resources (298,269,504 bytes) live in the independent [London data repository](https://github.com/CANOPY-WORLD/canopy-scenario-imperial-corridor-8km) and [data website](https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/). The [publication reference](publication.json) pins its source revision and immutable snapshot URL; [data/manifest.json](data/manifest.json) is a locked inventory only. Existing presentation paths resolve to the independent data host without copying payloads into Canopy's Pages artifact.
 
 The opening page downloads and verifies this selected Scenario's complete presentation for browser caching; a [direct viewer link](https://canopy-world.github.io/canopy/viewer/3d/?scene=imperial_corridor_8km) loads resources on demand. The data website links back to the same Viewer. Both GitHub Pages sites currently share the `canopy-world.github.io` origin, at different repository paths.
 
@@ -68,3 +68,5 @@ while indoors; surrounding detailed city geometry remains visible.
 ## Optional research experiments
 
 [Healthy-route extended replay](experiments/healthy_route_extended_replay/README.md) is an opt-in private research profile. It does not change this Scenario's recorded timelines, default tasks or publication.
+
+The proposed 53-station Tube release preserves the current I-HUB, daylight solar, LISFLOOD, native traffic and coupled pollution. The six contributed rail payloads add approximately 14.4 MB. Runtime Tube geometry is loaded on selection; only one station is built at a time. Representative interiors and scheduled trains are not surveyed geometry or live service.
