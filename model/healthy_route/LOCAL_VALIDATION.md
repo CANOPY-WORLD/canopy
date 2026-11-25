@@ -1,6 +1,6 @@
 # Local workflow validation — 25 November 2026
 
-Executable revision: `e052e99dc1ba83e8ed9c35d9034302b5bd08cc88`, based on current main `ba8e1da99a3f43afc4c1dbfeba06451ac137ac1b`. This evidence file is a documentation-only follow-up. The final PR head includes this evidence; no implementation changes follow the tested executable revision.
+Executable revision: `fec7e086f73b1bf887bcafc8561149a146cd4060`, based on current main `ba8e1da99a3f43afc4c1dbfeba06451ac137ac1b`. This evidence file is a documentation-only follow-up. The final PR head includes this evidence; no implementation changes follow the tested executable revision.
 
 ## Results
 
@@ -24,7 +24,7 @@ The browser checks exposed an endpoint rounding bug: an HTML slider could produc
 
 ## Environments and commands
 
-Windows: Python 3.12.14, PyTorch 2.15.0+cpu, NumPy 2.3.5; Microsoft Edge through Puppeteer. An isolated editable environment uses the preinstalled scientific dependencies from the earlier local audit. The wheel was installed into a separate environment using those same preinstalled dependencies. This is not a clean dependency-resolution test. The wheel was built at `5f47c4e10cb2387a843071e7714207c1c8735b15`; its packaged Python code, tests, tools and packaging configuration are unchanged in the final executable revision. Wheel SHA-256: `7a9220733b5e1ff8fb3e5245259cce149e9288800873c1dc4cc4e37ef8ab19bd`.
+Windows: Python 3.12.14, PyTorch 2.15.0+cpu, NumPy 2.3.5; Microsoft Edge through Puppeteer. An isolated editable environment uses the preinstalled scientific dependencies from the earlier local audit. The wheel was installed into a separate environment using those same preinstalled dependencies. This is not a clean dependency-resolution test. The wheel was built and tested at the final executable revision above. Wheel SHA-256: `dbd18e98e6d19453407a05de9a40e65a3d7c608b0edac41f432efd85f0601838`.
 
 Linux/WSL: Python 3.12.16, PyTorch 2.15.0+cpu, NumPy 2.5.5; existing dependencies, fresh Git clone with `core.autocrlf=false`, detached exact executable revision, `PYTHONPATH` set to that clone's `model/src`, `OMP_NUM_THREADS=2`, `MKL_NUM_THREADS=2`. No participant inputs were copied into the fresh checkout.
 
