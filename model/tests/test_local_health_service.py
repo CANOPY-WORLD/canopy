@@ -13,7 +13,7 @@ class LocalHealthServiceTests(unittest.TestCase):
     def setUp(self):
         self.server=ThreadingHTTPServer(('127.0.0.1',0),partial(Handler,storage=None))
         self.calls=[]
-        self.server.session=SimpleNamespace(token='test-token',job={'status':'idle'},bundle_path=Path('/private/input_bundle'),calculate=self.calls.append)
+        self.server.session=SimpleNamespace(token='test-token',job={'status':'idle'},allowed_files=set(),calculate=self.calls.append)
         self.thread=threading.Thread(target=self.server.serve_forever,daemon=True);self.thread.start()
 
     def tearDown(self):
@@ -27,7 +27,7 @@ class LocalHealthServiceTests(unittest.TestCase):
 
     def test_get_does_not_run_and_input_bytes_are_blocked(self):
         self.assertEqual(self.request('GET','/api/health/job')[0],200)
-        for path in ['/project/imperial_corridor_8km/assets/bundles/input_bundle/manifest.json','/project/imperial_corridor_8km/assets/bundles/result/provenance/request.json','/project/imperial_corridor_8km/runs/cache/file.json']:
+        for path in ['/project/imperial_corridor_8km/assets/bundles/input_bundle/manifest.json','/project/imperial_corridor_8km/assets/bundles/older_input/observations.csv','/project/imperial_corridor_8km/assets/bundles/result/provenance/request.json','/project/imperial_corridor_8km/runs/cache/file.json']:
             self.assertEqual(self.request('GET',path)[0],403)
         self.assertEqual(self.calls,[])
 

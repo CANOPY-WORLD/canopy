@@ -11,6 +11,7 @@ from canopy.assets.store import load as load_asset
 from canopy.running.runner import run, prepare_request
 from canopy.visualization.profile import select
 from canopy.visualization.server import Handler as ReadHandler
+from canopy.scenario.store import load as load_scenario
 from common.layout import visualization_root
 
 
@@ -25,6 +26,18 @@ class Session:
         self.network=read(self.bundle_path/'pedestrian/generated/network.json')
         self.token=secrets.token_urlsafe(32)
         self.lock=threading.Lock();self.job={'status':'idle'}
+        self.allowed_files=set()
+        self.allow_results(load_scenario(storage,self.request['scenario_id'])['assets'])
+
+    def allow_results(self,references):
+        allowed=set(self.allowed_files)
+        for reference in references:
+            _,manifest,path=load_asset(self.storage,self.request['scenario_id'],reference,verify=False)
+            recording=next((a for a in manifest.get('artifacts',[]) if a['id']=='health_recording'),None)
+            if recording is None:continue
+            prefix='/project/'+self.request['scenario_id']+'/assets/bundles/'+path.parent.name+'/'
+            allowed.update(prefix+name for name in ['manifest.json',recording['asset'],*[layer['asset'] for layer in manifest['layers']]])
+        self.allowed_files=allowed
 
     def calculate(self,parameters):
         if not self.lock.acquire(blocking=False):raise RuntimeError('A journey is already being calculated')
@@ -38,6 +51,7 @@ class Session:
             try:
                 result=run(self.storage,request)
                 if result['status']!='complete':raise RuntimeError('Run did not complete')
+                self.allow_results(result['assets'])
                 select(self.storage,request['scenario_id'],result['assets'],'laboratory')
                 self.job={'status':'complete','assets':result['assets'],'viewer':'/src/visualization/viewer/?scenario='+request['scenario_id']}
             except Exception:
@@ -67,8 +81,7 @@ class Handler(ReadHandler):
         if path=='/api/health/job':return self.json_response(session.job,head)
         # Never expose the private input bundle, caches or source records through HTTP.
         if path.startswith('/project/'):
-            parts=Path(path.lstrip('/')).parts
-            if len(parts)<6 or parts[2:4]!=('assets','bundles') or parts[4]==session.bundle_path.name or 'provenance' in parts:
+            if path not in session.allowed_files:
                 return self.send_error(403,'Private input or provenance resource')
         return super().respond(head)
 
