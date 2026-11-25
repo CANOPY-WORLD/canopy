@@ -1,6 +1,6 @@
 # Widget model cards
 
-Draft English copy for model information cards in the London viewer. This document is editable review material; it does not add cards to the website. Model guides describe reusable methods, while the published Scenario records identify the results actually displayed. Keep both aligned when implementing the cards.
+English copy and review notes for model information cards in the London viewer. The compact city card reads [Scenario presentation metadata](../../scenario/imperial_corridor_8km/presentation/model-cards.json); its two-line summary and links follow the selected widget, with qualifications under About this demo. Collapse persists across selections. Cosmos recordings retain their descriptions inside the existing video dialog. Model guides describe reusable methods, while the published Scenario records identify the results actually displayed. Keep both aligned when implementing the cards.
 
 Each card should show a model name, a short description, a model or paper link and a link to its Canopy guide. Authors and additional references can be added during review.
 

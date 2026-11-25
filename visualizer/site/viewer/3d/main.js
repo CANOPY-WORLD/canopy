@@ -1,3 +1,4 @@
+import { installModelCard } from './model-card.js';
 import { installCosmosDemos } from './cosmos-demos.js';
 import {TUBE_PRESETS} from './tube-preset.mjs';
 import {createTubeLayer} from './tube-layer.js';
@@ -48,6 +49,7 @@ import { recordedFrame } from '../scene-run.js';
 // the masks, the field layers (files, frame counts, clocks, display ranges) and the camera focus. South Kensington also
 // switches on the traffic / UAV / bird replay, the station tile, the OSM supplement and the building refinements.
 const SCENE = await loadScene();
+let modelCard = null;
 const tubeConfig = TUBE_PRESETS[SCENE.id];
 let tubeLayer=null, tubeLoading=null, tubeController=null, tubeSelect=null;
 // Regional data path: where the scene declares checksummed `underground` rail files, London Tube is served from the
@@ -2155,6 +2157,7 @@ function setSectionUI() {
   );
   syncFieldCheckboxes();
   for (const button of [...shotButtons, ...fieldButtons]) button.setAttribute('aria-pressed', String(button.classList.contains('active')));
+  modelCard?.select(section === 'fields' ? state.phase : (replayLayer?.shot ?? tour.shot));
   syncPlaybackUI();
 }
 /** Site section: ground, trees and (South Kensington) the traffic / UAV replay visible; the physics fields hidden; the shot tour runs. */
@@ -3379,3 +3382,9 @@ if (SCENE.city_tools) {
 }
 
 if (LAYERS.wind.scalar_speed) { const p=document.getElementById('l-part'); p.checked=false;p.disabled=true;p.closest('label').title='Unavailable: scalar speed preview does not retain wind direction'; }
+
+// Optional Scenario-owned copy; absent cards never block scene loading.
+fetch(new URL(`../model-cards/${encodeURIComponent(SCENE.id)}.json`, import.meta.url))
+  .then(response => { if (!response.ok) return null; return response.json(); })
+  .then(cards => { if (cards) { modelCard = installModelCard(document.getElementById('tabs'), cards); setSectionUI(); } })
+  .catch(error => console.warn('Model information unavailable', error));

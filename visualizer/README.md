@@ -1,6 +1,6 @@
 # Visualizer
 
-Draft model descriptions and project references for viewer information cards are maintained in [Widget model cards](docs/widget-model-cards.md).
+The main city viewer shows a compact, collapsible model-information card beneath the widget buttons. It follows actual widget selection, including automatic transitions, and keeps detailed qualifications expandable. The [copy and references](docs/widget-model-cards.md) are backed by [Scenario presentation metadata](../scenario/imperial_corridor_8km/presentation/model-cards.json), copied into the Pages build. Card controls do not change city playback.
 
 [Canopy](../README.md) / Visualizer
 
