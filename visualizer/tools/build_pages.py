@@ -147,6 +147,8 @@ def frontend(root):
         files[route] = (root / 'visualizer' / route).read_bytes()
     for name in ('index.html', 'style.css', 'app.js', 'inventory.json', 'architecture.svg'):
         files['guide/' + name] = (root / 'visualizer/guide' / name).read_bytes()
+    for path in sorted((root / 'scenario').glob('*/presentation/model-cards.json')):
+        files['viewer/model-cards/' + path.parent.parent.name + '.json'] = path.read_bytes()
     return files
 
 
@@ -188,7 +190,8 @@ def generated(root):
     for name, path in manifests.items():
         files[name] = path.read_bytes()
     shared = [{'path': name, 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
-              for name, data in files.items()]
+              for name, data in files.items()
+              if not (name.startswith('viewer/demos/') and name.endswith('.mp4'))]
     downloads = {}
     for scenario in scenarios:
         inventory = shared + [{'path': name, 'bytes': record['bytes'], 'sha256': record['sha256']}
