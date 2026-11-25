@@ -1,7 +1,7 @@
 {
-  "version": "66aaa775171b9a61de0b",
+  "version": "7f3f4a47d27842aedf4c",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 288609736,
+  "bytes": 302983816,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -86,12 +86,12 @@
     {
       "path": "asset-router.js",
       "bytes": 6285,
-      "sha256": "218892e39bf5bc66b83ca0a12a4a48588bf98affacb61d6f69c1d22e9cbfd34e"
+      "sha256": "7c6f4d267f167aeb6e012ab444af5b17d760c18f9e314315225da97d321dad0c"
     },
     {
       "path": "asset-sources.json",
-      "bytes": 354907,
-      "sha256": "4dcac3415637c2eb1e6abd7b1a517dba2687e8a50fa4753cd969471443cec5cf"
+      "bytes": 356393,
+      "sha256": "168f7d0f642dfbd62ef8afa63e18cad42a028a5843e9d7682368a47a8e110d37"
     },
     {
       "path": "assets/uav-wavepde-4m-20261111/config.json",
@@ -150,18 +150,18 @@
     },
     {
       "path": "scenario-index.json",
-      "bytes": 984,
-      "sha256": "5ad9efe9763216a0cb08506b5d6950ce83924e3aa480d7d55f44f19c2feee7c3"
+      "bytes": 980,
+      "sha256": "2edc469df00d1b40cee0c3bd5d1e6e80c0e2a34a850fdb6dcc1832915e9fcc4b"
     },
     {
       "path": "scenario/imperial_corridor_8km/data/manifest.json",
-      "bytes": 501228,
-      "sha256": "5979fb771f8c82b428249c9d8e309e79ae5db38b3d17ddb7040a5527122571a2"
+      "bytes": 503221,
+      "sha256": "a51b797d186edc975e1f68ab46414687fbf7f4c4dea873575ec3e0d1cb535e57"
     },
     {
       "path": "scenario/imperial_corridor_8km/publication.json",
-      "bytes": 667,
-      "sha256": "0d5cff4f1d85da7bbe0c6ae06b3ded51e1bd45c1eae92f958b2c044dc466cf88"
+      "bytes": 663,
+      "sha256": "0212f6b24ecfa93123484b19b6b4433db04b0aa81bb8980baf16bc04e1f06c75"
     },
     {
       "path": "scenes/imperial_corridor_8km/compact-provenance/fields-8m-report.json",
@@ -302,6 +302,36 @@
       "path": "scenes/imperial_corridor_8km/context/traffic-native.json",
       "bytes": 1004954,
       "sha256": "76f4f497901bfe5a54ee99b6d7da04c1dcb97a203cefb7a2e705866f8eaf13f7"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/context/underground/underground.json",
+      "bytes": 617011,
+      "sha256": "dc543052d8ec7e5b366bade26a799a021a3f3c95640f6d873e3dd8663d402d12"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/context/underground/underground_stations_scene_data.js",
+      "bytes": 12949830,
+      "sha256": "93d577d5e8ca0d52bb17b91b85f40d736f8d2a85e56d683f0d8b73d283bdb179"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/context/underground/underground_status.json",
+      "bytes": 39909,
+      "sha256": "608793404387f6f01802b0e4de1d96a65941817487979ad6cc6e0823cb2bada8"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/context/underground/underground_trains_am_peak.json",
+      "bytes": 260163,
+      "sha256": "0ce2681a7e3c4b9c1baac0aa182d40f41bada31571bd2b58183b93964069cc64"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/context/underground/underground_trains_inter_peak.json",
+      "bytes": 238093,
+      "sha256": "6b352913834c8681e8c84dedd3c1834eae7efb12b3b86483e23e791858c263fe"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/context/underground/underground_trains_pm_peak.json",
+      "bytes": 260116,
+      "sha256": "da7a8c1e4500e67f5c7a08a5ad2febc45f7b0a019a92733e337aa79b4dac5c4d"
     },
     {
       "path": "scenes/imperial_corridor_8km/context/vector_landscape/00-wetland.f32",
@@ -3080,8 +3110,8 @@
     },
     {
       "path": "scenes/imperial_corridor_8km/scene.json",
-      "bytes": 134799,
-      "sha256": "8e939b29a323b3aa9a2fd63310afb962d0d7bea08eefb81d1bf8af7a6b10cbe3"
+      "bytes": 140286,
+      "sha256": "840b7873d166cd4513cb1b0eeafc065a3ece69643fde2c2ca044959c7c3cc87c"
     },
     {
       "path": "scenes/index.json",
