@@ -143,7 +143,7 @@ async function load(){
       for(const w of widgets){if(['geometry','building_heat','assumed_heat_connections'].includes(w.layer.id)){const row=rows.get(`${w.context?.manifest?.run_id||''}:${w.layer.id}`)||[...rows.values()].find(r=>r.querySelector('label').title.endsWith(` / ${w.layer.id}`));const checkbox=row?.querySelector('input[type=checkbox]');if(checkbox){checkbox.checked=!underground;w.setVisible(!underground);}}}
       const target=viewCamera.target;camera.position.set(...enuToWorld(underground?[target[0]+500,target[1]-750,-100]:viewCamera.position));controls.target.set(...enuToWorld(target));controls.update();invalidate();});$('fit').after(button);
   }
-  window.urbanViewer={performanceStats,get manifest(){return manifest;},get widgets(){return widgets;},setTime,fit,dispose};
+  window.urbanViewer={performanceStats,get manifest(){return manifest;},get widgets(){return widgets;},get healthInspections(){return inspections.map(i=>i.inspector.state);},setTime,fit,dispose};
 }
 function animate(now){
   animationId=0;if(disposed||document.hidden){previous=0;return;}
