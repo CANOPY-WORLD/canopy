@@ -9,13 +9,13 @@
       "viewer_url": "viewer/3d/?scene=imperial_corridor_8km",
       "download_manifest": "download-manifests/imperial_corridor_8km.json",
       "snapshot": "london-compact-20261122",
-      "bytes": 235513224,
-      "files": 1298,
+      "bytes": 256895130,
+      "files": 1405,
       "repository": "https://github.com/CANOPY-WORLD/canopy-scenario-imperial-corridor-8km",
-      "revision": "5b4fbca154cb50f9b8e18d24c7807325ff66bc15",
+      "revision": "3e3d8810b0b55a9122ff33b1f4cbcfd8ebfd3132",
       "data_website": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/",
       "manifest_url": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-compact-20261122/manifest.json",
-      "manifest_sha256": "75fdcb48d65aea4c89b86f32378d092592c7be096d1e15005fd4da966b2efe3d"
+      "manifest_sha256": "116f227fba9d8a7421046a1ba7e962517dcc5de9142e5ed7772c01b381fce936"
     }
   ]
 }
