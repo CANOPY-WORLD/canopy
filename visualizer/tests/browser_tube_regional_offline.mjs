@@ -31,9 +31,11 @@ try {
       station: t?.station?.name ?? null, alone: t?.alone ?? null,
       network: n ? {visible: n.group.visible, time: n.clock.time, playing: n.clock.playing, speed: n.clock.speed, trains: n.trains, cars: n.carInstances, omitted: n.omitted} : null};
   });
+  const workerSessions = new Map();
   const network = async on => {
     for (const target of browser.targets().filter(t => t.type() === 'service_worker')) {
-      const session = await target.createCDPSession(); await session.send('Network.enable');
+      let session = workerSessions.get(target);
+      if (!session) { session = await target.createCDPSession(); workerSessions.set(target, session); await session.send('Network.enable'); }
       await session.send('Network.emulateNetworkConditions', on ? {offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1} : {offline: true, latency: 0, downloadThroughput: 0, uploadThroughput: 0});
     }
     await page.setOfflineMode(!on);
@@ -60,9 +62,13 @@ try {
   pass('complete download stores the rail files, the station file and the code; London Tube not visited');
 
   // ---- 2. Offline (page and service worker), reload, first selection of London Tube.
+  const canFetchScene = () => page.evaluate(async () => { try { return (await fetch('../../scenes/imperial_corridor_8km/scene.json', {cache: 'no-store'})).ok; } catch { return false; } });
+  assert.equal(await canFetchScene(), true, 'the network probe succeeds before going offline');
   await network(false); await page.reload({waitUntil: 'domcontentloaded'}); await ready();
-  assert.equal(await page.evaluate(async () => { try { return (await fetch('../../scenes/imperial_corridor_8km/scene.json', {cache: 'no-store'})).ok; } catch { return false; } }), false, 'the service worker is offline too');
-  let s = await state(); assert(!s.online && s.button === 'London Tube' && !s.loaded);
+  assert.equal(await canFetchScene(), false, 'the service worker is offline too');
+  // Assert the failed network request above, not navigator.onLine: Chromium can
+  // retain an online flag across reload while CDP blocks both page and worker traffic.
+  let s = await state(); assert(s.button === 'London Tube' && !s.loaded, JSON.stringify(s));
   const shown = {model: s.model, trees: s.trees, ground: s.ground};
   // 2a. One read of the stored rail data fails: a clear retry, and the city stays usable.
   await page.evaluate(() => { const original = window.fetch.bind(window); let fail = true;
@@ -102,7 +108,8 @@ try {
   pass('overview and back while offline: layers restored, network reopened at the kept service time');
 
   // ---- 5. Online again: nothing changes; the pinned source is still not requested.
-  await network(true); await until(() => navigator.onLine);
+  await network(true);
+  assert.equal(await canFetchScene(), true, 'the network probe succeeds after reconnecting');
   await click('overview'); await sleep(800); await click('londonTube'); await until(() => window.canopyTube.service.group.visible);
   s = await state(); assert(s.network.time === 30144 && s.button === 'London Tube' && s.strip.name === 'Tube timetable time');
   assert.equal(receipt.pinned_source_requests, 0, 'the pinned four-station source was never requested');
