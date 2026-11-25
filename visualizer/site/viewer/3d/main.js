@@ -2073,8 +2073,7 @@ function syncTubeStrip(){
 }
 /**
  * Regional data path: what the selected Tube view needs from the rest of the viewer. The scheduled network hides
- * buildings and trees (it is drawn through the ground), also when focusing a surface station's location. Deep
- * platform interiors retain the city; no station is displayed as an isolated model. The service clock runs only while the network is on screen: it
+ * buildings and trees (it is drawn through the ground), only on the overview. All platform views retain the city around a local cutaway. The service clock runs only while the network is on screen: it
  * starts on the first visit, later resumes as it was left, and never starts by itself under reduced motion.
  */
 function syncTubeMode(){
@@ -2199,7 +2198,7 @@ function runCampus(shot = 'overview') {
         });
         document.querySelector('[data-shot="londonTube"]').after(tubeSelect);
         const note=document.createElement('p');note.textContent=layer.regional
-          ? `Tube network: schematic tunnels at assumed depths and one representative day's scheduled timetable${layer.service.serviceDate?' ('+layer.service.serviceDate+')':''}, 08:00 to 09:00; not live positions. Trains move at constant speed between timetabled calls, without added stops; where the timetable gives the same minute for a departure and the next arrival, a train covers that run within a second (some Central line runs). Tube stations: representative interiors with assumed cross-sections, stairs, ways out and roofs, not surveyed; track positions, levels and entrance points come from the source data; static geometry without trains or passengers. Stations with deep platforms open one representative platform interior with a local city cutaway; source positions are unchanged. Surface-only stations remain marked locations in the network map; no deep interior is invented for them. ${(SCENE.underground.attribution??[]).join(' · ')} `
+          ? `Tube network: schematic tunnels at assumed depths and one representative day's scheduled timetable${layer.service.serviceDate?' ('+layer.service.serviceDate+')':''}, 08:00 to 09:00; not live positions. Trains move at constant speed between timetabled calls, without added stops; where the timetable gives the same minute for a departure and the next arrival, a train covers that run within a second (some Central line runs). Tube stations: representative interiors with assumed cross-sections, stairs, ways out and roofs, not surveyed; track positions, levels and entrance points come from the source data; static geometry without trains or passengers. All stations use the same journey to a standing view 1.6 m above a source platform surface, with a local city cutaway; source positions are unchanged. Deep platforms retain their tunnel shells; open and deck platforms retain their exported roofs, open sky and surrounding city. ${(SCENE.underground.attribution??[]).join(' · ')} `
           : 'Four representative Piccadilly stations and source connecting routes. Network overview uses an x-ray display through the city; tunnel depths and interiors are illustrative. Static geometry, not live service. ';
         const link=document.createElement('a');link.href=tubeConfig.attribution;link.textContent='Source and attribution';note.append(link);document.getElementById('viewer-details').append(note);
         return layer;

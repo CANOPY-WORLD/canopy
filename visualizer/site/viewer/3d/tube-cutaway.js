@@ -17,9 +17,10 @@ export function createTubeCutaway(scene) {
       restore();
       if (!platform) return;
       active = platform; platform.updateMatrixWorld(true);
-      const box = new THREE.Box3().setFromObject(platform).expandByScalar(8);
+      const box = new THREE.Box3().setFromObject(platform).expandByScalar(2);
       const planes = [new THREE.Plane(new THREE.Vector3(1,0,0),-box.max.x), new THREE.Plane(new THREE.Vector3(-1,0,0),box.min.x),
-        new THREE.Plane(new THREE.Vector3(0,0,1),-box.max.z), new THREE.Plane(new THREE.Vector3(0,0,-1),box.min.z)];
+        new THREE.Plane(new THREE.Vector3(0,0,1),-box.max.z), new THREE.Plane(new THREE.Vector3(0,0,-1),box.min.z),
+        new THREE.Plane(new THREE.Vector3(0,-1,0),box.min.y)];
       for (const root of scene.children) if (root !== platform) root.traverse(object => {
         if (!object.isMesh) return;
         for (const material of Array.isArray(object.material) ? object.material : [object.material]) {

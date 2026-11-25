@@ -1,7 +1,7 @@
 {
-  "version": "7cc7417c493a5e19850c",
+  "version": "98393276665bd1c34c95",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 302985180,
+  "bytes": 302986709,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -7785,8 +7785,8 @@
     },
     {
       "path": "viewer/3d/main.js",
-      "bytes": 143935,
-      "sha256": "4bd798f1f2b203905cf65d5e049125aa58533fed3f040048f751368f04223fef"
+      "bytes": 143920,
+      "sha256": "b635bdd8455d3611e85ad4f8855fb10547ba337eec21627c1815283d703f7e38"
     },
     {
       "path": "viewer/3d/native-road-surface.js",
@@ -7890,8 +7890,8 @@
     },
     {
       "path": "viewer/3d/tube-cutaway.js",
-      "bytes": 1646,
-      "sha256": "dbdf11029b7d5489191fb775779f9df8309517d394070b4b984c077d66559d94"
+      "bytes": 1708,
+      "sha256": "8d446817daaacf6d6f1a8d3a1e606119b18c65307793263d68c75fe018f63667"
     },
     {
       "path": "viewer/3d/tube-layer.js",
@@ -7904,29 +7904,34 @@
       "sha256": "65134aa0c473036c000f3ea75266e132d30830abd655eaa2b5f4c27c7081fa01"
     },
     {
+      "path": "viewer/3d/tube-platform-camera.js",
+      "bytes": 2545,
+      "sha256": "9e4dcc4db66fbb5b5e68d5f714166a8278573f041873c108a045c5f1121838ed"
+    },
+    {
       "path": "viewer/3d/tube-preset.mjs",
       "bytes": 800,
       "sha256": "b3b8bd321777a45de56aa00ba0dca206ff26a93e1c870e5c863220d95377858d"
     },
     {
       "path": "viewer/3d/tube-regional.js",
-      "bytes": 4957,
-      "sha256": "00eef55a8108ab38224ef22ee40c561fb283cf6445d3b4c24b124f81329c4d5e"
+      "bytes": 5242,
+      "sha256": "183ecbf15898d552c25bf715292e8823d4d10d87a17a17c6b54fcf13f500f48e"
     },
     {
       "path": "viewer/3d/tube-service.js",
-      "bytes": 11235,
-      "sha256": "fb934579e2f3843ec75bd21e75d30b9d1dc23e38eec26fbfae98932bfe8773d4"
+      "bytes": 10754,
+      "sha256": "89091edd03bb4b3c2dff73f41202e7c54fc8ba8426598651717ef1070bbc1bd3"
     },
     {
       "path": "viewer/3d/tube-station-view.mjs",
-      "bytes": 729,
-      "sha256": "1f35002dea27457be550c2ad12cc77218c356c492b853277eadd2c584f99e45a"
+      "bytes": 826,
+      "sha256": "bbc9847a321310628713927fc062fbb162ce7a633b7e9ba560e623719c598ec8"
     },
     {
       "path": "viewer/3d/tube-stations.js",
-      "bytes": 6215,
-      "sha256": "6425a7b19867ac37889f692951a595ccd3cd8e451211e331447f33c8728f0510"
+      "bytes": 5251,
+      "sha256": "2a10f263850d4997d4fe7ec11b5181b5f1c1b10c98dfb8be625e8169657a9578"
     },
     {
       "path": "viewer/3d/tube-timetable.mjs",

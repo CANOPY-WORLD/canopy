@@ -123,7 +123,7 @@ try {
     pass('pause, seek, seven witnesses and the 98-train peak; the Play button is not rewritten while the service runs');
 
     if (before.stations) {
-      // ---- 5. The 53 choices resolve to source deep interiors or contextual network locations.
+      // ---- 5. The 53 choices use a standing camera on their source platforms.
       const listed = await page.evaluate(() => [...document.querySelector('#tube-view').options].slice(1).map(o => o.value));
       const arrived = id => until(id => window.canopyTube.selection === id && !document.querySelector('#tube-view').hasAttribute('aria-busy'), id);
       const choose = async id => { await page.select('#tube-view', id); await arrived(id); };
@@ -133,7 +133,7 @@ try {
       s = await state(); assert(s.selection === 'network' && s.menu.value === 'network' && s.network.visible && s.network.time === kept);
       await rail({stationDelayMs: 1200}); await page.select('#tube-view', '940GZZLURVP'); await page.setViewport({width:390,height:844});
       await click('overview'); await click('londonTube'); await arrived('940GZZLURVP');
-      await rail({stationDelayMs: 0}); s=await state(); assert(s.network.visible && s.ground && s.inScene===0 && s.stationMeshes===0 && !s.alone && s.strip.name==='Tube timetable time');
+      await rail({stationDelayMs: 0}); s=await state(); assert(!s.network.visible && city(s) && s.inScene===1 && s.stationMeshes>0 && !s.alone && s.strip.name==='Interior camera journey progress');
       const hold = async id => { await page.evaluate(id => { const catalog=window.viewer.tubeStations,build=catalog.build; window.__release=null;
         catalog.build=(...args)=>args[1]!==id?build(...args):new Promise((resolve,reject)=>{window.__release=()=>{catalog.build=build;build(...args).then(resolve,reject);};}); },id);
         await page.select('#tube-view',id);await until(()=>window.__release&&document.querySelector('#tube-view').hasAttribute('aria-busy')); };
@@ -142,34 +142,39 @@ try {
       s=await state(); assert(s.stationVisible && city(s) && !s.alone && !s.network.visible,'mixed South Kensington enters its deep platform with city retained');
       // A newer selection wins over an older station build.
       await hold('940GZZLUBST'); await choose('940GZZLULAD'); await page.evaluate(()=>window.__release()); await sleep(250);
-      assert.equal((await state()).selection,'940GZZLULAD'); assert.equal((await state()).inScene,0);
+      assert.equal((await state()).selection,'940GZZLULAD'); assert.equal((await state()).inScene,1);
       await page.setViewport({width:1280,height:800});
       const built=[];
       for(const id of listed){ await choose(id); const q=await state();
-        const interior=q.station.viewKind==='interior';
+        const interior=q.station.viewKind==='platform';
         assert(!q.alone && q.network.time===kept, id);assert.equal(q.cutaway,interior,id+' cutaway state');
         assert(interior ? q.stationVisible&&q.inScene===1&&q.stationMeshes>0&&city(q)&&!q.network.visible : q.network.visible&&q.inScene===0&&q.stationMeshes===0&&q.ground&&!q.model, id);
         assert.equal(q.strip.name,interior?'Interior camera journey progress':'Tube timetable time');
-        assert.match(await page.$eval('#tube-view',e=>e.selectedOptions[0].textContent),interior?/platform interior/:/network location/);
-        built.push({id,name:q.station.name,kind:q.station.viewKind,meshes:q.stationMeshes});
+        assert.match(await page.$eval('#tube-view',e=>e.selectedOptions[0].textContent),/platform/);
+        const audit=q.station.camera;assert.equal(audit.eyeHeight,1.6);assert(audit.forwardClearance===null||audit.forwardClearance>=15);
+        assert(audit.localFoot[0]>audit.bounds.min[0]+.79&&audit.localFoot[0]<audit.bounds.max[0]-.79);
+        assert(audit.localFoot[2]>audit.bounds.min[2]+.39&&audit.localFoot[2]<audit.bounds.max[2]-.39);
+        await seek(1e9);await until(()=>!canopyTube.journey.playing);
+        const eye=await page.evaluate(()=>viewer.camera.position.toArray());assert(Math.abs(eye[1]-audit.foot[1]-1.6)<1e-6,id+' measured standing eye height');
+        built.push({id,name:q.station.name,kind:q.station.environment,meshes:q.stationMeshes,hasDeck:q.station.hasDeck,camera:q.station.camera});
       }
-      assert.equal(built.filter(x=>x.kind==='interior').length,23);assert.equal(built.filter(x=>x.kind==='network').length,30);
+      assert.equal(built.filter(x=>x.kind==='deep').length,23);assert.equal(built.filter(x=>x.kind==='open').length,30);
       receipt.station_views=built;
-      const shot=async(id,name)=>{await choose(id);const q=await state();if(q.station.viewKind==='interior'){await seek(1e9);await until(()=>!window.canopyTube.journey.playing);}
+      const shot=async(id,name)=>{await choose(id);const q=await state();if(q.station.viewKind==='platform'){await seek(1e9);await until(()=>!window.canopyTube.journey.playing);}
         await page.evaluate(()=>{window.__pauseDraw=false});await sleep(2000);if(process.env.QA_SCREENSHOTS==='1')await page.screenshot({path:`${out}/${name}.png`});await page.evaluate(()=>{if('__skippedDraws'in window)window.__pauseDraw=true});};
-      await shot('940GZZLUBST','mixed-interior'); await shot('940GZZLULAD','surface-context');
-      const wide=await page.evaluate(()=>viewer.camera.position.distanceTo(canopyTube.pose.target));
-      await page.setViewport({width:390,height:844});await sleep(2100);
-      const narrow=await page.evaluate(()=>viewer.camera.position.distanceTo(canopyTube.pose.target));assert(narrow>wide,'surface location fits narrow view');
-      await shot('940GZZLULAD','surface-context-390');await shot('940GZZLUSKS','interior-390');
+      await shot('940GZZLUBST','mixed-platform'); await shot('940GZZLUGPK','deep-platform');
+      await shot('940GZZLUHSK','open-platform'); await shot('940GZZLULAD','deck-platform');
+      const wide=await page.evaluate(()=>viewer.camera.position.toArray());
+      await page.setViewport({width:390,height:844});await sleep(200);
+      assert.deepEqual(await page.evaluate(()=>viewer.camera.position.toArray()),wide,'resize preserves standing camera');
+      await shot('940GZZLULAD','deck-platform-390');await shot('940GZZLUSKS','deep-platform-390');
       await page.setViewport({width:1280,height:800});
       await page.select('#tube-view','network');await until(()=>window.canopyTube.service.group.visible);assert.equal((await state()).network.time,kept);
       await page.click('#play');await until(()=>window.canopyTube.service.clock.playing);
-      await choose('940GZZLUWCY');assert((await state()).network.playing,'surface location keeps the service clock running');
-      assert.equal((await state()).rate,'30','surface selection retains the service rate controls');
+      await choose('940GZZLUWCY');assert(!(await state()).network.playing,'every platform pauses the service clock');
       await page.select('#tube-view','network');
       assert.equal(await page.evaluate(()=>window.__rail.stations),2,'one successful station catalog fetch after retry');
-      pass('53 choices: 23 deep interiors, 30 network locations without isolated meshes; mixed stations, cancellation, city restoration and narrow views');
+      pass('53 source platform cameras: floor support, 1.6 m eye height, clear forward view, source types, city cutaways, cancellation and narrow views');
     }
 
     // ---- 6. Other views give the city back and stop the service clock; returning resumes it at the kept time.
