@@ -108,6 +108,8 @@ export async function createTubeService({scene, config, url, signal}) {
     state.drawnAt = clock.time; state.drawnFar = far.visible;
   }
 
+  const focus = new THREE.Mesh(new THREE.RingGeometry(32, 40, 48), new THREE.MeshBasicMaterial({color: 0xffffff, depthTest: false, depthWrite: false, transparent: true, opacity: .95, side: THREE.DoubleSide, fog: false}));
+  focus.rotation.x = -Math.PI / 2; focus.renderOrder = 24; focus.visible = false; focus.name = 'Selected Tube station location'; group.add(focus);
   draw();
   const resources = new Set();
   group.traverse(o => { if (o.geometry) resources.add(o.geometry); if (o.material) resources.add(o.material); });
@@ -140,6 +142,7 @@ export async function createTubeService({scene, config, url, signal}) {
       if (clock.tick(dt) || state.drawnAt !== clock.time || state.drawnFar !== far.visible) { draw(); changed = true; }
       return changed;
     },
+    focusStation(position) { focus.visible = Boolean(position); if (position) focus.position.copy(position); },
     setVisible(on) { group.visible = on; },
     dispose,
   };

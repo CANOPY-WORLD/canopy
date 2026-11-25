@@ -1,7 +1,7 @@
 {
-  "version": "bc22296863185ea806bc",
+  "version": "7cc7417c493a5e19850c",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 302983816,
+  "bytes": 302985180,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -7785,8 +7785,8 @@
     },
     {
       "path": "viewer/3d/main.js",
-      "bytes": 143671,
-      "sha256": "03c442675eaaa3cf542dc2767127f8fc6135885ff36607fc7fa8d1b09a54414f"
+      "bytes": 143935,
+      "sha256": "4bd798f1f2b203905cf65d5e049125aa58533fed3f040048f751368f04223fef"
     },
     {
       "path": "viewer/3d/native-road-surface.js",
@@ -7889,6 +7889,11 @@
       "sha256": "08177f89cc58c99dca305db6300feeb253988e7a7472b94a49c792eb2e013974"
     },
     {
+      "path": "viewer/3d/tube-cutaway.js",
+      "bytes": 1646,
+      "sha256": "dbdf11029b7d5489191fb775779f9df8309517d394070b4b984c077d66559d94"
+    },
+    {
       "path": "viewer/3d/tube-layer.js",
       "bytes": 6985,
       "sha256": "2059122d2071292a4bd9b31b65fd0940423c8b5aa99b0c53dbc878d16f0a1a64"
@@ -7905,18 +7910,23 @@
     },
     {
       "path": "viewer/3d/tube-regional.js",
-      "bytes": 4674,
-      "sha256": "e706fa7541c65f143db5d96ef4f9bf3d4e405bc44fd401e5917ae300ed86c99d"
+      "bytes": 4957,
+      "sha256": "00eef55a8108ab38224ef22ee40c561fb283cf6445d3b4c24b124f81329c4d5e"
     },
     {
       "path": "viewer/3d/tube-service.js",
-      "bytes": 10754,
-      "sha256": "89091edd03bb4b3c2dff73f41202e7c54fc8ba8426598651717ef1070bbc1bd3"
+      "bytes": 11235,
+      "sha256": "fb934579e2f3843ec75bd21e75d30b9d1dc23e38eec26fbfae98932bfe8773d4"
+    },
+    {
+      "path": "viewer/3d/tube-station-view.mjs",
+      "bytes": 729,
+      "sha256": "1f35002dea27457be550c2ad12cc77218c356c492b853277eadd2c584f99e45a"
     },
     {
       "path": "viewer/3d/tube-stations.js",
-      "bytes": 8254,
-      "sha256": "7a925c934f1ceb9a00c80cd5d1bca1c2a040439a40faa196c814273d7a1af69a"
+      "bytes": 6215,
+      "sha256": "6425a7b19867ac37889f692951a595ccd3cd8e451211e331447f33c8728f0510"
     },
     {
       "path": "viewer/3d/tube-timetable.mjs",
