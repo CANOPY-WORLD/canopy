@@ -145,6 +145,8 @@ def frontend(root):
     for name in ('scenario-tabs.mjs', 'scenario-tabs.css'):
         route = 'src/visualization/shared/' + name
         files[route] = (root / 'visualizer' / route).read_bytes()
+    for path in sorted((root / 'visualizer/src/visualization/healthy-route').glob('*.mjs')):
+        files['src/visualization/healthy-route/' + path.name] = path.read_bytes()
     for name in ('index.html', 'style.css', 'app.js', 'inventory.json', 'architecture.svg'):
         files['guide/' + name] = (root / 'visualizer/guide' / name).read_bytes()
     for path in sorted((root / 'scenario').glob('*/presentation/model-cards.json')):

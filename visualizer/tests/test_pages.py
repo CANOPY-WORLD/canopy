@@ -29,6 +29,19 @@ class PublicationTests(unittest.TestCase):
     def save(self):
         (self.data / 'manifest.json').write_text(json.dumps(self.manifest))
 
+    def test_public_health_modules_and_relative_imports_are_packaged(self):
+        import re
+        files = pages.frontend(pages.ROOT)
+        base = 'src/visualization/healthy-route/'
+        self.assertIn(base + 'city-health.mjs', files)
+        for name, data in files.items():
+            if not name.startswith(base):
+                continue
+            for relative in re.findall(r"['\"](\.[^'\"]+\.mjs)['\"]", data.decode()):
+                import posixpath
+                target = posixpath.normpath(posixpath.join(posixpath.dirname(name), relative))
+                self.assertIn(target, files, name + ' imports missing ' + target)
+
     def test_only_declared_scenario_data_is_selected(self):
         private = self.root / 'asset/data/project/test/secret.bin'
         private.parent.mkdir(parents=True)

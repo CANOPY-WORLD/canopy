@@ -6,10 +6,10 @@ import {clockText} from './health-clock.mjs';
 import {createCityCrossingSignals} from './city-crossing-signals.mjs';
 import {activeCrossingAt} from './crossing-highlight-state.mjs';
 
-export async function installCityRecording(viewer,{enter,invalidate,selectRoutes=false}){
-  const response=await fetch('/api/health/recording');if(!response.ok)throw Error('Recorded Health result unavailable');
-  const saved=await response.json();let result=saved,rows=result.samples,lift=result.alignment.presentation.route_visibility_lift_m;
-  const presentationResponse=await fetch('/local-health-presentation.json');if(!presentationResponse.ok)throw Error('Local Health presentation unavailable; rebuild the local site');
+export async function installCityRecording(viewer,{enter,invalidate,selectRoutes=false,recordingURL='/api/health/recording',presentationURL='/local-health-presentation.json',compact=false}){
+  const response=await fetch(recordingURL);if(!response.ok)throw Error('Recorded Health result unavailable');
+  const saved=recordingURL.endsWith('.gz')?await new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).json():await response.json();let result=saved,rows=result.samples,lift=result.alignment.presentation.route_visibility_lift_m;
+  const presentationResponse=await fetch(presentationURL);if(!presentationResponse.ok)throw Error('Local Health presentation unavailable; rebuild the local site');
   const signalPresentation=(await presentationResponse.json()).pedestrian_signals;
   const physiology=Boolean(result.physiology_policy);let arrival=result.route_duration_s??result.duration_s,pending=false,selection=null;
   let includeFollowup=false;
@@ -34,7 +34,7 @@ export async function installCityRecording(viewer,{enter,invalidate,selectRoutes
     <div id="cr-values"></div>
     <details open><summary>Exposure along the route</summary><div id="cr-charts"></div></details>
     <details><summary>Alignment and limits</summary><div id="cr-details"></div></details></div>`;
-  document.body.append(panel);const $=id=>panel.querySelector('#cr-'+id);
+  (compact?document.querySelector('#viewer-details'):document.body).append(panel);const $=id=>panel.querySelector('#cr-'+id);
   $('clock').after($('speed').closest('p'));
   $('speed').closest('p').after($('crossing-status'));
   function setSpeed(v){if(Number.isFinite(v)&&v>0){speed=v;last=null;if(![...$('speed').options].some(o=>+o.value===v))$('speed').add(new Option(v+'×',String(v)));$('speed').value=String(v);invalidate();}}
@@ -54,7 +54,7 @@ export async function installCityRecording(viewer,{enter,invalidate,selectRoutes
   function drawDetails(){$('details').replaceChildren();const details=[result.recording.asset,'Snapshot: '+result.alignment.snapshot,result.inputs.recording?'Source route: '+result.inputs.recording:'Geometry: '+result.inputs.geometry,result.coordinate_conversion,result.vertical_limit,result.alignment.clock,result.alignment.solar_clock,result.alignment.traffic_clock,result.signal_status,result.alignment.field_limits,result.missing_policy,'No clinical validation. Thermal proxy and health scores remain heuristic.','Control points: '+result.control_points.length+'; maximum XY residual '+Math.max(...result.control_points.map(p=>p.xy_residual_m)).toExponential(2)+' m.'];
   const crossing=result.crossing_summary;$('crossing-details').hidden=!crossing;$('crossing-note').textContent=crossing?`${crossing.assumption} ${crossing.traffic_clock.mapping}. Newer vehicle gaps cover ${crossing.traffic_clock.covered_crossings} of ${crossing.crossing_count} selected crossings; elsewhere vehicle clearance is unavailable. Recorded vehicle lamps are separate from the modelled pedestrian WAIT/WALK heads. ${crossing.traffic_clock.limits} ${result.native_vehicle_signals?.vertical_policy??''} ${crossing.waiting_health} ${signalPresentation.assumption}`:'';
   for(const text of details){const p=document.createElement('p');p.textContent=text;$('details').append(p);}
-  if(physiology)for(const text of [result.physiology_note,result.followup_note,JSON.stringify(result.physiology_policy),`Maximum temperature donor distance: ${result.physiology_audit.max_temperature_donor_distance_m.toFixed(1)} m. Private input records stay on this computer.`]){const p=document.createElement('p');p.textContent=text;$('details').append(p);}
+  if(physiology)for(const text of [result.physiology_note,result.followup_note,JSON.stringify(result.physiology_policy),`Maximum temperature donor distance: ${result.physiology_audit.max_temperature_donor_distance_m.toFixed(1)} m. Synthetic demo inputs are labelled; participant records are not published.`]){const p=document.createElement('p');p.textContent=text;$('details').append(p);}
   if(result.temporal_policy){const p=document.createElement('p');p.textContent='Health time policy: '+JSON.stringify(result.temporal_policy);$('details').append(p);}
   }drawDetails();
   if(physiology)$('estimate-note').textContent=(result.physiology_input_kind==='synthetic'?'Fictional physiology inputs and assumed reference. ':'Locally supplied physiology inputs. ')+$('estimate-note').textContent;
@@ -77,7 +77,7 @@ export async function installCityRecording(viewer,{enter,invalidate,selectRoutes
     $('focus-walker').disabled=!s.scene_m;$('follow').disabled=!s.scene_m;
     if(active&&!window.canopyNavigation?.manual&&$('follow').checked&&s.scene_m)followWalker(camera,controls,person.group.position);
     updateMarkers();invalidate();}
-  function setActive(on){active=on;panel.hidden=!on;button.classList.toggle('active',on);group.visible=on&&!pending&&$('visible').checked;playing=false;last=null;selection?.setActive(on);if(on){enter();seek(time);focus();}invalidate();}
+  function setActive(on){active=on;panel.hidden=compact||!on;button.classList.toggle('active',on);group.visible=on&&!pending&&$('visible').checked;playing=false;last=null;selection?.setActive(on);if(on){enter();seek(time);focus();}invalidate();}
   button.onclick=()=>setActive(!active);$('close').onclick=()=>setActive(false);$('focus').onclick=focus;$('visible').onchange=()=>{group.visible=active&&!pending&&$('visible').checked;invalidate();};
   if(physiology)$('followup').onchange=()=>{playing=false;includeFollowup=$('followup').checked;drawCharts();seek(time);};
   // Release Health before the selected widget's handler refreshes its card and clock.
@@ -92,6 +92,7 @@ export async function installCityRecording(viewer,{enter,invalidate,selectRoutes
     drawRoute();drawCharts();drawDetails();group.visible=active&&$('visible').checked;seek(rows[0].world_seconds);if(active)focus();}
   if(selectRoutes){const {installCityRouteSelection}=await import('./city-route-selection.mjs');selection=await installCityRouteSelection(viewer,{panel,invalidate,
     onPending(){pending=true;playing=false;group.visible=false;$('output').hidden=true;invalidate();},onResult:replaceResult,onRestore(){replaceResult(saved);}});}
+  if(compact)setSpeed(10);
   seek(time);
   return {get result(){return result},usesTerrain:true,releaseCamera(){ $('follow').checked=false; },setActive,focus,seekWorld(t){playing=false;if(!pending)seek(t);},setPlaying(on){if(pending)return;if(on&&time>=displayEnd())seek(rows[0].world_seconds);playing=on;last=null;invalidate();},setSpeed,
     get active(){return active},get playing(){return playing},get speed(){return speed},get time(){return pending?rows[0].world_seconds:time},get elapsed(){return pending?0:time-rows[0].world_seconds},get start(){return rows[0].world_seconds},get end(){return pending?rows[0].world_seconds:displayEnd()},get position(){return person.group.position.toArray()},get visible(){return group.visible}};

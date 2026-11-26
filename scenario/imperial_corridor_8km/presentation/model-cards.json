@@ -170,5 +170,17 @@
         "https://github.com/CANOPY-WORLD/canopy/blob/main/visualizer/site/viewer/demos/provenance.json"
       ]
     ]
+  },
+  "localHealth": {
+    "label": "Health",
+    "title": "City Health \u00b7 CVAE Breathing Model",
+    "description": "A recorded South Kensington walk connects the breathing model to city pollution, temperature and sunlight, with modelled crossing waits. Use the shared playback controls to explore the route.",
+    "note": "Synthetic physiology inputs. Experimental health score; modelled pedestrian signals, not observed traffic control. Recorded playback only; 10\u00d7 default speed.",
+    "links": [
+      [
+        "Model and limits",
+        "https://github.com/CANOPY-WORLD/canopy/blob/main/model/healthy_route/LOCAL_CITY.md"
+      ]
+    ]
   }
 }

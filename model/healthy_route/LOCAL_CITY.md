@@ -32,7 +32,7 @@ Open `http://127.0.0.1:8826/viewer/3d/?scene=imperial_corridor_8km&health=local&
 - Visualizer: read-only result rendering and explicit loopback request controls under `visualizer/`.
 - Cache: disposable preparation files and local static builds. They are not Pages publication artifacts.
 
-Health's extended pollution/temperature clock and bounded environmental estimates are separate model covariates. The native city samplers, masks, data files and clocks remain unchanged. Sunlight follows its native day timeline. Other widgets do not receive Health estimates. Public launches do not load the local Health controller; this PR does not publish a hosted city demo.
+Health's extended pollution/temperature clock and bounded environmental estimates are separate model covariates. The native city samplers, masks, data files and clocks remain unchanged. Sunlight follows its native day timeline. Other widgets do not receive Health estimates. The public website offers a separate recorded-only South Kensington demo with synthetic physiology inputs. It shares the city renderer and timeline, defaults to 10× playback, and exposes no calculation API. The detailed inspection panel remains local; the public model card explains its assumptions.
 
 Synthetic versus authorized-history inputs remain explicit. To use authorized history locally, prepare the documented physiology Asset yourself and supply its exact version in a request. No participant records, personal baseline, retained private result, or machine path ships with the example. Do not publish resulting sensitive Assets merely because code is public.
 
@@ -43,3 +43,7 @@ The health score and thermal proxy are heuristic; latent spread is not total cal
 ### Camera handoff
 
 In the full desktop viewer, entering WASD exploration releases Health's walker-follow camera. Focus walker, Follow walker and Frame route explicitly exit WASD before moving the shared camera. Health playback pauses its elapsed-time accounting while the document is hidden, so returning to the tab does not jump across the route. Verify these combined controls with `visualizer/tests/browser_health_camera.cjs`; `CANOPY_QA_PAUSE_RENDER=1` checks control behavior with continuous GPU drawing paused and is not a frame-rate benchmark.
+
+### Public recording
+
+The approved `20261126T110633Z_73e7c367f4_physics@1` result retains 668 samples over a 318.7 m walk, including modelled crossing waits. The Scenario publication declares the losslessly compressed recording and pedestrian presentation. No participant records are included. Coordinates, native missing values, donor estimates and timestamps are unchanged. The public snapshot retains its export provenance; earlier city resources are reused by checksum.
