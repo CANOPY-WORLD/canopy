@@ -1,7 +1,7 @@
 {
-  "version": "7e9753f0877c2e90aefb",
+  "version": "ffcb65630ae915c20c65",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 360666989,
+  "bytes": 365309951,
   "files": [
     {
       "path": "agents/auspex/bird.glb",
@@ -106,12 +106,12 @@
     {
       "path": "asset-router.js",
       "bytes": 6285,
-      "sha256": "4b708b6a7e15f4461838fbc8715917c566a0f86a907fafa58522e0ce8f3e1522"
+      "sha256": "6109017e69b2900bdce0b39b57cf2189b5f17c465a65065d7ceb40d50ec889d5"
     },
     {
       "path": "asset-sources.json",
-      "bytes": 359465,
-      "sha256": "2a71637ae113b863e5e8ff0e90632cde1b313129050b03b94692bd3cdc9ea639"
+      "bytes": 362325,
+      "sha256": "061bb710d9b378b3a935c2a71f1263d7cf050d9b5acb067705c5bd08890efd19"
     },
     {
       "path": "assets/birds/README.txt",
@@ -230,18 +230,18 @@
     },
     {
       "path": "scenario-index.json",
-      "bytes": 974,
-      "sha256": "c2e3a9720ccb9bd845e36874b810cb1de9577a6ab508b5aff031a413733e7b86"
+      "bytes": 976,
+      "sha256": "7c3abba6122e85d212b951e2929c731c6b850fb20bc16b53990214155014cd31"
     },
     {
       "path": "scenario/imperial_corridor_8km/data/manifest.json",
-      "bytes": 506531,
-      "sha256": "772800c00794473f60a1372e7d93bfda9f7d9ab35baa9d6b447fb8fc23dfded4"
+      "bytes": 510456,
+      "sha256": "6a807455cfc195f0a30085e89afb0e8ded27eb70efd39f522ee86ceb86b6c508"
     },
     {
       "path": "scenario/imperial_corridor_8km/publication.json",
-      "bytes": 657,
-      "sha256": "ff06e60bb9a3419dc6365eef02739114d7ca1184018c4fd603093dc35d4d3fe9"
+      "bytes": 659,
+      "sha256": "0bcd789f8cc3c5effb122f7207794daa7ccefc965f2170cf5fa588ba55ca413f"
     },
     {
       "path": "scenes/imperial_corridor_8km/compact-provenance/fields-8m-report.json",
@@ -1102,6 +1102,51 @@
       "path": "scenes/imperial_corridor_8km/physics/chunks/quantized8/flood/0099.gz",
       "bytes": 332405,
       "sha256": "df75fcaf78e1a66ee96a092a58d58107ccd5ed411897eeee6701d18d547c4924"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/physics/chunks/quantized8/noise/0000.gz",
+      "bytes": 509663,
+      "sha256": "1be890ac6d2df4406191811242c7aba4b2dbe9e2a0a04ba480dd8590385edd4b"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/physics/chunks/quantized8/noise/0001.gz",
+      "bytes": 457880,
+      "sha256": "ac8c2f84a68048f40251fb8a87aa9c06ddc794f047fb5b17a2b67169599a66fe"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/physics/chunks/quantized8/noise/0002.gz",
+      "bytes": 476749,
+      "sha256": "aa4fcda2182092a95a9f18c7132dda5432802a8307ba68094a7fd4f72b85dada"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/physics/chunks/quantized8/noise/0003.gz",
+      "bytes": 488050,
+      "sha256": "955ac1324b7374c274302e6fecc93a6bb683d7dd5ef5e468e71001bb930840a1"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/physics/chunks/quantized8/noise/0004.gz",
+      "bytes": 500254,
+      "sha256": "4fa76d75b8fb8be288ff0a125892387d9f23f46bbf14977e2ffcd42943a12f42"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/physics/chunks/quantized8/noise/0005.gz",
+      "bytes": 520160,
+      "sha256": "830d1c1e0e4872316f642dd58a2e44ae2898983068df1623d12eaa1fc8292518"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/physics/chunks/quantized8/noise/0006.gz",
+      "bytes": 533408,
+      "sha256": "106ecce4d90ca9ff9ba8ed3092751b75254aafc43c0dce33ee6eff313a24ad3b"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/physics/chunks/quantized8/noise/0007.gz",
+      "bytes": 554426,
+      "sha256": "abc50798cee13581f350d2c87cd76d7e90e08d3a7ce598ed56d52a91e3824ce3"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/physics/chunks/quantized8/noise/0008.gz",
+      "bytes": 577761,
+      "sha256": "05068f7b850e2e688b1179eda02145a66a9530e41c6b8dafc78e32d4c3e9f10a"
     },
     {
       "path": "scenes/imperial_corridor_8km/physics/chunks/quantized8/wind_history/0000.gz",
@@ -3179,6 +3224,21 @@
       "sha256": "df4d3ab831bd253748e1daa57060dc96bfa4e241ac696408f75ef73022841e20"
     },
     {
+      "path": "scenes/imperial_corridor_8km/physics/noise_provenance/README.txt",
+      "bytes": 522,
+      "sha256": "a6c2b3a38db14761650456930cfc9d2948f66f8058810381cb37b2ca348a67ca"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/physics/noise_provenance/export_manifest.json",
+      "bytes": 6729,
+      "sha256": "4f6ac27d2c86475cf12ba887b2673305db4339a3762824a6bf2a88164590c4ce"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/physics/noise_provenance/noise_grid.json",
+      "bytes": 3779,
+      "sha256": "5d432c23f8254b4a096014c69a031f9aec9724110e6254f1953103f2c483f128"
+    },
+    {
       "path": "scenes/imperial_corridor_8km/physics/solar-day-frames.json",
       "bytes": 21402,
       "sha256": "2c58ba1bb73e406e60c3075547562d0d1c4dc2667ba0498b8a9791c0fb340b1c"
@@ -3205,8 +3265,8 @@
     },
     {
       "path": "scenes/imperial_corridor_8km/scene.json",
-      "bytes": 117251,
-      "sha256": "a8e91ef7813fe705617a808cd57488d707ea63f987f687dc5be2c5bce75e3049"
+      "bytes": 119829,
+      "sha256": "d972b75d572c2909a0b290f5febf449793ee15e08d0e7fc7a6f2899537f1de5d"
     },
     {
       "path": "scenes/index.json",
@@ -7920,8 +7980,8 @@
     },
     {
       "path": "viewer/3d/field-colorbar.mjs",
-      "bytes": 6895,
-      "sha256": "7e7baf28638a9ccf6efbc85d7b2a44de613ae649335e3cb5720a7de9f3cfab9b"
+      "bytes": 6906,
+      "sha256": "7ad1b2f1242e63b2ac7a011ca4d228afd3bbc32ba36cdc451c08770269eff944"
     },
     {
       "path": "viewer/3d/flight-corridors.js",
@@ -7945,8 +8005,8 @@
     },
     {
       "path": "viewer/3d/index.html",
-      "bytes": 12905,
-      "sha256": "fa390a12325086d67d93f65efa27232971b2e31f27695d155faff33cc8eecde1"
+      "bytes": 13354,
+      "sha256": "684cb9af2a16dce18c77ecdea1d1ae488de858657dbe2f737bebee8de0497cc5"
     },
     {
       "path": "viewer/3d/interior.js",
@@ -7955,13 +8015,13 @@
     },
     {
       "path": "viewer/3d/main.js",
-      "bytes": 148742,
-      "sha256": "81f2a7328e7685ffd03b9d960eb8002026dbbc7e8df15ddc6cf418c0103e62fc"
+      "bytes": 151415,
+      "sha256": "649d004e3a858bbb09b545763d7952405a47cd280de2a2ea22367a6dcf2f5f4d"
     },
     {
       "path": "viewer/3d/model-card.js",
-      "bytes": 2775,
-      "sha256": "b05ae93669b90768eba392ac475396f8efc442e8aa59c6d9b62f0d5c3056a91c"
+      "bytes": 3136,
+      "sha256": "69b3d95b8d872957ba9f4d2382631a5e1a4eb5a83364f3c2cfe8a1bb4c84e184"
     },
     {
       "path": "viewer/3d/native-road-surface.js",
@@ -8035,8 +8095,8 @@
     },
     {
       "path": "viewer/3d/style.css",
-      "bytes": 18552,
-      "sha256": "123cd09fa63141fb8462261f64a0a59e76c4e10e45f9562202a834087ebb2a8b"
+      "bytes": 18710,
+      "sha256": "560fcddec9bb44d5118767d67fcc6186c78967575082d157e02eb9c35cbf7c31"
     },
     {
       "path": "viewer/3d/tile.js",
@@ -8175,8 +8235,8 @@
     },
     {
       "path": "viewer/model-cards/imperial_corridor_8km.json",
-      "bytes": 7389,
-      "sha256": "dffeec3c79369ebd60d3eb739c4e05dbbb0f5d210fcf49f499656783ef39fdd5"
+      "bytes": 7951,
+      "sha256": "986c4bb1dca869ac1eba7c654de7a328da3b15dd14fdcc45d39541526e80b213"
     },
     {
       "path": "viewer/model-source.js",

@@ -2,7 +2,7 @@
   "schema_version": "1.1.0",
   "kind": "canopy.publication",
   "scenario_id": "imperial_corridor_8km",
-  "snapshot": "london-birds-auspex-20261126",
+  "snapshot": "london-noise-traffic-20261127",
   "representation": "london-website-compatibility",
   "source": {
     "repository": "https://github.com/acse-yl222/canopy",
@@ -13,10 +13,10 @@
       "https://github.com/acse-yl222/physics-grounded-4d-world-model-framework/releases/tag/imperial-corridor-native-20261102"
     ]
   },
-  "bytes": 342273323,
+  "bytes": 346905282,
   "derivation": {
-    "source_snapshot": "london-health-replay-20261126",
-    "added": "Auspex bird replay (assets/birds) and scene.json birds_enabled=true"
+    "source_snapshot": "london-birds-auspex-20261126",
+    "added": "road-traffic noise map (physics/chunks/quantized8/noise, scene.json layers.noise)"
   },
   "files": [
     {
@@ -10495,79 +10495,163 @@
       "path": "assets/birds/README.txt",
       "viewer_path": "assets/birds/README.txt",
       "bytes": 541,
-      "sha256": "9decdf8034674090615761b279eda7a2dff804c267ccddaab7c36501e995a5dd"
+      "sha256": "9decdf8034674090615761b279eda7a2dff804c267ccddaab7c36501e995a5dd",
+      "source_snapshot": "london-birds-auspex-20261126"
     },
     {
       "path": "assets/birds/bird_affect.u8.gz",
       "viewer_path": "assets/birds/bird_affect.u8.gz",
       "bytes": 3693425,
-      "sha256": "43eb4ee3fccb292d30fd1fb4044bb4e25a03ef55163e7c8e2c87f55fbfce0a6e"
+      "sha256": "43eb4ee3fccb292d30fd1fb4044bb4e25a03ef55163e7c8e2c87f55fbfce0a6e",
+      "source_snapshot": "london-birds-auspex-20261126"
     },
     {
       "path": "assets/birds/bird_replay.f32.gz",
       "viewer_path": "assets/birds/bird_replay.f32.gz",
       "bytes": 39995189,
-      "sha256": "ca1534748585a39405f576360d18096dacc7905475300f647749fe227c3ceab4"
+      "sha256": "ca1534748585a39405f576360d18096dacc7905475300f647749fe227c3ceab4",
+      "source_snapshot": "london-birds-auspex-20261126"
     },
     {
       "path": "assets/birds/bird_replay.json",
       "viewer_path": "assets/birds/bird_replay.json",
       "bytes": 103589,
-      "sha256": "ade1e69dd3f31af22846ba53accdd136b6667e44c9dca2b33b8e2be1d0f20150"
+      "sha256": "ade1e69dd3f31af22846ba53accdd136b6667e44c9dca2b33b8e2be1d0f20150",
+      "source_snapshot": "london-birds-auspex-20261126"
     },
     {
       "path": "assets/birds/bird_states.u8.gz",
       "viewer_path": "assets/birds/bird_states.u8.gz",
       "bytes": 24798,
-      "sha256": "cb25e1f804012139adcc0ac2d41d487a1e1895b07dbe9700388cde9c69899889"
+      "sha256": "cb25e1f804012139adcc0ac2d41d487a1e1895b07dbe9700388cde9c69899889",
+      "source_snapshot": "london-birds-auspex-20261126"
     },
     {
       "path": "assets/birds/provenance/london_hubs.json",
       "viewer_path": "assets/birds/provenance/london_hubs.json",
       "bytes": 2426,
-      "sha256": "0226512e255e42b92c9a301031641c0be4870664007142931dade58838ec1a3e"
+      "sha256": "0226512e255e42b92c9a301031641c0be4870664007142931dade58838ec1a3e",
+      "source_snapshot": "london-birds-auspex-20261126"
     },
     {
       "path": "assets/birds/provenance/prepare.json",
       "viewer_path": "assets/birds/provenance/prepare.json",
       "bytes": 9412,
-      "sha256": "c97d94adb8e6e8744c1ab73579022bfb34e34855eb15392315dcc9c97705f951"
+      "sha256": "c97d94adb8e6e8744c1ab73579022bfb34e34855eb15392315dcc9c97705f951",
+      "source_snapshot": "london-birds-auspex-20261126"
     },
     {
       "path": "assets/birds/provenance/run_1.json",
       "viewer_path": "assets/birds/provenance/run_1.json",
       "bytes": 4735,
-      "sha256": "bbd1f6e1d486597eb684f9503988492867b3bc3a68d768e76f82add42561e5a2"
+      "sha256": "bbd1f6e1d486597eb684f9503988492867b3bc3a68d768e76f82add42561e5a2",
+      "source_snapshot": "london-birds-auspex-20261126"
     },
     {
       "path": "assets/birds/provenance/run_2.json",
       "viewer_path": "assets/birds/provenance/run_2.json",
       "bytes": 4722,
-      "sha256": "b2950bb72863701597ef67cbe968619ffe8060baaa76cb914f36b952124527f4"
+      "sha256": "b2950bb72863701597ef67cbe968619ffe8060baaa76cb914f36b952124527f4",
+      "source_snapshot": "london-birds-auspex-20261126"
     },
     {
       "path": "assets/birds/provenance/run_3.json",
       "viewer_path": "assets/birds/provenance/run_3.json",
       "bytes": 4722,
-      "sha256": "8e009d199efb47b81fe1a73834abced7b2eea9200fcdadea0c585786bb94b129"
+      "sha256": "8e009d199efb47b81fe1a73834abced7b2eea9200fcdadea0c585786bb94b129",
+      "source_snapshot": "london-birds-auspex-20261126"
     },
     {
       "path": "assets/birds/provenance/run_4.json",
       "viewer_path": "assets/birds/provenance/run_4.json",
       "bytes": 4724,
-      "sha256": "8c529df1e78c645c11875d8eac832a619e0b6177152b12d8190a20a3ed277404"
+      "sha256": "8c529df1e78c645c11875d8eac832a619e0b6177152b12d8190a20a3ed277404",
+      "source_snapshot": "london-birds-auspex-20261126"
     },
     {
       "path": "assets/birds/provenance/run_5.json",
       "viewer_path": "assets/birds/provenance/run_5.json",
       "bytes": 4723,
-      "sha256": "cb340b0ca03e4b1fa06dcece09d5295cc2228abf3ba907e01caa351a672865b2"
+      "sha256": "cb340b0ca03e4b1fa06dcece09d5295cc2228abf3ba907e01caa351a672865b2",
+      "source_snapshot": "london-birds-auspex-20261126"
+    },
+    {
+      "path": "physics/chunks/quantized8/noise/0000.gz",
+      "viewer_path": "scenes/imperial_corridor_8km/physics/chunks/quantized8/noise/0000.gz",
+      "bytes": 509663,
+      "sha256": "1be890ac6d2df4406191811242c7aba4b2dbe9e2a0a04ba480dd8590385edd4b"
+    },
+    {
+      "path": "physics/chunks/quantized8/noise/0001.gz",
+      "viewer_path": "scenes/imperial_corridor_8km/physics/chunks/quantized8/noise/0001.gz",
+      "bytes": 457880,
+      "sha256": "ac8c2f84a68048f40251fb8a87aa9c06ddc794f047fb5b17a2b67169599a66fe"
+    },
+    {
+      "path": "physics/chunks/quantized8/noise/0002.gz",
+      "viewer_path": "scenes/imperial_corridor_8km/physics/chunks/quantized8/noise/0002.gz",
+      "bytes": 476749,
+      "sha256": "aa4fcda2182092a95a9f18c7132dda5432802a8307ba68094a7fd4f72b85dada"
+    },
+    {
+      "path": "physics/chunks/quantized8/noise/0003.gz",
+      "viewer_path": "scenes/imperial_corridor_8km/physics/chunks/quantized8/noise/0003.gz",
+      "bytes": 488050,
+      "sha256": "955ac1324b7374c274302e6fecc93a6bb683d7dd5ef5e468e71001bb930840a1"
+    },
+    {
+      "path": "physics/chunks/quantized8/noise/0004.gz",
+      "viewer_path": "scenes/imperial_corridor_8km/physics/chunks/quantized8/noise/0004.gz",
+      "bytes": 500254,
+      "sha256": "4fa76d75b8fb8be288ff0a125892387d9f23f46bbf14977e2ffcd42943a12f42"
+    },
+    {
+      "path": "physics/chunks/quantized8/noise/0005.gz",
+      "viewer_path": "scenes/imperial_corridor_8km/physics/chunks/quantized8/noise/0005.gz",
+      "bytes": 520160,
+      "sha256": "830d1c1e0e4872316f642dd58a2e44ae2898983068df1623d12eaa1fc8292518"
+    },
+    {
+      "path": "physics/chunks/quantized8/noise/0006.gz",
+      "viewer_path": "scenes/imperial_corridor_8km/physics/chunks/quantized8/noise/0006.gz",
+      "bytes": 533408,
+      "sha256": "106ecce4d90ca9ff9ba8ed3092751b75254aafc43c0dce33ee6eff313a24ad3b"
+    },
+    {
+      "path": "physics/chunks/quantized8/noise/0007.gz",
+      "viewer_path": "scenes/imperial_corridor_8km/physics/chunks/quantized8/noise/0007.gz",
+      "bytes": 554426,
+      "sha256": "abc50798cee13581f350d2c87cd76d7e90e08d3a7ce598ed56d52a91e3824ce3"
+    },
+    {
+      "path": "physics/chunks/quantized8/noise/0008.gz",
+      "viewer_path": "scenes/imperial_corridor_8km/physics/chunks/quantized8/noise/0008.gz",
+      "bytes": 577761,
+      "sha256": "05068f7b850e2e688b1179eda02145a66a9530e41c6b8dafc78e32d4c3e9f10a"
+    },
+    {
+      "path": "physics/noise_provenance/README.txt",
+      "viewer_path": "scenes/imperial_corridor_8km/physics/noise_provenance/README.txt",
+      "bytes": 522,
+      "sha256": "a6c2b3a38db14761650456930cfc9d2948f66f8058810381cb37b2ca348a67ca"
+    },
+    {
+      "path": "physics/noise_provenance/export_manifest.json",
+      "viewer_path": "scenes/imperial_corridor_8km/physics/noise_provenance/export_manifest.json",
+      "bytes": 6729,
+      "sha256": "4f6ac27d2c86475cf12ba887b2673305db4339a3762824a6bf2a88164590c4ce"
+    },
+    {
+      "path": "physics/noise_provenance/noise_grid.json",
+      "viewer_path": "scenes/imperial_corridor_8km/physics/noise_provenance/noise_grid.json",
+      "bytes": 3779,
+      "sha256": "5d432c23f8254b4a096014c69a031f9aec9724110e6254f1953103f2c483f128"
     },
     {
       "path": "scene.json",
       "viewer_path": "scenes/imperial_corridor_8km/scene.json",
-      "bytes": 117251,
-      "sha256": "a8e91ef7813fe705617a808cd57488d707ea63f987f687dc5be2c5bce75e3049"
+      "bytes": 119829,
+      "sha256": "d972b75d572c2909a0b290f5febf449793ee15e08d0e7fc7a6f2899537f1de5d"
     }
   ]
 }

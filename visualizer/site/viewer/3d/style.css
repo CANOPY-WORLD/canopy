@@ -27,6 +27,8 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #0f1216; fon
 .bar.solar { background: linear-gradient(90deg, #1a2468, #5c62a8, #cfc7a6, #ffea96); }
 .bar.diurnal { background: linear-gradient(90deg, #313695, #4575b4, #abd9e9, #ffffbf, #fdae61, #d73027, #a50026); }
 .bar.poll { background: linear-gradient(90deg, rgba(239,237,245,.1), #9e9ac8, #54278f, #3f007d); }
+.sw.noise { background: #f46d43; }
+.bar.noise { background: linear-gradient(90deg, #1c1044, #4f127b, #812581, #b5367a, #e55964, #fb8761, #fec287, #fcfdbf); }
 .readout { left: 16px; bottom: 64px; background: rgba(18, 21, 26, .82); border: 1px solid rgba(255,255,255,.12); border-radius: 8px; padding: 6px 10px; font-size: 12px; font-variant-numeric: tabular-nums; pointer-events: none; white-space: pre; }
 .timebar { left: 50%; bottom: 16px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; width: min(760px, calc(100% - 32px)); background: rgba(18, 21, 26, .82); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.12); border-radius: 10px; padding: 8px 12px; }
 .timebar input[type=range] { flex: 1; }
