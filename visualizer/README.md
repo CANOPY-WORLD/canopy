@@ -158,3 +158,5 @@ Inside the visible I-HUB layer, movement stays on the current floor at 1.6 m/s. 
 ## Local recorded Health view
 
 The [opt-in local Health view](../model/healthy_route/LOCAL_CITY.md) reuses the city renderer and selected-widget timeline. It supports recorded playback, explicit endpoint calculation, scenario start time, 60× speed, focus/follow walker, roadside crossing lamps and clearly labelled estimated inputs. It only loads on loopback with `health=local`; public widget behavior and native field clocks are unchanged. Model computation runs through registered Methods, never inside the renderer. Display parameters belong to the Scenario experiment.
+
+The public Health widget replays a declared synthetic South Kensington result in the shared city scene. It uses the shared playback controls and compact model card; route calculation remains a local-only capability. See [Health usage and limits](../model/healthy_route/LOCAL_CITY.md).

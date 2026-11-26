@@ -3367,11 +3367,11 @@ if (!LITE) navigation = createNavigation({
 window.canopyNavigation = navigation;
 if(qs0.get('pedestrian')==='1')window.canopyLocalHealth?.setActive(true);
 async function installLocalHealth(){
-// Explicit loopback experiment: public launches never load this controller.
-if(qs0.get('health')==='local'&&['127.0.0.1','localhost'].includes(location.hostname)){
+const local=qs0.get('health')==='local'&&['127.0.0.1','localhost'].includes(location.hostname);
+if(local||SCENE.health_recording){
   try{
     const {installCityHealth}=await import('../../src/visualization/healthy-route/city-health.mjs');
-    window.canopyLocalHealth=await installCityHealth(window.viewer,{invalidate,enter(){
+    window.canopyLocalHealth=await installCityHealth(window.viewer,{publication:local?null:SCENE.health_recording,resolve:SCENE.url,invalidate,enter(){
       navigation?.reset();viewIntent++;setPlaying(false);ui.auto.checked=false;tour.active=false;flight=null;
       section='free';controls.enabled=true;state.introDone=false;applyLayers();
       for(const plane of Object.values(planes)){plane.fade=0;plane.target=0;}updateFades(0);
@@ -3387,7 +3387,7 @@ if(qs0.get('health')==='local'&&['127.0.0.1','localhost'].includes(location.host
   }catch(error){
     console.error(error);
     const warning=document.createElement('button');warning.className='tab';warning.id='local-health-error';
-    warning.textContent='Health unavailable';warning.title='Local Health unavailable: '+error.message;
+    warning.textContent='Health unavailable';warning.title='Health unavailable: '+error.message;
     warning.onclick=()=>alert(warning.title);$('tabs').append(warning);
   }
 }
