@@ -2623,7 +2623,8 @@ function syncNativeTrafficView(){
   tubeLayer?.setVisible(tubeActive);
   if(!tubeActive&&tubeLayer)tubeLayer.journey.playing=false;
   controls.maxPolarAngle=indoor||underground ? Math.PI-.02 : Math.PI/2-.02;
-  const near=indoor||underground||navigation?.active ? 0.1 : 5;
+  const birdsClose=section==='campus'&&tour.shot==='birds'; // the bird shot follows one bird from a few metres away
+  const near=indoor||underground||navigation?.active||birdsClose ? 0.1 : 5;
   if(camera.near!==near){camera.near=near;camera.updateProjectionMatrix();invalidate();}
   // Only a recording with an explicit current-terrain transform uses terrain.
   // Historical comparisons retain their original flat presentation.
