@@ -3,12 +3,12 @@
   "kind": "canopy.publication-reference",
   "scenario_id": "imperial_corridor_8km",
   "repository": "https://github.com/CANOPY-WORLD/canopy-scenario-imperial-corridor-8km",
-  "revision": "c3a5ec29bc0471dc445f3b0e2321498872b58c6c",
+  "revision": "51e2dc6643cae7b77d2ec813aba0c245434e6493",
   "website": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/",
-  "base_url": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-health-replay-20261126/",
-  "snapshot": "london-health-replay-20261126",
+  "base_url": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-noise-traffic-20261127/",
+  "snapshot": "london-noise-traffic-20261127",
   "manifest": {
     "path": "data/manifest.json",
-    "sha256": "023cdbea1de7e2d87916f548329e7959f64cc952da35b186884b54bf1cd19ada"
+    "sha256": "6a807455cfc195f0a30085e89afb0e8ded27eb70efd39f522ee86ceb86b6c508"
   }
 }

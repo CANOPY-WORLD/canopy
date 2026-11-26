@@ -131,6 +131,13 @@
       ]
     ]
   },
+  "noise": {
+    "label": "Noise",
+    "title": "Road-Traffic Noise Map",
+    "description": "Time-averaged road-traffic noise from the CANOPY traffic run: a 63 Hz wave solution per 256 m tile, extended to 125 Hz\u20138 kHz with ray-traced ratios, with CNOSSOS-EU vehicle emission.",
+    "note": "8 m grid, 3\u20135 m above ground. The first frame is the A-weighted total in dB(A); the next eight are the octave bands from 63 Hz to 8 kHz in dB. Light synthetic traffic (1,000 vehicles), so levels are lower than real London traffic noise.",
+    "links": []
+  },
   "flood": {
     "label": "Flooding",
     "title": "LISFLOOD-FP \u00b7 Xuan et al., 2026",

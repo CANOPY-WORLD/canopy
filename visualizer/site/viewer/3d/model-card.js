@@ -5,7 +5,7 @@ export function installModelCard(tabs, cards) {
   host.id = 'model-card';
   host.hidden = true;
   host.setAttribute('aria-label', 'About this model');
-  host.innerHTML = `<header><span data-label></span><button type="button" aria-expanded="true" aria-controls="model-card-body" aria-label="Collapse model information">−</button></header><div id="model-card-body"><h2></h2><p data-description></p><nav aria-label="Model references"></nav><details><summary>About this demo</summary><p data-note></p></details></div>`;
+  host.innerHTML = `<header><span data-label></span><button type="button" aria-expanded="true" aria-controls="model-card-body" aria-label="Collapse model information">−</button></header><div id="model-card-body"><h2></h2><p data-description></p><p data-live hidden></p><nav aria-label="Model references"></nav><details><summary>About this demo</summary><p data-note></p></details></div>`;
   document.body.append(host);
   const toggle = host.querySelector('button');
   const body = host.querySelector('#model-card-body');
@@ -29,10 +29,13 @@ export function installModelCard(tabs, cards) {
   position();
   return {
     updateHealth(health) { assessment.update(health); },
+    // One short line following the shared timeline for a static multi-frame layer (e.g. which noise band is shown).
+    setLive(text) { const live = host.querySelector('[data-live]'); live.textContent = text ?? ''; live.hidden = !text; },
     select(key) {
       if (current === key) return;
       current = key;
       assessment.host.hidden = key !== 'localHealth';
+      const live = host.querySelector('[data-live]'); live.hidden = true; live.textContent = '';
       const card = cards[key];
       host.hidden = !card;
       if (!card) return;

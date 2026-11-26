@@ -20,7 +20,7 @@ function lut(name) {
 const fmt=v=>Number.isFinite(v)?Number(v.toPrecision(4)).toString():'—';
 export function installColorbars({layers,repaint}) {
   const configs={}, cache={};
-  const units={wind:'|V| m/s',temp:'°C',solar:'GHI W/m²',poll:'tracer · arbitrary units',flood:'water depth m'};
+  const units={wind:'|V| m/s',temp:'°C',solar:'GHI W/m²',poll:'tracer · arbitrary units',noise:'dB',flood:'water depth m'};
   for(const key of Object.keys(units)) {
     if(!layers[key])continue;
     const legend=document.querySelector(`.legend[data-layer="${key}"]`);if(!legend)continue;

@@ -107,6 +107,7 @@ const TAB_NAME = {
   solar: 'Sunlight',
   diurnal: 'Day cycle',
   poll: 'Pollution',
+  noise: 'Noise',
   flood: 'Flooding',
 };
 const TREE_NODE =
@@ -116,6 +117,7 @@ const TREE_MAT =
 const FILES = {
   wind: LAYERS.wind?.file,
   poll: LAYERS.poll?.file,
+  noise: LAYERS.noise?.file,
   temp: LAYERS.temp?.file,
   flood: LAYERS.flood?.file,
   floodMax: LAYERS.flood?.max, // flood: own clock; the static maximum map is shown in overlay mode
@@ -133,6 +135,7 @@ const LAYER_Y = {
   temp: LAYERS.temp?.y ?? 0.6,
   iso: LAYERS.temp?.iso_y ?? 12,
   poll: LAYERS.poll?.y ?? 14,
+  noise: LAYERS.noise?.y ?? 4.5,
   particles: (LAYERS.wind?.y ?? 10) + 1,
   flood: LAYERS.flood?.y ?? 0.8,
   solar: 0.7,
@@ -164,6 +167,7 @@ const ui = {
   lWind: $('l-wind'),
   lTemp: $('l-temp'),
   lPoll: $('l-poll'),
+  lNoise: $('l-noise'),
   lFlood: $('l-flood'),
   oFlood: $('o-flood'),
   lModel: $('l-model'),
@@ -186,6 +190,7 @@ const ui = {
   oWind: $('o-wind'),
   oTemp: $('o-temp'),
   oPoll: $('o-poll'),
+  oNoise: $('o-noise'),
   nPart: $('n-part'),
   play: $('play'),
   step: $('step'),
@@ -275,7 +280,7 @@ function setupSceneUI() {
     $(`lg-${k}-unit`).textContent = L.legend[1];
     $(`lg-${k}-hi`).textContent = L.legend[2];
   };
-  for (const k of ['wind', 'temp', 'poll', 'flood', 'solar', 'diurnal'])
+  for (const k of ['wind', 'temp', 'poll', 'noise', 'flood', 'solar', 'diurnal'])
     if (has(k)) {
       $(`lbl-${k}`).textContent = LAYERS[k].label;
       if (k !== 'solar' && k !== 'diurnal') legend(k, LAYERS[k]);
@@ -464,6 +469,7 @@ function makePlane(key, g, y, opacity, renderOrder, magFilter = THREE.LinearFilt
 const tempPlane = has('temp') ? makePlane('temp', LG.temp, LAYER_Y.temp, +ui.oTemp.value, 1) : null;
 const windPlane = has('wind') ? makePlane('wind', LG.wind, LAYER_Y.wind, +ui.oWind.value, 2) : null;
 const pollPlane = has('poll') ? makePlane('poll', LG.poll, LAYER_Y.poll, +ui.oPoll.value, 3) : null;
+const noisePlane = has('noise') ? makePlane('noise', LG.noise, LAYER_Y.noise, +ui.oNoise.value, 3) : null;
 const floodPlane = has('flood')
   ? makePlane('flood', LG.flood, LAYER_Y.flood, +ui.oFlood.value, 1)
   : null;
@@ -836,6 +842,23 @@ function paintPollution(vals) {
   }
   pollPlane.tex.needsUpdate = true;
 }
+// Road-traffic noise: time-averaged map, frame 0 total dB(A), frames 1-8 octave bands (dB). Continuous magma scale
+// (quiet = dark purple, loud = pale yellow), opacity rising with level; levels below the range take the quietest colour,
+// buildings (NaN) stay clear.
+const NOISE_MAGMA = ['#000004','#1c1044','#4f127b','#812581','#b5367a','#e55964','#fb8761','#fec287','#fcfdbf'].map(h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)));
+const noiseColour = t => { const x = (0.12 + 0.88 * t) * (NOISE_MAGMA.length - 1), j = Math.min(NOISE_MAGMA.length - 2, Math.floor(x)), f = x - j; return NOISE_MAGMA[j].map((v, k) => Math.round(v + (NOISE_MAGMA[j + 1][k] - v) * f)); };
+function paintNoise(vals) {
+  const g = LG.noise, count = g.w * g.h;
+  if (colorbars?.paint('noise', vals, noisePlane, count, i => vals[i], i => Number.isFinite(vals[i]))) return;
+  const d = noisePlane.data, [lo, hi] = LAYERS.noise.range ?? [20, 80];
+  for (let i = 0; i < count; i++) {
+    const o = i * 4, v = vals[i];
+    if (!Number.isFinite(v)) { d[o + 3] = 0; continue; }
+    const t = Math.max(0, Math.min(1, (v - lo) / (hi - lo))), c = noiseColour(t);
+    d[o] = c[0]; d[o + 1] = c[1]; d[o + 2] = c[2]; d[o + 3] = Math.round(150 + 105 * t);
+  }
+  noisePlane.tex.needsUpdate = true;
+}
 
 // ------------------------------------------------------------------ wind particles (comet tails), on the wind layer's grid
 const TAIL = 7,
@@ -989,6 +1012,7 @@ const state = {
     wind: null,
     temp: null,
     poll: null,
+    noise: null,
     flood: null,
     solar: null,
     shadow: null,
@@ -1176,6 +1200,7 @@ function activeLayers() {
       wind: ui.lWind,
       temp: ui.lTemp,
       poll: ui.lPoll,
+      noise: ui.lNoise,
       flood: ui.lFlood,
       solar: ui.lSolar,
       diurnal: ui.lDiurnal,
@@ -1196,6 +1221,7 @@ function repaint() {
   if (has('wind') && !f.wind) return;
   if (has('wind') && (act.wind || windPlane.fade > 0)) paintWind(f.wind);
   if (has('poll') && (act.poll || pollPlane.fade > 0) && f.poll) paintPollution(f.poll);
+  if (has('noise') && (act.noise || noisePlane.fade > 0) && f.noise) paintNoise(f.noise);
   if (has('flood') && (act.flood || floodPlane.fade > 0) && f.flood) paintFlood(f.flood);
   if (
     has('solar') &&
@@ -1256,13 +1282,14 @@ async function loadStepInner(step) {
       has('poll') &&
       (!SCENE.protocol_display?.strict_time || fi.poll !== null) &&
       (act.poll || pollPlane.fade > 0 || !state.fields.poll),
+    wantNoise = has('noise') && (act.noise || noisePlane.fade > 0),
     wantTemp =
       has('temp') &&
       (!SCENE.protocol_display?.strict_time || fi.temp !== null) &&
       (act.temp || tempPlane.fade > 0 || !state.fields.temp);
   state.loading = true;
   const dKey = 'diurnal_' + ui.diurnalMode.value.replace('Rel', '');
-  const [wr, pr, tr, fr, sr, dr] = await Promise.all([
+  const [wr, pr, tr, fr, sr, dr, nr] = await Promise.all([
     wantWind ? frame('wind', FILES.wind, fi.wind) : null,
     wantPoll ? frame('poll', FILES.poll, fi.poll) : null,
     wantTemp ? frame('temp', FILES.temp, fi.temp) : null,
@@ -1275,6 +1302,7 @@ async function loadStepInner(step) {
       : null,
     wantSolar ? frame(solarKey(), solarFile(), fi.solar, shadowMode) : null,
     wantDiurnal ? frame(dKey, diurnalArray(), fi.diurnal) : null,
+    wantNoise ? frame('noise', FILES.noise, fi.noise) : null,
   ]);
   if (token === state.token) state.loading = false;
   if (token !== state.token) return;
@@ -1292,6 +1320,7 @@ async function loadStepInner(step) {
   // decode only what is shown (the raw frames stay cached for the readout)
   if (wr) state.fields.wind = wr;
   if (pr) state.fields.poll = pr;
+  if (nr) state.fields.noise = nr;
   if (tr) state.fields.temp = tr;
   if (fr) state.fields.flood = fr;
   wind.uv = state.fields.wind;
@@ -1323,6 +1352,7 @@ async function loadStepInner(step) {
     ui.timeLabel.textContent = `${ph.label} · frame ${fi[state.phase] + 1} / ${LAYERS[state.phase].frames} · t = ${time} s`;
   } else if (seqMode() && LAYERS[state.phase].sample_labels) {
     ui.timeLabel.textContent = `${ph.label} · ${LAYERS[state.phase].sample_labels[fi[state.phase]]}`;
+    if (state.phase === 'noise') modelCard?.setLive?.(`Showing: ${LAYERS.noise.sample_labels[fi.noise]} (${fi.noise + 1} of ${LAYERS.noise.frames})`);
   } else if (seqMode() && LAYERS[state.phase].own_clock) {
     const layer = LAYERS[state.phase];
     ui.timeLabel.textContent = `${ph.label} · t = ${layer.t0_s + fi[state.phase] * layer.step_s} s`;
@@ -1334,6 +1364,7 @@ async function loadStepInner(step) {
           .map(([key]) => {
             const k = fi[key], L = LAYERS[key];
             if (key === 'solar') return `${solarDayLabel()} ${solarMeta()?.time_local?.[k] ?? ''} London`;
+            if (L.sample_labels) return `${TAB_NAME[key] ?? key}: ${L.sample_labels[k] ?? ''}`;
             const seconds = key === 'flood' ? floodMeta?.time_s?.[k] : L.t0_s + k * L.step_s;
             return `${TAB_NAME[key] ?? key}: ${seconds ?? '?'} s${key === 'wind' ? ' model clock' : ''}`;
           }).join(' · ');
@@ -1347,6 +1378,7 @@ async function loadStepInner(step) {
       const f = frameIndex(n), d = k <= DECODE_AHEAD;
       if (act.wind) prefetch('wind', FILES.wind, f.wind, d);
       if (act.poll) prefetch('poll', FILES.poll, f.poll, d);
+      if (act.noise) prefetch('noise', FILES.noise, f.noise, d);
       if (act.temp) prefetch('temp', FILES.temp, f.temp, d);
       if (act.flood && f.flood !== null) prefetch('flood', FILES.flood, f.flood, d);
       if (act.solar) prefetch(solarKey(), solarFile(), f.solar, d);
@@ -1385,7 +1417,7 @@ function setPhase(phase) {
 // checkboxes truthful so clicking Wind does not appear to enable every field.
 function syncFieldCheckboxes() {
   if (!seqMode()) return;
-  const fields = {wind: ui.lWind, temp: ui.lTemp, poll: ui.lPoll, flood: ui.lFlood, solar: ui.lSolar, diurnal: ui.lDiurnal};
+  const fields = {wind: ui.lWind, temp: ui.lTemp, poll: ui.lPoll, noise: ui.lNoise, flood: ui.lFlood, solar: ui.lSolar, diurnal: ui.lDiurnal};
   for (const [key, input] of Object.entries(fields)) if (input) input.checked = key === state.phase;
 }
 function tick() {
@@ -1599,6 +1631,7 @@ function applyLayers() {
   if (windPlane) windPlane.target = on && act.wind ? 1 : 0;
   if (tempPlane) tempPlane.target = on && act.temp ? 1 : 0;
   if (pollPlane) pollPlane.target = on && act.poll ? 1 : 0;
+  if (noisePlane) noisePlane.target = on && act.noise ? 1 : 0;
   if (floodPlane) floodPlane.target = on && act.flood ? 1 : 0;
   if (solarPlane) solarPlane.target = on && act.solar && ui.solarMode.value !== 'shadow' ? 1 : 0;
   if (shadowPlane) shadowPlane.target = on && act.solar && ui.solarMode.value === 'shadow' ? 1 : 0;
@@ -1643,6 +1676,10 @@ function updateFades(dt) {
     pollPlane.mesh.visible = pollPlane.fade > 0;
     pollPlane.mat.opacity = +ui.oPoll.value * pollPlane.fade;
   }
+  if (noisePlane) {
+    noisePlane.mesh.visible = noisePlane.fade > 0 && !!state.fields.noise;
+    noisePlane.mat.opacity = +ui.oNoise.value * noisePlane.fade;
+  }
   if (floodPlane) {
     floodPlane.mesh.visible = floodPlane.fade > 0 && !!state.fields.flood;
     floodPlane.mat.opacity = +ui.oFlood.value * floodPlane.fade;
@@ -1661,7 +1698,7 @@ function updateFades(dt) {
   }
   return changed;
 }
-for (const [key, el] of [['wind', ui.lWind], ['temp', ui.lTemp], ['poll', ui.lPoll], ['flood', ui.lFlood], ['solar', ui.lSolar], ['diurnal', ui.lDiurnal]])
+for (const [key, el] of [['wind', ui.lWind], ['temp', ui.lTemp], ['poll', ui.lPoll], ['noise', ui.lNoise], ['flood', ui.lFlood], ['solar', ui.lSolar], ['diurnal', ui.lDiurnal]])
   el.addEventListener('input', () => {
     if (seqMode()) {
       if (el.checked) setPhase(key);
@@ -1680,6 +1717,7 @@ for (const el of [
   ui.oWind,
   ui.oTemp,
   ui.oPoll,
+  ui.oNoise,
   ui.oFlood,
   ui.oSolar,
   ui.oDiurnal,
@@ -2537,6 +2575,11 @@ renderer.domElement.addEventListener('pointermove', (e) => {
     if (i >= 0 && !layerInvalid.poll?.[i])
       lines.push(`Concentration ${f.poll[i] < 10 ? f.poll[i].toFixed(2) : f.poll[i].toFixed(0)}`);
   }
+  if (f.noise) {
+    const i = cellOf(LG.noise), L = LAYERS.noise, k = frameIndex(state.step).noise ?? 0;
+    if (i >= 0 && Number.isFinite(f.noise[i]))
+      lines.push(`Noise ${f.noise[i].toFixed(1)} ${k ? 'dB' : 'dB(A)'} · ${L.sample_labels?.[k] ?? ''}`);
+  }
   if (f.flood) {
     const i = cellOf(LG.flood);
     if (i >= 0 && layerInvalid.flood?.[i])
@@ -2623,7 +2666,8 @@ function syncNativeTrafficView(){
   tubeLayer?.setVisible(tubeActive);
   if(!tubeActive&&tubeLayer)tubeLayer.journey.playing=false;
   controls.maxPolarAngle=indoor||underground ? Math.PI-.02 : Math.PI/2-.02;
-  const near=indoor||underground||navigation?.active ? 0.1 : 5;
+  const birdsClose=section==='campus'&&tour.shot==='birds'; // the bird shot follows one bird from a few metres away
+  const near=indoor||underground||navigation?.active||birdsClose ? 0.1 : 5;
   if(camera.near!==near){camera.near=near;camera.updateProjectionMatrix();invalidate();}
   // Only a recording with an explicit current-terrain transform uses terrain.
   // Historical comparisons retain their original flat presentation.
