@@ -1947,6 +1947,7 @@ function syncPlaybackUI() {
   };
   if (activeHealth()) {
     const health=activeHealth();
+    modelCard?.updateHealth(health);
     // Recorded arrival may fall between centisecond ticks; allow the slider
     // to reach that exact final sample instead of rounding down before arrival.
     range(health.start,health.end,'any',health.time);

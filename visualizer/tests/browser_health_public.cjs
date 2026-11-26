@@ -20,16 +20,31 @@ const assert=require('node:assert/strict');
   assert.equal(await page.evaluate(()=>canopyLocalHealth.result.physiology_input_kind),'synthetic');
   assert.equal(await page.$eval('#city-recorded-health',e=>e.hidden),true,'No public inspection panel');
   assert.equal(await page.$('#cr-calculate'),null);
+  assert.equal(await page.$eval('#health-assessment',e=>e.hidden),false);
+  async function checkAssessment(){
+    const values=await page.evaluate(()=>{
+      const h=canopyLocalHealth,r=h.result.samples.findLast(s=>s.world_seconds<=h.time);
+      return {expected:[r.health_score,r.breathing,r.pollution_proxy].map(v=>Number.isFinite(v)?v.toFixed(1):'Unavailable'),actual:['score','breathing','pollution'].map(k=>document.querySelector('#health-assessment [data-'+k+']').textContent)};
+    });assert.deepEqual(values.actual,values.expected);
+  }
+  await checkAssessment();
+  assert(await page.$eval('#health-assessment [data-trend]',e=>e.getAttribute('d').length>0));
   assert.equal(await page.evaluate(()=>canopyLocalHealth.speed),10);
   await page.click('#play');await new Promise(r=>setTimeout(r,250));await page.click('#play');
   const paused=await page.evaluate(()=>canopyLocalHealth.time);assert(paused>await page.evaluate(()=>canopyLocalHealth.start));
   await new Promise(r=>setTimeout(r,150));assert.equal(await page.evaluate(()=>canopyLocalHealth.time),paused);
   await page.evaluate(()=>{const e=document.querySelector('#step');e.value=e.max;e.dispatchEvent(new Event('input',{bubbles:true}))});
   assert.equal(await page.evaluate(()=>viewer.scene.getObjectByName('health-walker').userData.status),'Arrived');
+  await checkAssessment();
+  assert.equal(await page.$eval('#health-assessment [data-cursor]',e=>+e.getAttribute('x1')),260);
   await page.click('#play');await new Promise(r=>setTimeout(r,100));await page.click('#play');assert(await page.evaluate(()=>canopyLocalHealth.time<canopyLocalHealth.end));
   await page.click('#tabs [data-field="wind"]');assert.equal(await page.evaluate(()=>canopyLocalHealth.active),false);
+  assert.equal(await page.$eval('#health-assessment',e=>e.hidden),true);
   await page.click('#canopy-walking-mode');await page.click('#tabs [data-shot="overview"]');assert.equal(await page.evaluate(()=>canopyLocalHealth.active),false);
   await page.click('#canopy-walking-mode');
+  await page.click('#model-card header button');
+  assert(await page.$eval('#model-card-body',e=>e.hidden));
+  await page.click('#model-card header button');
   await page.setViewport({width:390,height:844});assert(await page.$eval('#model-card',e=>e.getBoundingClientRect().right<=innerWidth));
   await page.setViewport({width:1280,height:800});
   if(process.env.CANOPY_QA_PAUSE_RENDER==='1'){await page.evaluate(()=>{viewer.renderer.render=window.qaRender;window.dispatchEvent(new Event('resize'))});await new Promise(r=>setTimeout(r,1500));}
