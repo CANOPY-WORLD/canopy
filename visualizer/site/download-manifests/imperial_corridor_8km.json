@@ -1,5 +1,5 @@
 {
-  "version": "d744371836666bbbb925",
+  "version": "7e9753f0877c2e90aefb",
   "scenario_id": "imperial_corridor_8km",
   "bytes": 360666989,
   "files": [
@@ -231,7 +231,7 @@
     {
       "path": "scenario-index.json",
       "bytes": 974,
-      "sha256": "a882d58fdc4ad929bf262ae30cd8f7855220f702241e50edaf9695874b284b0f"
+      "sha256": "c2e3a9720ccb9bd845e36874b810cb1de9577a6ab508b5aff031a413733e7b86"
     },
     {
       "path": "scenario/imperial_corridor_8km/data/manifest.json",
@@ -241,7 +241,7 @@
     {
       "path": "scenario/imperial_corridor_8km/publication.json",
       "bytes": 657,
-      "sha256": "d82740afca0c6102743fa9ee06ddc9f22eb569406e251b78f083dba3d4ba150f"
+      "sha256": "ff06e60bb9a3419dc6365eef02739114d7ca1184018c4fd603093dc35d4d3fe9"
     },
     {
       "path": "scenes/imperial_corridor_8km/compact-provenance/fields-8m-report.json",

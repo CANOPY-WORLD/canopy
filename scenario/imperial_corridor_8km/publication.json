@@ -3,7 +3,7 @@
   "kind": "canopy.publication-reference",
   "scenario_id": "imperial_corridor_8km",
   "repository": "https://github.com/CANOPY-WORLD/canopy-scenario-imperial-corridor-8km",
-  "revision": "0000000000000000000000000000000000000000",
+  "revision": "50ce5157cc610209f6654f6236a0e3ba4e89d24f",
   "website": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/",
   "base_url": "https://canopy-world.github.io/canopy-scenario-imperial-corridor-8km/snapshots/london-birds-auspex-20261126/",
   "snapshot": "london-birds-auspex-20261126",
