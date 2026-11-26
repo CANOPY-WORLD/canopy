@@ -1,7 +1,7 @@
 {
-  "version": "177480455fd57938bf79",
+  "version": "0286358a82c9be0ab1a3",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 303258892,
+  "bytes": 303263342,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -3167,6 +3167,11 @@
       "path": "src/visualization/healthy-route/crossing-person.mjs",
       "bytes": 2966,
       "sha256": "b7dcfca18ef259792a30a6d8a16836bce9535de219fc8bf789115c0c46dba098"
+    },
+    {
+      "path": "src/visualization/healthy-route/health-assessment.mjs",
+      "bytes": 3157,
+      "sha256": "7c19ab1ff8f2cdbdbc346c7f5f16bbedc458bf9c1f767a5c342ed504cb79ed7e"
     },
     {
       "path": "src/visualization/healthy-route/health-clock.mjs",
@@ -7870,13 +7875,13 @@
     },
     {
       "path": "viewer/3d/main.js",
-      "bytes": 148576,
-      "sha256": "ce56a0b19003366870e85948790098cc0b8e6fc1992174567b77c706eb8e909d"
+      "bytes": 148613,
+      "sha256": "44b01b4b27b0cad3dd0e9a31f9ba62a9f3f77f3da77499c960c5c82d55f66d7d"
     },
     {
       "path": "viewer/3d/model-card.js",
-      "bytes": 2466,
-      "sha256": "7594e4a672de65e345fea8bc5bafd7b3b4f5be147f5efac1bebddcb14eeb457c"
+      "bytes": 2775,
+      "sha256": "b05ae93669b90768eba392ac475396f8efc442e8aa59c6d9b62f0d5c3056a91c"
     },
     {
       "path": "viewer/3d/native-road-surface.js",
@@ -7950,8 +7955,8 @@
     },
     {
       "path": "viewer/3d/style.css",
-      "bytes": 17605,
-      "sha256": "6ba22ee76542b34bd80b1c53b338db18a631ccbf90fb740811d9795c2df27fb8"
+      "bytes": 18552,
+      "sha256": "123cd09fa63141fb8462261f64a0a59e76c4e10e45f9562202a834087ebb2a8b"
     },
     {
       "path": "viewer/3d/tile.js",

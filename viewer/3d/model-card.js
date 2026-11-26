@@ -1,3 +1,4 @@
+import {createHealthAssessment} from '../../src/visualization/healthy-route/health-assessment.mjs';
 // Read-only information alongside the existing scene; selection comes from the viewer.
 export function installModelCard(tabs, cards) {
   const host = document.createElement('aside');
@@ -8,6 +9,8 @@ export function installModelCard(tabs, cards) {
   document.body.append(host);
   const toggle = host.querySelector('button');
   const body = host.querySelector('#model-card-body');
+  const assessment=createHealthAssessment();
+  body.querySelector('nav').before(assessment.host);
   let current;
   toggle.addEventListener('click', () => {
     body.hidden = !body.hidden;
@@ -25,9 +28,11 @@ export function installModelCard(tabs, cards) {
   window.addEventListener('resize', position);
   position();
   return {
+    updateHealth(health) { assessment.update(health); },
     select(key) {
       if (current === key) return;
       current = key;
+      assessment.host.hidden = key !== 'localHealth';
       const card = cards[key];
       host.hidden = !card;
       if (!card) return;
