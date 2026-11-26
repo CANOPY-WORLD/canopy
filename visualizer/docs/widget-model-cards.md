@@ -40,13 +40,13 @@ These are presentation settings, not universal model capabilities. Recheck them 
 
 The requested positioning for Temperature, Sunlight and Pollution is **differentiable, GPU-based PyTorch solvers**. The proposed copy above retains the GPU/PyTorch description while differentiability remains an explicit verification item. PyTorch alone does not establish end-to-end differentiability: the temperature execution path uses `torch.no_grad()`, and solar shadow visibility includes hard comparisons. Specify supported differentiable inputs and operations and validate gradients before adding an unqualified differentiability claim. Keep this verification separate from the published run's actual execution backend.
 
-## Reserved Health card
+## Health assessment card
 
 | Widget | Model | Proposed description | Guide |
 | --- | --- | --- | --- |
 | Health | Conditional Breathing Response Model | A conditional variational autoencoder estimates breathing responses along a supplied trajectory using environmental and activity inputs. | [Health](../../model/healthy_route/README.md). Evaluates a supplied route; the health score is experimental. |
 
-Health is not enabled in the checked main-city publication. Auto is a playback control rather than a model. Birds, Day cycle and Traffic map are not enabled in that configuration.
+The public Health replay includes a compact assessment in the existing collapsible model card: recorded experimental score, predicted breathing, estimated PM2.5 proxy concentration, score deductions and a 0–100 score trend with playback cursor. Values follow recorded step samples without new inference; missing values remain unavailable. The card is hidden for other widgets. Synthetic physiology and heuristic scoring are labelled; these are route evaluations, not health-optimized routes or measured clinical validation. Auto is a playback control rather than a model. Birds, Day cycle and Traffic map are not enabled in that configuration.
 
 ## Paper reference
 

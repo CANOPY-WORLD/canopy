@@ -13,5 +13,21 @@ await page.focus('#model-card button');await page.keyboard.press('Space');assert
 await page.evaluate(()=>card.select('missing'));assert(await page.$eval('#model-card',e=>e.hidden));
 await page.evaluate(()=>card.select('poll'));
 for(const width of [1280,768,320]){await page.setViewport({width,height:800});const r=await page.$eval('#model-card',e=>({right:e.getBoundingClientRect().right,w:innerWidth}));assert(r.right<=r.w);}
+await page.evaluate(()=>{
+ card.select('localHealth');
+ window.healthFixture={start:0,end:10,time:0,result:{physiology_input_kind:'synthetic',samples:[
+ {world_seconds:0,seconds:0,health_score:95,breathing:12,pollution_proxy:0},
+ {world_seconds:5,seconds:5,health_score:null,breathing:null,pollution_proxy:null},
+ {world_seconds:10,seconds:10,health_score:90,breathing:14,pollution_proxy:3,gap_before:true}]}};
+ card.updateHealth(healthFixture);
+});
+assert.equal(await page.$eval('#health-assessment [data-pollution]',e=>e.textContent),'0.0');
+await page.evaluate(()=>{healthFixture.time=4;card.updateHealth(healthFixture);});
+assert.equal(await page.$eval('#health-assessment [data-breathing]',e=>e.textContent),'12.0');
+await page.evaluate(()=>{healthFixture.time=5;card.updateHealth(healthFixture);});
+assert.equal(await page.$eval('#health-assessment [data-score]',e=>e.textContent),'Unavailable');
+assert.equal(await page.$eval('#health-assessment [data-trend]',e=>(e.getAttribute('d').match(/M/g)||[]).length),2);
+await page.evaluate(()=>card.select('wind'));
+assert(await page.$eval('#health-assessment',e=>e.hidden));
 console.log('PASS selection, unknown card, collapsed-state persistence, Space isolation and 320–1280 px bounds');
 }finally{await browser.close()}
