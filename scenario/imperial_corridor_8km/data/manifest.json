@@ -2,7 +2,7 @@
   "schema_version": "1.1.0",
   "kind": "canopy.publication",
   "scenario_id": "imperial_corridor_8km",
-  "snapshot": "london-complete-tube53-20261125",
+  "snapshot": "london-health-replay-20261126",
   "representation": "london-website-compatibility",
   "source": {
     "repository": "https://github.com/acse-yl222/canopy",
@@ -13,7 +13,7 @@
       "https://github.com/acse-yl222/physics-grounded-4d-world-model-framework/releases/tag/imperial-corridor-native-20261102"
     ]
   },
-  "bytes": 298269504,
+  "bytes": 298443490,
   "files": [
     {
       "path": "actors/demo_rev02/actors/pigeon.glb.gz",
@@ -271,37 +271,43 @@
       "path": "context/underground/underground.json",
       "viewer_path": "scenes/imperial_corridor_8km/context/underground/underground.json",
       "bytes": 617011,
-      "sha256": "dc543052d8ec7e5b366bade26a799a021a3f3c95640f6d873e3dd8663d402d12"
+      "sha256": "dc543052d8ec7e5b366bade26a799a021a3f3c95640f6d873e3dd8663d402d12",
+      "source_snapshot": "london-complete-tube53-20261125"
     },
     {
       "path": "context/underground/underground_stations_scene_data.js",
       "viewer_path": "scenes/imperial_corridor_8km/context/underground/underground_stations_scene_data.js",
       "bytes": 12949830,
-      "sha256": "93d577d5e8ca0d52bb17b91b85f40d736f8d2a85e56d683f0d8b73d283bdb179"
+      "sha256": "93d577d5e8ca0d52bb17b91b85f40d736f8d2a85e56d683f0d8b73d283bdb179",
+      "source_snapshot": "london-complete-tube53-20261125"
     },
     {
       "path": "context/underground/underground_status.json",
       "viewer_path": "scenes/imperial_corridor_8km/context/underground/underground_status.json",
       "bytes": 39909,
-      "sha256": "608793404387f6f01802b0e4de1d96a65941817487979ad6cc6e0823cb2bada8"
+      "sha256": "608793404387f6f01802b0e4de1d96a65941817487979ad6cc6e0823cb2bada8",
+      "source_snapshot": "london-complete-tube53-20261125"
     },
     {
       "path": "context/underground/underground_trains_am_peak.json",
       "viewer_path": "scenes/imperial_corridor_8km/context/underground/underground_trains_am_peak.json",
       "bytes": 260163,
-      "sha256": "0ce2681a7e3c4b9c1baac0aa182d40f41bada31571bd2b58183b93964069cc64"
+      "sha256": "0ce2681a7e3c4b9c1baac0aa182d40f41bada31571bd2b58183b93964069cc64",
+      "source_snapshot": "london-complete-tube53-20261125"
     },
     {
       "path": "context/underground/underground_trains_inter_peak.json",
       "viewer_path": "scenes/imperial_corridor_8km/context/underground/underground_trains_inter_peak.json",
       "bytes": 238093,
-      "sha256": "6b352913834c8681e8c84dedd3c1834eae7efb12b3b86483e23e791858c263fe"
+      "sha256": "6b352913834c8681e8c84dedd3c1834eae7efb12b3b86483e23e791858c263fe",
+      "source_snapshot": "london-complete-tube53-20261125"
     },
     {
       "path": "context/underground/underground_trains_pm_peak.json",
       "viewer_path": "scenes/imperial_corridor_8km/context/underground/underground_trains_pm_peak.json",
       "bytes": 260116,
-      "sha256": "da7a8c1e4500e67f5c7a08a5ad2febc45f7b0a019a92733e337aa79b4dac5c4d"
+      "sha256": "da7a8c1e4500e67f5c7a08a5ad2febc45f7b0a019a92733e337aa79b4dac5c4d",
+      "source_snapshot": "london-complete-tube53-20261125"
     },
     {
       "path": "context/vector_landscape/00-wetland.f32",
@@ -477,6 +483,24 @@
       "bytes": 488,
       "sha256": "7a77fef7726b95fc85a582e5410a444652355defe244a60ed216e453df658575",
       "source_snapshot": "london-complete-20261125"
+    },
+    {
+      "path": "health/presentation.json",
+      "viewer_path": "scenes/imperial_corridor_8km/health/presentation.json",
+      "bytes": 1055,
+      "sha256": "84e6ada71a6439b212040b3d4cb47e9b74980ea68bdd502d560d000b68261593"
+    },
+    {
+      "path": "health/provenance.json",
+      "viewer_path": "scenes/imperial_corridor_8km/health/provenance.json",
+      "bytes": 1458,
+      "sha256": "26e9cf9f01d011baceab9b29a7d0f9062aa6275aa6bb3c1813ef4e8b9d03df9c"
+    },
+    {
+      "path": "health/south-kensington-synthetic.json.gz",
+      "viewer_path": "scenes/imperial_corridor_8km/health/south-kensington-synthetic.json.gz",
+      "bytes": 171335,
+      "sha256": "59b20efc8dada6e47e3326f430a7abcbc85238588bb621a3a8aa2bfced5d5660"
     },
     {
       "path": "interiors/ihub-v10/building.glb.gz",
@@ -4191,8 +4215,8 @@
     {
       "path": "scene.json",
       "viewer_path": "scenes/imperial_corridor_8km/scene.json",
-      "bytes": 140286,
-      "sha256": "840b7873d166cd4513cb1b0eeafc065a3ece69643fde2c2ca044959c7c3cc87c"
+      "bytes": 140424,
+      "sha256": "37054c62e3e7143617359fd5785a5b44c56417581024afb5d82bacc08d4d4742"
     },
     {
       "path": "tiles/detail_tiles_enu_20261030/index.json",

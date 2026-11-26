@@ -1,7 +1,7 @@
 {
-  "version": "e35264d9ac727e98377a",
+  "version": "177480455fd57938bf79",
   "scenario_id": "imperial_corridor_8km",
-  "bytes": 303013019,
+  "bytes": 303258892,
   "files": [
     {
       "path": "agents/demo_rev02/actors/actor-layer.js",
@@ -86,12 +86,12 @@
     {
       "path": "asset-router.js",
       "bytes": 6285,
-      "sha256": "7c6f4d267f167aeb6e012ab444af5b17d760c18f9e314315225da97d321dad0c"
+      "sha256": "33986270d10a4f01250b9b6ffbb03764f95e9cedda98d2bb32fa4060b600f119"
     },
     {
       "path": "asset-sources.json",
-      "bytes": 356393,
-      "sha256": "168f7d0f642dfbd62ef8afa63e18cad42a028a5843e9d7682368a47a8e110d37"
+      "bytes": 357132,
+      "sha256": "cfb16b37528a6483c6828e16c60131a0748af050d2a6270ac2cff4a59bdb56f4"
     },
     {
       "path": "assets/uav-wavepde-4m-20261111/config.json",
@@ -130,8 +130,8 @@
     },
     {
       "path": "guide/inventory.json",
-      "bytes": 48415,
-      "sha256": "0b9ebb9f8d5a63f3ea96ee5512b3425ebe0dd0582d9089fb830546a19f14f4f0"
+      "bytes": 59888,
+      "sha256": "a7581e25d505177c15dee2267972a02e2209983555e26c35f47030e1c9c1b791"
     },
     {
       "path": "guide/style.css",
@@ -150,18 +150,18 @@
     },
     {
       "path": "scenario-index.json",
-      "bytes": 980,
-      "sha256": "5c69429dae30151a0cda539b03ddb9640d78da8897e53fb3e422d349f49835fb"
+      "bytes": 976,
+      "sha256": "409d3b91254d9045d614982e0755edcdeb62e429bfb9520b9f8c6191760b428f"
     },
     {
       "path": "scenario/imperial_corridor_8km/data/manifest.json",
-      "bytes": 503221,
-      "sha256": "a51b797d186edc975e1f68ab46414687fbf7f4c4dea873575ec3e0d1cb535e57"
+      "bytes": 504322,
+      "sha256": "023cdbea1de7e2d87916f548329e7959f64cc952da35b186884b54bf1cd19ada"
     },
     {
       "path": "scenario/imperial_corridor_8km/publication.json",
-      "bytes": 663,
-      "sha256": "56091435fd49f5aa5ceb9c5bfcb3bf31a55cac942b40c1a8987f24db6f10e751"
+      "bytes": 659,
+      "sha256": "e1f9114c0ea81b534ba0911772e309c090aeab526df9335899e4db378f66c27f"
     },
     {
       "path": "scenes/imperial_corridor_8km/compact-provenance/fields-8m-report.json",
@@ -457,6 +457,21 @@
       "path": "scenes/imperial_corridor_8km/derivation.json",
       "bytes": 488,
       "sha256": "7a77fef7726b95fc85a582e5410a444652355defe244a60ed216e453df658575"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/health/presentation.json",
+      "bytes": 1055,
+      "sha256": "84e6ada71a6439b212040b3d4cb47e9b74980ea68bdd502d560d000b68261593"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/health/provenance.json",
+      "bytes": 1458,
+      "sha256": "26e9cf9f01d011baceab9b29a7d0f9062aa6275aa6bb3c1813ef4e8b9d03df9c"
+    },
+    {
+      "path": "scenes/imperial_corridor_8km/health/south-kensington-synthetic.json.gz",
+      "bytes": 171335,
+      "sha256": "59b20efc8dada6e47e3326f430a7abcbc85238588bb621a3a8aa2bfced5d5660"
     },
     {
       "path": "scenes/imperial_corridor_8km/interiors/ihub-v10/building.glb.gz",
@@ -3110,13 +3125,78 @@
     },
     {
       "path": "scenes/imperial_corridor_8km/scene.json",
-      "bytes": 140286,
-      "sha256": "840b7873d166cd4513cb1b0eeafc065a3ece69643fde2c2ca044959c7c3cc87c"
+      "bytes": 140424,
+      "sha256": "37054c62e3e7143617359fd5785a5b44c56417581024afb5d82bacc08d4d4742"
     },
     {
       "path": "scenes/index.json",
       "bytes": 226,
       "sha256": "2add1dff164c2c3f0d124881bda467ab370f0b1bd1e91e419efd4c1e42741a55"
+    },
+    {
+      "path": "src/visualization/healthy-route/active-crossing-cue.mjs",
+      "bytes": 4324,
+      "sha256": "f517756421d9a7de8d406ec3331a1ff4f4e86f9f3bb925dc36a81afef8bb5ef1"
+    },
+    {
+      "path": "src/visualization/healthy-route/city-crossing-signals.mjs",
+      "bytes": 4199,
+      "sha256": "fcdbdc1645f5556824a4e09de6aac9038e1c366cda6e88becf7ae5d7bfead45d"
+    },
+    {
+      "path": "src/visualization/healthy-route/city-health.mjs",
+      "bytes": 784,
+      "sha256": "ba40e20455d554fc8b92e2033448372538b5930ed90ea26d237f9e930f329e56"
+    },
+    {
+      "path": "src/visualization/healthy-route/city-recording.mjs",
+      "bytes": 20788,
+      "sha256": "57f194a1b83167bc1f4b217e2f88a6c6de19c467bb90bc4bad37c89872f1460b"
+    },
+    {
+      "path": "src/visualization/healthy-route/city-route-selection.mjs",
+      "bytes": 10685,
+      "sha256": "bf51858cbad482e9f7115ca8689af20a0ffa095227955f40cd68d1650c8e7e38"
+    },
+    {
+      "path": "src/visualization/healthy-route/crossing-highlight-state.mjs",
+      "bytes": 494,
+      "sha256": "ebd1aa8fca01f554190de7d6379db01f9f8462ddcdb94baea1def14e23aad9ea"
+    },
+    {
+      "path": "src/visualization/healthy-route/crossing-person.mjs",
+      "bytes": 2966,
+      "sha256": "b7dcfca18ef259792a30a6d8a16836bce9535de219fc8bf789115c0c46dba098"
+    },
+    {
+      "path": "src/visualization/healthy-route/health-clock.mjs",
+      "bytes": 544,
+      "sha256": "a7ff18e6584a56c304413f214d53f6b40c1724cc8bbfa02f7ede69541485b4dd"
+    },
+    {
+      "path": "src/visualization/healthy-route/pedestrian-walk-signals.mjs",
+      "bytes": 3689,
+      "sha256": "6900411e6a77f9c17307914e9a8756f63ed3a9cbc81f0c334f342c10edf9a24f"
+    },
+    {
+      "path": "src/visualization/healthy-route/recorded-health-state.mjs",
+      "bytes": 2222,
+      "sha256": "e3127317da4e428f7730475ebf1b3bb43a40f1f0457529adf7dc6c19bfe8ec09"
+    },
+    {
+      "path": "src/visualization/healthy-route/route-presentation.mjs",
+      "bytes": 2988,
+      "sha256": "1cbcd58b22e6410b1ad98b20acc1727be13a4eeaba28c56c466309f97fe9e77f"
+    },
+    {
+      "path": "src/visualization/healthy-route/traffic-gaps.mjs",
+      "bytes": 455,
+      "sha256": "3e965febc1e4726e36504c91d7da88f6749d09b40c33ff21fed65bc6cadf5a32"
+    },
+    {
+      "path": "src/visualization/healthy-route/walking-endpoints.mjs",
+      "bytes": 884,
+      "sha256": "26aef80049f8a3b688b740223c29a61f4adccc60d57324f4d1418cc90d67c3be"
     },
     {
       "path": "src/visualization/public-scenes.json",
@@ -7790,8 +7870,8 @@
     },
     {
       "path": "viewer/3d/main.js",
-      "bytes": 145684,
-      "sha256": "6d827849a954a861ce290d266e61a8b517da301497f8026814e4eaed99deaff1"
+      "bytes": 148576,
+      "sha256": "ce56a0b19003366870e85948790098cc0b8e6fc1992174567b77c706eb8e909d"
     },
     {
       "path": "viewer/3d/model-card.js",
@@ -8010,8 +8090,8 @@
     },
     {
       "path": "viewer/model-cards/imperial_corridor_8km.json",
-      "bytes": 6721,
-      "sha256": "84d67eacf4563b6634b035d4a886b9814cd5ff29f72add0edfbbdbc9f79184d5"
+      "bytes": 7389,
+      "sha256": "dffeec3c79369ebd60d3eb739c4e05dbbb0f5d210fcf49f499656783ef39fdd5"
     },
     {
       "path": "viewer/model-source.js",
