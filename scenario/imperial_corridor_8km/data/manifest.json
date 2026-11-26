@@ -2,7 +2,7 @@
   "schema_version": "1.1.0",
   "kind": "canopy.publication",
   "scenario_id": "imperial_corridor_8km",
-  "snapshot": "london-health-replay-20261126",
+  "snapshot": "london-birds-auspex-20261126",
   "representation": "london-website-compatibility",
   "source": {
     "repository": "https://github.com/acse-yl222/canopy",
@@ -13,7 +13,11 @@
       "https://github.com/acse-yl222/physics-grounded-4d-world-model-framework/releases/tag/imperial-corridor-native-20261102"
     ]
   },
-  "bytes": 298443490,
+  "bytes": 342273323,
+  "derivation": {
+    "source_snapshot": "london-health-replay-20261126",
+    "added": "Auspex bird replay (assets/birds) and scene.json birds_enabled=true"
+  },
   "files": [
     {
       "path": "actors/demo_rev02/actors/pigeon.glb.gz",
@@ -488,19 +492,22 @@
       "path": "health/presentation.json",
       "viewer_path": "scenes/imperial_corridor_8km/health/presentation.json",
       "bytes": 1055,
-      "sha256": "84e6ada71a6439b212040b3d4cb47e9b74980ea68bdd502d560d000b68261593"
+      "sha256": "84e6ada71a6439b212040b3d4cb47e9b74980ea68bdd502d560d000b68261593",
+      "source_snapshot": "london-health-replay-20261126"
     },
     {
       "path": "health/provenance.json",
       "viewer_path": "scenes/imperial_corridor_8km/health/provenance.json",
       "bytes": 1458,
-      "sha256": "26e9cf9f01d011baceab9b29a7d0f9062aa6275aa6bb3c1813ef4e8b9d03df9c"
+      "sha256": "26e9cf9f01d011baceab9b29a7d0f9062aa6275aa6bb3c1813ef4e8b9d03df9c",
+      "source_snapshot": "london-health-replay-20261126"
     },
     {
       "path": "health/south-kensington-synthetic.json.gz",
       "viewer_path": "scenes/imperial_corridor_8km/health/south-kensington-synthetic.json.gz",
       "bytes": 171335,
-      "sha256": "59b20efc8dada6e47e3326f430a7abcbc85238588bb621a3a8aa2bfced5d5660"
+      "sha256": "59b20efc8dada6e47e3326f430a7abcbc85238588bb621a3a8aa2bfced5d5660",
+      "source_snapshot": "london-health-replay-20261126"
     },
     {
       "path": "interiors/ihub-v10/building.glb.gz",
@@ -4211,12 +4218,6 @@
       "bytes": 13,
       "sha256": "b83387f345d121e12cdcc4cfc7d0b5d64f2aba7d02005c423fc7efe821c8af57",
       "source_snapshot": "london-compact-20261122"
-    },
-    {
-      "path": "scene.json",
-      "viewer_path": "scenes/imperial_corridor_8km/scene.json",
-      "bytes": 140424,
-      "sha256": "37054c62e3e7143617359fd5785a5b44c56417581024afb5d82bacc08d4d4742"
     },
     {
       "path": "tiles/detail_tiles_enu_20261030/index.json",
@@ -10489,25 +10490,84 @@
       "bytes": 413721,
       "sha256": "f17a4c9023ab7420b6a6cd1bb9914c73f017db0490e54826b1fc614249cc3098",
       "source_snapshot": "london-compact-20261122"
+    },
+    {
+      "path": "assets/birds/README.txt",
+      "viewer_path": "assets/birds/README.txt",
+      "bytes": 541,
+      "sha256": "9decdf8034674090615761b279eda7a2dff804c267ccddaab7c36501e995a5dd"
+    },
+    {
+      "path": "assets/birds/bird_affect.u8.gz",
+      "viewer_path": "assets/birds/bird_affect.u8.gz",
+      "bytes": 3693425,
+      "sha256": "43eb4ee3fccb292d30fd1fb4044bb4e25a03ef55163e7c8e2c87f55fbfce0a6e"
+    },
+    {
+      "path": "assets/birds/bird_replay.f32.gz",
+      "viewer_path": "assets/birds/bird_replay.f32.gz",
+      "bytes": 39995189,
+      "sha256": "ca1534748585a39405f576360d18096dacc7905475300f647749fe227c3ceab4"
+    },
+    {
+      "path": "assets/birds/bird_replay.json",
+      "viewer_path": "assets/birds/bird_replay.json",
+      "bytes": 103589,
+      "sha256": "ade1e69dd3f31af22846ba53accdd136b6667e44c9dca2b33b8e2be1d0f20150"
+    },
+    {
+      "path": "assets/birds/bird_states.u8.gz",
+      "viewer_path": "assets/birds/bird_states.u8.gz",
+      "bytes": 24798,
+      "sha256": "cb25e1f804012139adcc0ac2d41d487a1e1895b07dbe9700388cde9c69899889"
+    },
+    {
+      "path": "assets/birds/provenance/london_hubs.json",
+      "viewer_path": "assets/birds/provenance/london_hubs.json",
+      "bytes": 2426,
+      "sha256": "0226512e255e42b92c9a301031641c0be4870664007142931dade58838ec1a3e"
+    },
+    {
+      "path": "assets/birds/provenance/prepare.json",
+      "viewer_path": "assets/birds/provenance/prepare.json",
+      "bytes": 9412,
+      "sha256": "c97d94adb8e6e8744c1ab73579022bfb34e34855eb15392315dcc9c97705f951"
+    },
+    {
+      "path": "assets/birds/provenance/run_1.json",
+      "viewer_path": "assets/birds/provenance/run_1.json",
+      "bytes": 4735,
+      "sha256": "bbd1f6e1d486597eb684f9503988492867b3bc3a68d768e76f82add42561e5a2"
+    },
+    {
+      "path": "assets/birds/provenance/run_2.json",
+      "viewer_path": "assets/birds/provenance/run_2.json",
+      "bytes": 4722,
+      "sha256": "b2950bb72863701597ef67cbe968619ffe8060baaa76cb914f36b952124527f4"
+    },
+    {
+      "path": "assets/birds/provenance/run_3.json",
+      "viewer_path": "assets/birds/provenance/run_3.json",
+      "bytes": 4722,
+      "sha256": "8e009d199efb47b81fe1a73834abced7b2eea9200fcdadea0c585786bb94b129"
+    },
+    {
+      "path": "assets/birds/provenance/run_4.json",
+      "viewer_path": "assets/birds/provenance/run_4.json",
+      "bytes": 4724,
+      "sha256": "8c529df1e78c645c11875d8eac832a619e0b6177152b12d8190a20a3ed277404"
+    },
+    {
+      "path": "assets/birds/provenance/run_5.json",
+      "viewer_path": "assets/birds/provenance/run_5.json",
+      "bytes": 4723,
+      "sha256": "cb340b0ca03e4b1fa06dcece09d5295cc2228abf3ba907e01caa351a672865b2"
+    },
+    {
+      "path": "scene.json",
+      "viewer_path": "scenes/imperial_corridor_8km/scene.json",
+      "bytes": 117251,
+      "sha256": "a8e91ef7813fe705617a808cd57488d707ea63f987f687dc5be2c5bce75e3049"
     }
-  ],
-  "derivation": {
-    "operation": "Compose existing approved presentation assets; no numerical rerun or resampling",
-    "base_snapshot": "london-complete-daylight-20261125",
-    "updated_fields_snapshot": "london-compact-20261122",
-    "preserved": [
-      "I-HUB v10 interior",
-      "native traffic replay",
-      "100-frame coupled pollution",
-      "London Tube viewer integration"
-    ],
-    "updated": [
-      "LISFLOOD flood metadata and quantization",
-      "100-frame summer-solstice irradiance and packed shadows"
-    ],
-    "daylight_default": true,
-    "tube_source_commit": "bdb4408288a334c8ac61962bca0e00bbb2a4a0cf",
-    "tube_source_pr": "https://github.com/CANOPY-WORLD/canopy-scenario-imperial-corridor-8km/pull/6",
-    "tube_payloads": "Byte-identical six payloads from Bohan; only scene metadata composed."
-  }
+  ]
 }
