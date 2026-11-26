@@ -39,3 +39,7 @@ Synthetic versus authorized-history inputs remain explicit. To use authorized hi
 ## Validation limits
 
 The health score and thermal proxy are heuristic; latent spread is not total calibrated uncertainty. Terrain/deck mapping and modelled crossing signals have the limits in [CITY_ALIGNMENT.md](CITY_ALIGNMENT.md) and [CITY_CROSSINGS.md](CITY_CROSSINGS.md). No clinical accuracy, live sensing, traffic safety or independently surveyed vertical alignment is claimed. Required coverage gaps fail visibly rather than turning into zeros. New result indexes are selected explicitly; the server never scans for a latest result.
+
+### Camera handoff
+
+In the full desktop viewer, entering WASD exploration releases Health's walker-follow camera. Focus walker, Follow walker and Frame route explicitly exit WASD before moving the shared camera. Health playback pauses its elapsed-time accounting while the document is hidden, so returning to the tab does not jump across the route. Verify these combined controls with `visualizer/tests/browser_health_camera.cjs`; `CANOPY_QA_PAUSE_RENDER=1` checks control behavior with continuous GPU drawing paused and is not a frame-rate benchmark.

@@ -3362,7 +3362,7 @@ if (!LITE) navigation = createNavigation({
   camera, controls, canvas:renderer.domElement, invalidate,
   indoorRoot:() => interiorLayer?.group.visible ? interiorLayer.group : null,
   groundHeight:position => section === 'campus' && tour.shot === 'londonTube' ? -Infinity : (currentTerrain()?.sample(position.x, position.z) ?? 0),
-  onEnter() { flight = null; tour.paused = true; ui.auto.checked = false; const journey = activeJourney(); if (journey) journey.playing = false; },
+  onEnter() { window.canopyLocalHealth?.releaseCamera?.(); flight = null; tour.paused = true; ui.auto.checked = false; const journey = activeJourney(); if (journey) journey.playing = false; },
 });
 window.canopyNavigation = navigation;
 if(qs0.get('pedestrian')==='1')window.canopyLocalHealth?.setActive(true);

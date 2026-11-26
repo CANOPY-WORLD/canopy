@@ -58,11 +58,11 @@ export async function installCityRecording(viewer,{enter,invalidate,selectRoutes
   if(result.temporal_policy){const p=document.createElement('p');p.textContent='Health time policy: '+JSON.stringify(result.temporal_policy);$('details').append(p);}
   }drawDetails();
   if(physiology)$('estimate-note').textContent=(result.physiology_input_kind==='synthetic'?'Fictional physiology inputs and assumed reference. ':'Locally supplied physiology inputs. ')+$('estimate-note').textContent;
-  function focus(){ $('follow').checked=false;const pts=rows.filter(s=>s.scene_m).map(s=>new THREE.Vector3(...s.scene_m));const box=new THREE.Box3().setFromPoints(pts),centre=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3());controls.target.copy(centre);const extent=Math.max(size.x,size.z,80);camera.position.copy(centre).add(new THREE.Vector3(0,extent*1.6,extent*.85));controls.update();updateMarkers();invalidate();}
+  function focus(){ window.canopyNavigation?.reset(); $('follow').checked=false;const pts=rows.filter(s=>s.scene_m).map(s=>new THREE.Vector3(...s.scene_m));const box=new THREE.Box3().setFromPoints(pts),centre=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3());controls.target.copy(centre);const extent=Math.max(size.x,size.z,80);camera.position.copy(centre).add(new THREE.Vector3(0,extent*1.6,extent*.85));controls.update();updateMarkers();invalidate();}
   function updateMarkers(){camera.updateMatrixWorld();const height=viewer.renderer.domElement.clientHeight;person.group.scale.setScalar(48*worldPerPixel(camera,person.group.position,height)/9.625);person.updateCamera(camera);for(const p of pins)p.update(camera,height);crossingSignals.resize(camera,height);invalidate();}
   controls.addEventListener('change',updateMarkers);window.addEventListener('resize',updateMarkers);
   controls.addEventListener('start',()=>{$('follow').checked=false;});
-  $('focus-walker').onclick=()=>{if(!pending&&person.group.visible){$('visible').checked=true;group.visible=active;followWalker(camera,controls,person.group.position,true);updateMarkers();}};
+  $('focus-walker').onclick=()=>{if(!pending&&person.group.visible){window.canopyNavigation?.reset();$('visible').checked=true;group.visible=active;followWalker(camera,controls,person.group.position,true);updateMarkers();}};
   $('follow').onchange=()=>{if($('follow').checked)$('focus-walker').click();};
   function seek(t){time=boundedPlaybackTime(t,rows[0].world_seconds,displayEnd());const s=sampleRecording(rows,time);if(!s)return;person.group.visible=Boolean(s.scene_m);if(s.scene_m){person.group.position.set(s.scene_m[0],s.scene_m[1]+lift,s.scene_m[2]);person.setPose(time>=rows[0].world_seconds+arrival?'Arrived':s.movement_state??'Walking',s.seconds,1);person.updateCamera(camera);}
     crossingSignals.update(time,s.scene_m?activeCrossingAt(result,time):null);
@@ -75,14 +75,15 @@ export async function installCityRecording(viewer,{enter,invalidate,selectRoutes
     if(physiology){$('score').textContent=Number.isFinite(s.health_score)?s.health_score.toFixed(1):'—';$('score-ring').style.setProperty('--fill',(s.health_score??0)+'%');$('breathing').textContent=Number.isFinite(s.breathing)?s.breathing.toFixed(1)+' breaths/min':'Breathing unavailable';$('contributions').textContent=s.contributions?`Points deducted: pollution ${s.contributions.pollution.toFixed(2)} · thermal ${s.contributions.temperature.toFixed(2)} · breathing ${s.contributions.breathing.toFixed(2)}. Supplied reference ${s.breathing_reference.lower.toFixed(1)}–${s.breathing_reference.upper.toFixed(1)} breaths/min.`:'Score inputs unavailable';$('raw-values').replaceChildren(...rawFields.map(([key,label,unit])=>{const p=document.createElement('p');p.textContent=label+': '+(Number.isFinite(s[key])?s[key].toFixed(3)+' '+unit:'Unavailable in source');return p;}));}
     for(const cursor of panel.querySelectorAll('.cr-cursor'))cursor.setAttribute('x1',s.seconds/(displayEnd()-rows[0].world_seconds)*300),cursor.setAttribute('x2',s.seconds/(displayEnd()-rows[0].world_seconds)*300);
     $('focus-walker').disabled=!s.scene_m;$('follow').disabled=!s.scene_m;
-    if(active&&$('follow').checked&&s.scene_m)followWalker(camera,controls,person.group.position);
+    if(active&&!window.canopyNavigation?.manual&&$('follow').checked&&s.scene_m)followWalker(camera,controls,person.group.position);
     updateMarkers();invalidate();}
   function setActive(on){active=on;panel.hidden=!on;button.classList.toggle('active',on);group.visible=on&&!pending&&$('visible').checked;playing=false;last=null;selection?.setActive(on);if(on){enter();seek(time);focus();}invalidate();}
   button.onclick=()=>setActive(!active);$('close').onclick=()=>setActive(false);$('focus').onclick=focus;$('visible').onchange=()=>{group.visible=active&&!pending&&$('visible').checked;invalidate();};
   if(physiology)$('followup').onchange=()=>{playing=false;includeFollowup=$('followup').checked;drawCharts();seek(time);};
   // Release Health before the selected widget's handler refreshes its card and clock.
   document.querySelector('#tabs').addEventListener('click',e=>{if(e.target.closest('button')!==button&&active)setActive(false);},{capture:true});
-  function tick(now){if(active&&playing){if(last!==null)seek(time+(now-last)/1000*speed);if(time>=displayEnd())playing=false;}last=now;requestAnimationFrame(tick);}requestAnimationFrame(tick);
+  document.addEventListener('visibilitychange',()=>{last=null;});
+  function tick(now){if(document.hidden){last=null;requestAnimationFrame(tick);return;}if(active&&playing){if(last!==null)seek(time+(now-last)/1000*speed);if(time>=displayEnd())playing=false;}last=now;requestAnimationFrame(tick);}requestAnimationFrame(tick);
   function replaceResult(next){if(!next.samples?.length||next.samples.some((s,i)=>!Number.isFinite(s.world_seconds)||(i&&s.world_seconds<=next.samples[i-1].world_seconds)))throw Error('Invalid calculated timeline');
     result=next;rows=result.samples;lift=result.alignment.presentation.route_visibility_lift_m;arrival=result.route_duration_s??result.duration_s;
     crossingSignals.dispose();crossingSignals=createCityCrossingSignals(result,signalPresentation);group.add(crossingSignals.group);
@@ -92,6 +93,6 @@ export async function installCityRecording(viewer,{enter,invalidate,selectRoutes
   if(selectRoutes){const {installCityRouteSelection}=await import('./city-route-selection.mjs');selection=await installCityRouteSelection(viewer,{panel,invalidate,
     onPending(){pending=true;playing=false;group.visible=false;$('output').hidden=true;invalidate();},onResult:replaceResult,onRestore(){replaceResult(saved);}});}
   seek(time);
-  return {get result(){return result},usesTerrain:true,setActive,focus,seekWorld(t){playing=false;if(!pending)seek(t);},setPlaying(on){if(pending)return;if(on&&time>=displayEnd())seek(rows[0].world_seconds);playing=on;last=null;invalidate();},setSpeed,
+  return {get result(){return result},usesTerrain:true,releaseCamera(){ $('follow').checked=false; },setActive,focus,seekWorld(t){playing=false;if(!pending)seek(t);},setPlaying(on){if(pending)return;if(on&&time>=displayEnd())seek(rows[0].world_seconds);playing=on;last=null;invalidate();},setSpeed,
     get active(){return active},get playing(){return playing},get speed(){return speed},get time(){return pending?rows[0].world_seconds:time},get elapsed(){return pending?0:time-rows[0].world_seconds},get start(){return rows[0].world_seconds},get end(){return pending?rows[0].world_seconds:displayEnd()},get position(){return person.group.position.toArray()},get visible(){return group.visible}};
 }
