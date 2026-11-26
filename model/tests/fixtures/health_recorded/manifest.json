@@ -1,0 +1,448 @@
+{
+  "schema_version": "1.1.0",
+  "scene_id": "health_example",
+  "simulation": "healthy_route",
+  "run_id": "20261123T130814Z_ccd01c3453",
+  "status": "complete",
+  "created_at": "2026-11-23T13:08:14.687946+00:00",
+  "spatial": {
+    "frame": "ENU",
+    "units": "m",
+    "georeferenced": false,
+    "origin": {
+      "longitude": 0,
+      "latitude": 0,
+      "height_m": 0,
+      "vertical_datum": "Explicit local example coordinates; not London geography"
+    },
+    "bounds_m": {
+      "min": [
+        -10,
+        -10,
+        -10
+      ],
+      "max": [
+        130,
+        10,
+        10
+      ]
+    }
+  },
+  "time": {
+    "unit": "s",
+    "samples": [
+      0,
+      300,
+      600,
+      900,
+      1200,
+      1500,
+      1800,
+      2100,
+      2400,
+      2700,
+      3000,
+      3300,
+      3600
+    ]
+  },
+  "layers": [
+    {
+      "id": "breathing",
+      "kind": "time_series",
+      "format": "json",
+      "asset": "breathing.json",
+      "sampling": "step",
+      "field": {
+        "name": "breathing",
+        "unit": "breaths/min"
+      },
+      "display": {
+        "widget": "time_series",
+        "capabilities": [
+          "pick"
+        ]
+      }
+    },
+    {
+      "id": "latent_spread",
+      "kind": "time_series",
+      "format": "json",
+      "asset": "latent_spread.json",
+      "sampling": "step",
+      "field": {
+        "name": "latent_spread",
+        "unit": "breaths/min"
+      },
+      "display": {
+        "widget": "time_series",
+        "capabilities": [
+          "pick"
+        ]
+      }
+    },
+    {
+      "id": "air_temperature",
+      "kind": "time_series",
+      "format": "json",
+      "asset": "air_temperature.json",
+      "sampling": "step",
+      "field": {
+        "name": "air_temperature",
+        "unit": "degC"
+      },
+      "display": {
+        "widget": "time_series",
+        "capabilities": [
+          "pick"
+        ]
+      }
+    },
+    {
+      "id": "pollution",
+      "kind": "time_series",
+      "format": "json",
+      "asset": "pollution.json",
+      "sampling": "step",
+      "field": {
+        "name": "pollution",
+        "unit": "ug/m3"
+      },
+      "display": {
+        "widget": "time_series",
+        "capabilities": [
+          "pick"
+        ]
+      }
+    },
+    {
+      "id": "irradiance",
+      "kind": "time_series",
+      "format": "json",
+      "asset": "irradiance.json",
+      "sampling": "step",
+      "field": {
+        "name": "irradiance",
+        "unit": "W/m2"
+      },
+      "display": {
+        "widget": "time_series",
+        "capabilities": [
+          "pick"
+        ]
+      }
+    },
+    {
+      "id": "thermal_proxy",
+      "kind": "time_series",
+      "format": "json",
+      "asset": "thermal_proxy.json",
+      "sampling": "step",
+      "field": {
+        "name": "thermal_proxy",
+        "unit": "degC"
+      },
+      "display": {
+        "widget": "time_series",
+        "capabilities": [
+          "pick"
+        ]
+      }
+    },
+    {
+      "id": "experimental_health_score",
+      "kind": "time_series",
+      "format": "json",
+      "asset": "experimental_health_score.json",
+      "sampling": "step",
+      "field": {
+        "name": "experimental_health_score",
+        "unit": "1"
+      },
+      "display": {
+        "widget": "time_series",
+        "capabilities": [
+          "pick"
+        ]
+      }
+    },
+    {
+      "id": "trajectory",
+      "kind": "trajectories",
+      "format": "json",
+      "asset": "trajectory.json",
+      "sampling": "linear",
+      "display": {
+        "widget": "trajectories",
+        "capabilities": [
+          "pick",
+          "opacity"
+        ]
+      }
+    }
+  ],
+  "provenance": {
+    "code_revision": "source-sha256:a5a40cfd0ad841225b9992014d9f9607c2110d3602d834deb394253af8e2e820",
+    "dirty": true,
+    "parameters": {
+      "schema_version": "2.0.0",
+      "scenario_id": "health_example",
+      "model_id": "healthy_route",
+      "method_id": "breathing_cvae",
+      "method_version": "1.0.0",
+      "inputs": {},
+      "parameters": {
+        "initial_breathing_bpm": 16,
+        "particles": 16,
+        "seed": 42,
+        "reference_lower_bpm": 12,
+        "reference_upper_bpm": 20,
+        "reference_scale_bpm": 2,
+        "solar_warming_c_per_800": 6,
+        "input_label": "Fictional exposure and route example; no participant data",
+        "features": [
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.7071067811865476,
+            -0.7071067811865475
+          ],
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.6915130557822694,
+            -0.7223639620597555
+          ],
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.6755902076156604,
+            -0.737277336810124
+          ],
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.659345815100069,
+            -0.7518398074789773
+          ],
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.6427876096865391,
+            -0.7660444431189782
+          ],
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.6259234721840592,
+            -0.7798844830928817
+          ],
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.6087614290087209,
+            -0.793353340291235
+          ],
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.5913096483635822,
+            -0.8064446042674827
+          ],
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.5735764363510464,
+            -0.8191520442889916
+          ],
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.5555702330196025,
+            -0.831469612302545
+          ],
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.5372996083468238,
+            -0.8433914458128857
+          ],
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.5187732581605218,
+            -0.8549118706729464
+          ]
+        ],
+        "positions_m": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            10,
+            0,
+            0
+          ],
+          [
+            20,
+            0,
+            0
+          ],
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            40,
+            0,
+            0
+          ],
+          [
+            50,
+            0,
+            0
+          ],
+          [
+            60,
+            0,
+            0
+          ],
+          [
+            70,
+            0,
+            0
+          ],
+          [
+            80,
+            0,
+            0
+          ],
+          [
+            90,
+            0,
+            0
+          ],
+          [
+            100,
+            0,
+            0
+          ],
+          [
+            110,
+            0,
+            0
+          ],
+          [
+            120,
+            0,
+            0
+          ]
+        ],
+        "irradiance_w_m2": [
+          400,
+          400,
+          400,
+          400,
+          400,
+          400,
+          400,
+          400,
+          400,
+          400,
+          400,
+          400,
+          400
+        ]
+      },
+      "execution": {
+        "device": "cpu",
+        "threads": 2
+      },
+      "disclaimer": "Offline research inference on supplied inputs; not live monitoring, clinical risk or validated health advice. Health score and thermal proxy are experimental heuristics. Latent spread is not calibrated total uncertainty. Missing samples are not replaced with zero."
+    },
+    "inputs": []
+  },
+  "artifacts": [
+    {
+      "id": "source_snapshot",
+      "asset": "provenance/source_snapshot.tar.gz",
+      "sha256": "4abba53a96788bbe7eb7984fdd108eff376581dc8dd788d152131506d15cc728",
+      "media_type": "application/gzip"
+    },
+    {
+      "id": "request_json",
+      "asset": "provenance/request.json",
+      "sha256": "9acf886b5df502f019080ba5594d352dae0bf747fe5c6515b17b2f20fcebd40d",
+      "media_type": "application/json"
+    },
+    {
+      "id": "environment_json",
+      "asset": "provenance/environment.json",
+      "sha256": "3b0d04f6e0ebe31dd86d5b67903f3f76b1ff307d05d91a08040c4d0c29f114fd",
+      "media_type": "application/json"
+    },
+    {
+      "id": "diagnostics_json",
+      "asset": "provenance/diagnostics.json",
+      "sha256": "c16f5bc8a56fc264af7b1b4bce2022dbf04da16672e075af97bd80177c209d31",
+      "media_type": "application/json"
+    },
+    {
+      "id": "events_jsonl",
+      "asset": "provenance/events.jsonl",
+      "sha256": "1cb36ad68f605f778e62562235710c831862bed14ce65cd1e8860c056c2d4d36",
+      "media_type": "application/x-ndjson"
+    }
+  ]
+}

@@ -8,7 +8,7 @@ export function walkSignalState(program,time){
 }
 
 // Shared textures keep hundreds of enlarged pedestrian heads inexpensive.
-export function createWalkSignals(data){
+export function createWalkSignals(data,{roundLamps=false}={}){
  const group=new THREE.Group();group.name='pedestrian-walk-signals';
  function texture(green){
   const canvas=document.createElement('canvas');canvas.width=128;canvas.height=256;
@@ -24,7 +24,17 @@ export function createWalkSignals(data){
    line(walking?[[64,y+49],[46,y+66],[34,y+73]]:[[64,y+49],[53,y+76]]);
    line(walking?[[64,y+49],[80,y+59],[88,y+77]]:[[64,y+49],[75,y+76]]);
   }
-  person(28,false,!green);person(133,true,green);
+  if(roundLamps){
+   function lamp(y,on,isGreen){
+    const colour=isGreen?'#22ff68':'#ff243d';
+    if(on){const glow=c.createRadialGradient(64,y,30,64,y,49);glow.addColorStop(0,colour);glow.addColorStop(1,'transparent');c.fillStyle=glow;c.fillRect(14,y-50,100,100);}
+    c.beginPath();c.arc(64,y,37,0,Math.PI*2);
+    if(on){const lens=c.createRadialGradient(59,y-6,0,64,y,37);lens.addColorStop(0,isGreen?'#70ff98':'#ff6070');lens.addColorStop(1,colour);c.fillStyle=lens;}
+    else c.fillStyle=isGreen?'#10291e':'#291219';
+    c.fill();c.strokeStyle=on?'#ffffff':'#465057';c.lineWidth=on?3:2;c.stroke();
+   }
+   lamp(64,!green,false);lamp(166,green,true);
+  }else{person(28,false,!green);person(133,true,green);}
   c.font='bold 20px Arial';c.textAlign='center';c.fillStyle=green?'#39ff80':'#ff404c';c.fillText(green?'WALK':'WAIT',64,241);
   return new THREE.CanvasTexture(canvas);
  }

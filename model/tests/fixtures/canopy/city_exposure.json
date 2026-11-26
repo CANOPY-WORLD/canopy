@@ -1,0 +1,17 @@
+{
+  "schema_version": "2.0.0",
+  "scenario_id": "imperial_corridor_8km",
+  "model_id": "healthy_route",
+  "method_id": "city_exposure",
+  "method_version": "1.0.0",
+  "inputs": {
+    "geometry": "PINNED_CITY_geometry@1",
+    "city": "PINNED_CITY_physics@1",
+    "recording": "RECORDED_ROUTE_physics@1"
+  },
+  "parameters": {},
+  "execution": {
+    "device": "cpu",
+    "threads": 2
+  }
+}

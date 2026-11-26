@@ -65,8 +65,8 @@ geographic transformation are preserved; the interior view uses the flat city
 datum and restores terrain on exit. Only the existing I-HUB landmark is replaced
 while indoors; surrounding detailed city geometry remains visible.
 
-## Optional research experiments
-
-[Healthy-route extended replay](experiments/healthy_route_extended_replay/README.md) is an opt-in private research profile. It does not change this Scenario's recorded timelines, default tasks or publication.
-
 The proposed 53-station Tube release preserves the current I-HUB, daylight solar, LISFLOOD, native traffic and coupled pollution. The six contributed rail payloads add approximately 14.4 MB. Runtime Tube geometry is loaded on selection; only one station is built at a time. Representative interiors and scheduled trains are not surveyed geometry or live service.
+
+## Local Health experiment
+
+The [current-city Health profiles](experiments/healthy_route_current_city/README.md) are opt-in research settings. Extended/interpolated fields apply only to Health calculations in a separate workspace; canonical fields, tasks and publication remain unchanged.

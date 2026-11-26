@@ -1,0 +1,25 @@
+{
+  "schema_version": "2.0.0",
+  "scenario_id": "imperial_corridor_8km",
+  "model_id": "healthy_route",
+  "method_id": "city_breathing",
+  "method_version": "1.0.0",
+  "inputs": {
+    "exposure": "ALIGNED_RECORDING_physics@1",
+    "city": "PINNED_CITY_physics@1",
+    "physiology": "PHYSIOLOGY_INPUT_physics@1"
+  },
+  "parameters": {
+    "assumed_background_pm25_ug_m3": 6,
+    "pmx_to_pm25_proxy_fraction": 1,
+    "max_temperature_fill_m": 128,
+    "max_pmx_fill_m": 16,
+    "solar_warming_c_per_800": 6,
+    "breathing_history_offset_s": 39600,
+    "followup_until_elapsed_s": 600
+  },
+  "execution": {
+    "device": "cpu",
+    "threads": 2
+  }
+}

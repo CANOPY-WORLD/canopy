@@ -1,0 +1,293 @@
+{
+  "schema_version": "2.0.0",
+  "scenario_id": "health_example",
+  "asset_id": "20261123T130814Z_ccd01c3453_physics",
+  "version": "1",
+  "kind": "physics",
+  "spatial": {
+    "frame": "ENU",
+    "units": "m",
+    "georeferenced": false,
+    "origin": {
+      "longitude": 0,
+      "latitude": 0,
+      "height_m": 0,
+      "vertical_datum": "Explicit local example coordinates; not London geography"
+    },
+    "bounds_m": {
+      "min": [
+        -10,
+        -10,
+        -10
+      ],
+      "max": [
+        130,
+        10,
+        10
+      ]
+    }
+  },
+  "derived_from": [],
+  "provenance": {
+    "code_revision": "source-sha256:a5a40cfd0ad841225b9992014d9f9607c2110d3602d834deb394253af8e2e820",
+    "dirty": true,
+    "parameters": {
+      "schema_version": "2.0.0",
+      "scenario_id": "health_example",
+      "model_id": "healthy_route",
+      "method_id": "breathing_cvae",
+      "method_version": "1.0.0",
+      "inputs": {},
+      "parameters": {
+        "initial_breathing_bpm": 16,
+        "particles": 16,
+        "seed": 42,
+        "reference_lower_bpm": 12,
+        "reference_upper_bpm": 20,
+        "reference_scale_bpm": 2,
+        "solar_warming_c_per_800": 6,
+        "input_label": "Fictional exposure and route example; no participant data",
+        "features": [
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.7071067811865476,
+            -0.7071067811865475
+          ],
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.6915130557822694,
+            -0.7223639620597555
+          ],
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.6755902076156604,
+            -0.737277336810124
+          ],
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.659345815100069,
+            -0.7518398074789773
+          ],
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.6427876096865391,
+            -0.7660444431189782
+          ],
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.6259234721840592,
+            -0.7798844830928817
+          ],
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.6087614290087209,
+            -0.793353340291235
+          ],
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.5913096483635822,
+            -0.8064446042674827
+          ],
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.5735764363510464,
+            -0.8191520442889916
+          ],
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.5555702330196025,
+            -0.831469612302545
+          ],
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.5372996083468238,
+            -0.8433914458128857
+          ],
+          [
+            10,
+            22,
+            50,
+            0.03,
+            0,
+            1,
+            0.5187732581605218,
+            -0.8549118706729464
+          ]
+        ],
+        "positions_m": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            10,
+            0,
+            0
+          ],
+          [
+            20,
+            0,
+            0
+          ],
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            40,
+            0,
+            0
+          ],
+          [
+            50,
+            0,
+            0
+          ],
+          [
+            60,
+            0,
+            0
+          ],
+          [
+            70,
+            0,
+            0
+          ],
+          [
+            80,
+            0,
+            0
+          ],
+          [
+            90,
+            0,
+            0
+          ],
+          [
+            100,
+            0,
+            0
+          ],
+          [
+            110,
+            0,
+            0
+          ],
+          [
+            120,
+            0,
+            0
+          ]
+        ],
+        "irradiance_w_m2": [
+          400,
+          400,
+          400,
+          400,
+          400,
+          400,
+          400,
+          400,
+          400,
+          400,
+          400,
+          400,
+          400
+        ]
+      },
+      "execution": {
+        "device": "cpu",
+        "threads": 2
+      },
+      "disclaimer": "Offline research inference on supplied inputs; not live monitoring, clinical risk or validated health advice. Health score and thermal proxy are experimental heuristics. Latent spread is not calibrated total uncertainty. Missing samples are not replaced with zero."
+    },
+    "inputs": []
+  },
+  "files": {
+    "air_temperature.json": "803729c8bb717a906b30343bbb9b6d9527c2d6732cc98c5a7ff1d7e05c5c4b5a",
+    "breathing.json": "c06f430b2ba0e827f70f5736363db2692713183aa32f29de0be1b3b17881f54a",
+    "experimental_health_score.json": "f4d3bf3383c75c2fd6ed953fb4376213766ebc5bc2dc1c8d71176f9294e6de69",
+    "irradiance.json": "b6a30989240dff0bc849fbef09f15e8597391e898f99930c75721a096ebbb18f",
+    "latent_spread.json": "e2736f0238f88526bc23f70a8bbe720ad10c546718e7e3fbb23b69a3ca545e93",
+    "pollution.json": "13c85235963276ee9bac59fc553d61a1c335867c5fbb7e75d2fcc9dd576b7b71",
+    "provenance/diagnostics.json": "c16f5bc8a56fc264af7b1b4bce2022dbf04da16672e075af97bd80177c209d31",
+    "provenance/environment.json": "3b0d04f6e0ebe31dd86d5b67903f3f76b1ff307d05d91a08040c4d0c29f114fd",
+    "provenance/events.jsonl": "1cb36ad68f605f778e62562235710c831862bed14ce65cd1e8860c056c2d4d36",
+    "provenance/request.json": "9acf886b5df502f019080ba5594d352dae0bf747fe5c6515b17b2f20fcebd40d",
+    "provenance/source_snapshot.tar.gz": "4abba53a96788bbe7eb7984fdd108eff376581dc8dd788d152131506d15cc728",
+    "thermal_proxy.json": "38b32f65832543005c9048624b5accac2892f20a0f1cecc519ec51f1f4b2703d",
+    "trajectory.json": "e496538e2eed4d1975c1a7a5ae8b54584e19fbc10297c014ebdc1670565cbe9a"
+  },
+  "payload": {
+    "format": "canopy-run-v1",
+    "manifest": "assets/bundles/20261123T130814Z_ccd01c3453/manifest.json",
+    "sha256": "9cdffa0ee0e2b8ba1d3887ffc935ad6fbfb546c1f39c5725782a80aae7f3f9db",
+    "layers": [
+      "breathing",
+      "latent_spread",
+      "air_temperature",
+      "pollution",
+      "irradiance",
+      "thermal_proxy",
+      "experimental_health_score",
+      "trajectory"
+    ]
+  }
+}

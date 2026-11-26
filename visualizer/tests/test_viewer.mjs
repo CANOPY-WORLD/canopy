@@ -2,11 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {sample,enuToWorld,worldToEnu,assetURL} from '../src/visualization/shared/time.mjs';
 import {f16} from '../src/visualization/shared/npy.mjs';
-import {replayTime} from '../src/visualization/healthy-route/shared-environment.mjs';
-test('retained health modules resolve the shared half-float decoder',()=>{
+test('shared half-float decoder preserves values and missing markers',()=>{
  const values=f16(new Uint16Array([0,0x3c00,0xc000,1,0x7c00,0x7e00]));
  assert.deepEqual(Array.from(values.slice(0,5)),[0,1,-2,2**-24,Infinity]);
- assert(Number.isNaN(values[5]));assert.equal(replayTime(650,600),50);
+ assert(Number.isNaN(values[5]));
 });
 test('ENU conversion preserves handedness and round trips',()=>{
  assert.deepEqual(enuToWorld([1,2,3]),[1,3,-2]);assert.deepEqual(worldToEnu(enuToWorld([-3,9,2])),[-3,9,2]);

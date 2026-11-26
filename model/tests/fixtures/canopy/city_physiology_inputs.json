@@ -1,0 +1,8 @@
+{
+  "format": "canopy-health-physiology-v1",
+  "input_kind": "synthetic",
+  "start_utc": "2026-06-20T23:00:00Z",
+  "features": [[6, 22, 50, 0.03, 3, 0.02, 0, 1]],
+  "initial_breathing_bpm": 16,
+  "reference": {"q10": 12, "q90": 20, "scale": 4}
+}

@@ -1,0 +1,23 @@
+{
+  "asset_ref": "20261123T130814Z_ccd01c3453_physics@1",
+  "scenario_id": "health_example",
+  "path": "model/tests/fixtures/health_recorded",
+  "derived_from": [],
+  "files": {
+    "air_temperature.json": "803729c8bb717a906b30343bbb9b6d9527c2d6732cc98c5a7ff1d7e05c5c4b5a",
+    "breathing.json": "c06f430b2ba0e827f70f5736363db2692713183aa32f29de0be1b3b17881f54a",
+    "experimental_health_score.json": "f4d3bf3383c75c2fd6ed953fb4376213766ebc5bc2dc1c8d71176f9294e6de69",
+    "irradiance.json": "b6a30989240dff0bc849fbef09f15e8597391e898f99930c75721a096ebbb18f",
+    "latent_spread.json": "e2736f0238f88526bc23f70a8bbe720ad10c546718e7e3fbb23b69a3ca545e93",
+    "manifest.json": "9cdffa0ee0e2b8ba1d3887ffc935ad6fbfb546c1f39c5725782a80aae7f3f9db",
+    "physics.asset.json": "171255d225a0be748597eeb910293b54d915716a81f29b58fc83dd2588a42432",
+    "pollution.json": "13c85235963276ee9bac59fc553d61a1c335867c5fbb7e75d2fcc9dd576b7b71",
+    "provenance/diagnostics.json": "c16f5bc8a56fc264af7b1b4bce2022dbf04da16672e075af97bd80177c209d31",
+    "provenance/environment.json": "3b0d04f6e0ebe31dd86d5b67903f3f76b1ff307d05d91a08040c4d0c29f114fd",
+    "provenance/events.jsonl": "1cb36ad68f605f778e62562235710c831862bed14ce65cd1e8860c056c2d4d36",
+    "provenance/request.json": "9acf886b5df502f019080ba5594d352dae0bf747fe5c6515b17b2f20fcebd40d",
+    "provenance/source_snapshot.tar.gz": "4abba53a96788bbe7eb7984fdd108eff376581dc8dd788d152131506d15cc728",
+    "thermal_proxy.json": "38b32f65832543005c9048624b5accac2892f20a0f1cecc519ec51f1f4b2703d",
+    "trajectory.json": "e496538e2eed4d1975c1a7a5ae8b54584e19fbc10297c014ebdc1670565cbe9a"
+  }
+}

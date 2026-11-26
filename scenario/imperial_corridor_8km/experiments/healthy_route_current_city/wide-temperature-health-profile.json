@@ -1,0 +1,11 @@
+{
+  "assumed_background_pm25_ug_m3": 6.0,
+  "pmx_to_pm25_proxy_fraction": 1.0,
+  "max_temperature_fill_m": 256,
+  "max_pmx_fill_m": 16.0,
+  "solar_warming_c_per_800": 6.0,
+  "breathing_history_offset_s": 39600,
+  "followup_until_elapsed_s": 600.0,
+  "field_time_policy": "health_replay",
+  "field_replay_blend_s": 60
+}

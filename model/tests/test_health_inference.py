@@ -65,6 +65,11 @@ class PublicInferenceTests(unittest.TestCase):
             self.assertTrue(np.all(a['fields']['thermal_proxy'][0]>b['fields']['thermal_proxy'][0]))
             out=method.export(a,c);validate(out/'manifest.json')
             m=json.loads((out/'manifest.json').read_text());self.assertEqual(len(m['layers']),8)
+            self.assertIn('not live monitoring',m['provenance']['parameters']['disclaimer'])
+            self.assertNotIn('disclaimer',c.provenance['parameters'])
             self.assertEqual(m['time']['samples'][-1],3600)
+            request['parameters']['irradiance_w_m2'][3]=float('nan')
+            with self.assertRaisesRegex(ValueError,'Missing irradiance'):method.validate(request,c)
+            request['parameters']['irradiance_w_m2'][3]=400
             request['parameters']['positions_m']=[[999,0,0]]*13
             with self.assertRaisesRegex(ValueError,'bounds'):method.validate(request,c)
